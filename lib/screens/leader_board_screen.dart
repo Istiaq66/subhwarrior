@@ -244,7 +244,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: rankColor.withOpacity(0.1),
+            color: rankColor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
             border: Border.all(
               color: rankColor,
@@ -304,7 +304,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           style: TextStyle(
             fontSize: 12,
             color: isCurrentUser
-                ? Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.7)
+                ? Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.7)
                 : Colors.grey,
           ),
         ),
