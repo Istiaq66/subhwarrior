@@ -12,38 +12,44 @@ jobs:
   build_apk:
     runs-on: ubuntu-latest
     steps:
+      # 1. Checkout code
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # 2. Setup Java 17 (matches Gradle settings)
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.35.0'
 
+      # 4. Install dependencies
       - name: Install Dependencies
         run: flutter pub get
 
+      # 5. Build APK (release)
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --no-tree-shake-icons
 
+      # 6. Upload APK as artifact
       - name: Upload APK as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: subhwarrior-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
+      # 7. Create GitHub Release and attach APK
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ github.run_number }}
-          name: SubhWarrior APK Release # Optional
+          name: SubhWarrior APK Release
+          files: build/app/outputs/flutter-apk/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload APK as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: subhwarrior-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-
-
