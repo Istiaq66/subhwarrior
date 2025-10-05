@@ -1,114 +1,53 @@
-name: subhwarrior
-description: "A new Flutter project."
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+# SubhWarrior
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+**A new Flutter project.**
 
-environment:
-sdk: ^3.9.0
+---
 
-# Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
-dependencies:
-flutter:
-sdk: flutter
+## Project Description
 
-# The following adds the Cupertino Icons font to your application.
-# Use with the CupertinoIcons class for iOS style icons.
-cupertino_icons: ^1.0.8
+SubhWarrior is a Flutter application that tracks daily routines, progress, and challenges. It includes features like prayer time notifications, streak tracking, and progress visualization.
 
-dev_dependencies:
-flutter_test:
-sdk: flutter
+---
 
-# The "flutter_lints" package below contains a set of recommended lints to
-# encourage good coding practices. The lint set provided by the package is
-# activated in the `analysis_options.yaml` file located at the root of your
-# package. See that file for information about deactivating specific lint
-# rules and activating additional ones.
-flutter_lints: ^5.0.0
+## Version
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
+- **Current Version:** 1.0.0+1
+- **Flutter SDK:** ^3.9.0
 
-# The following section is specific to Flutter packages.
-flutter:
+---
 
-# The following line ensures that the Material Icons font is
-# included with your application, so that you can use the icons in
-# the material Icons class.
-uses-material-design: true
+## Dependencies
 
-# To add assets to your application, add an assets section, like this:
-# assets:
-#   - images/a_dot_burr.jpeg
-#   - images/a_dot_ham.jpeg
+- **Flutter:** SDK
+- **Cupertino Icons:** ^1.0.8
+- **Flutter Lints:** ^5.0.0
+- **Flutter Test:** SDK
 
-# An image asset can refer to one or more resolution-specific "variants", see
-# https://flutter.dev/to/resolution-aware-images
+---
 
-# For details regarding adding assets from package dependencies, see
-# https://flutter.dev/to/asset-from-package
+## Project Structure
 
-# To add custom fonts to your application, add a fonts section here,
-# in this "flutter" section. Each entry in this list should have a
-# "family" key with the font family name, and a "fonts" key with a
-# list giving the asset and other descriptors for the font. For
-# example:
-# fonts:
-#   - family: Schyler
-#     fonts:
-#       - asset: fonts/Schyler-Regular.ttf
-#       - asset: fonts/Schyler-Italic.ttf
-#         style: italic
-#   - family: Trajan Pro
-#     fonts:
-#       - asset: fonts/TrajanPro.ttf
-#       - asset: fonts/TrajanPro_Bold.ttf
-#         weight: 700
-#
-# For details regarding fonts from package dependencies,
-# see https://flutter.dev/to/font-from-package
-
-Project Structure
 subh_warrior/
 ├── lib/
-│   ├── main.dart
-│   ├── providers/
-│   │   ├── challenge_provider.dart
-│   │   ├── prayer_time_provider.dart
-│   │   └── theme_provider.dart
-│   ├── screens/
-│   │   ├── home_screen.dart
-│   │   ├── log_day_screen.dart
-│   │   ├── progress_screen.dart
-│   │   ├── sleep_preparation_screen.dart
-│   │   ├── onboarding_screen.dart
-│   │   ├── splash_screen.dart
-│   │   └── leaderboard_screen.dart
-│   ├── widgets/
-│   │   ├── prayer_time_card.dart
-│   │   ├── progress_card.dart
-│   │   └── streak_card.dart
-│   └── utils/
-│       └── notification_service.dart
+│ ├── main.dart
+│ ├── providers/
+│ │ ├── challenge_provider.dart
+│ │ ├── prayer_time_provider.dart
+│ │ └── theme_provider.dart
+│ ├── screens/
+│ │ ├── home_screen.dart
+│ │ ├── log_day_screen.dart
+│ │ ├── progress_screen.dart
+│ │ ├── sleep_preparation_screen.dart
+│ │ ├── onboarding_screen.dart
+│ │ ├── splash_screen.dart
+│ │ └── leaderboard_screen.dart
+│ ├── widgets/
+│ │ ├── prayer_time_card.dart
+│ │ ├── progress_card.dart
+│ │ └── streak_card.dart
+│ └── utils/
+│ └── notification_service.dart
 ├── pubspec.yaml
 └── README.md
