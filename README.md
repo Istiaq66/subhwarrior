@@ -8,26 +8,21 @@
 
 SubhWarrior is a Flutter application that tracks daily routines, progress, and challenges. It includes features like prayer time notifications, streak tracking, and progress visualization.
 
+- Fajr prayer tracking
+- Daily productive work tracking (60+ minutes)
+- 28-day challenge streaks
+- Progress visualization and notifications
+
 ---
 
 ## Version
 
 - **Current Version:** 1.0.0+1
-- **Flutter SDK:** ^3.9.0
-
----
-
-## Dependencies
-
-- **Flutter:** SDK
-- **Cupertino Icons:** ^1.0.8
-- **Flutter Lints:** ^5.0.0
-- **Flutter Test:** SDK
-
----
+- **Flutter SDK:** ^3.35.0
 
 ## Project Structure
 
+```
 subh_warrior/
 ├── lib/
 │ ├── main.dart
@@ -51,3 +46,4 @@ subh_warrior/
 │ └── notification_service.dart
 ├── pubspec.yaml
 └── README.md
+```
