@@ -256,9 +256,13 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 12),
           Text(label),
           const Spacer(),
-          Text(
-            value,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          Flexible(
+            child: Text(
+              value,
+              maxLines: 2,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
