@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'package:subh_warrior/screens/onboarding_screen.dart';
 import 'package:subh_warrior/screens/settings_screen.dart';
 import 'package:subh_warrior/screens/splash_screen.dart';
-import 'package:timezone/data/latest.dart' as tz;
 
 import 'firebase_options.dart';
 
@@ -22,11 +21,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize timezone
-  tz.initializeTimeZones();
-
   // Initialize notifications
-  NotificationService.initialize();
+  NotificationService().initBackground();
 
   // Load preferences
   final prefs = await SharedPreferences.getInstance();

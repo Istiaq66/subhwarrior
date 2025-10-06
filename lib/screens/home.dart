@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:subh_warrior/helpers/notification_permission.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/providers/challenge_provider.dart';
 import 'package:subh_warrior/providers/prayer_time_provider.dart';
@@ -23,11 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _setup();
+    _init();
   }
 
-  Future<void> _setup() async {
+  Future<void> _init() async {
     await _loadPrayerTimes();
+    await _checkNotificationPermission();
     _setupNotifications();
   }
 
@@ -54,6 +56,13 @@ class _HomeScreenState extends State<HomeScreen> {
       todayFajrTime: prayerProvider.todayFajrTime,
       isChallengeActive: challengeProvider.isChallengeActive,
     );
+  }
+
+  Future<void> _checkNotificationPermission() async {
+    await incrementLaunchCount();
+    if (mounted) {
+      await ensureNotificationPermission(context);
+    }
   }
 
   @override
