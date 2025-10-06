@@ -613,26 +613,40 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _completeOnboarding() async {
-    // Save user settings
-    final challengeProvider = context.read<ChallengeProvider>();
-    await challengeProvider.updateUserSettings(
-      name: _nameController.text,
-      location: _locationController.text,
-      latitude: _latitude,
-      longitude: _longitude,
-    );
+    try {
+      // Save user settings
+      final challengeProvider = context.read<ChallengeProvider>();
+      await challengeProvider.updateUserSettings(
+        name: _nameController.text,
+        location: _locationController.text,
+        latitude: _latitude,
+        longitude: _longitude,
+      );
 
-    // Fetch prayer times
-    if (_latitude != 0 && _longitude != 0) {
-      final prayerProvider = context.read<PrayerTimeProvider>();
-      await prayerProvider.fetchPrayerTimes(_latitude, _longitude);
+      // Fetch prayer times
+      if (_latitude != 0 && _longitude != 0) {
+        final prayerProvider = context.read<PrayerTimeProvider>();
+        await prayerProvider.fetchPrayerTimes(_latitude, _longitude);
+      }
+
+      // Mark onboarding as complete
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isFirstTime', false);
+
+      // Navigate to home
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
-
-    // Mark onboarding as complete
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isFirstTime', false);
-
-    // Navigate to home
-    Navigator.pushReplacementNamed(context, '/home');
   }
 }

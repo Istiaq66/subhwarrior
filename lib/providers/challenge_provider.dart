@@ -177,6 +177,21 @@ class ChallengeProvider extends ChangeNotifier {
         type != WorkType.socialMedia;
   }
 
+  Future<bool> checkUsernameExists(String username) async {
+    try {
+      final query = await _firestore
+          .collection('challenges')
+          .where('userName', isEqualTo: username)
+          .limit(1)
+          .get();
+
+      return query.docs.isNotEmpty;
+    } catch (e) {
+      debugPrint('Error checking username: $e');
+      return false;
+    }
+  }
+
   // Update user settings
   Future<void> updateUserSettings({
     required String name,
@@ -184,6 +199,12 @@ class ChallengeProvider extends ChangeNotifier {
     required double latitude,
     required double longitude,
   }) async {
+    if (name != _userName) {
+      final exists = await checkUsernameExists(name);
+      if (exists) {
+        throw Exception('Username already taken. Please choose another name.');
+      }
+    }
     _userName = name;
     _userLocation = location;
     _userLatitude = latitude;

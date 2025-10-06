@@ -681,40 +681,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final challengeProvider = context.read<ChallengeProvider>();
     final prayerProvider = context.read<PrayerTimeProvider>();
 
-    // Save user profile
-    await challengeProvider.updateUserSettings(
-      name: _nameController.text,
-      location: _locationController.text,
-      latitude: challengeProvider.userLatitude,
-      longitude: challengeProvider.userLongitude,
-    );
-
-    // Save notification settings
-    await challengeProvider.updateNotificationSettings(
-      notificationsEnabled: _notificationsEnabled,
-      fajrReminder: _fajrReminder,
-      loggingReminder: _loggingReminder,
-      fajrReminderMinutes: _fajrReminderMinutes,
-    );
-
-    // Schedule/cancel notifications based on settings
-    await NotificationService.updateNotifications(
-      notificationsEnabled: _notificationsEnabled,
-      fajrReminder: _fajrReminder,
-      loggingReminder: _loggingReminder,
-      fajrReminderMinutes: _fajrReminderMinutes,
-      todayFajrTime: prayerProvider.todayFajrTime,
-      isChallengeActive: challengeProvider.isChallengeActive,
-    );
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Settings saved successfully'),
-          backgroundColor: Colors.green,
-        ),
+    try {
+      // Save user profile
+      await challengeProvider.updateUserSettings(
+        name: _nameController.text,
+        location: _locationController.text,
+        latitude: challengeProvider.userLatitude,
+        longitude: challengeProvider.userLongitude,
       );
-      Navigator.pop(context);
+
+      // Save notification settings
+      await challengeProvider.updateNotificationSettings(
+        notificationsEnabled: _notificationsEnabled,
+        fajrReminder: _fajrReminder,
+        loggingReminder: _loggingReminder,
+        fajrReminderMinutes: _fajrReminderMinutes,
+      );
+
+      // Update notifications
+      await NotificationService.updateNotifications(
+        notificationsEnabled: _notificationsEnabled,
+        fajrReminder: _fajrReminder,
+        loggingReminder: _loggingReminder,
+        fajrReminderMinutes: _fajrReminderMinutes,
+        todayFajrTime: prayerProvider.todayFajrTime,
+        isChallengeActive: challengeProvider.isChallengeActive,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Settings saved successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
