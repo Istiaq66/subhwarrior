@@ -14,6 +14,10 @@ class ChallengeProvider extends ChangeNotifier {
   int _totalQualifyingDays = 0;
   int _currentWeek = 1;
   bool _isChallengeActive = false;
+  bool _notificationsEnabled = true;
+  bool _fajrReminder = true;
+  bool _loggingReminder = true;
+  int _fajrReminderMinutes = 15;
 
   // User settings
   String _userName = '';
@@ -39,6 +43,10 @@ class ChallengeProvider extends ChangeNotifier {
   String get userLocation => _userLocation;
   double get userLatitude => _userLatitude;
   double get userLongitude => _userLongitude;
+  bool get notificationsEnabled => _notificationsEnabled;
+  bool get fajrReminder => _fajrReminder;
+  bool get loggingReminder => _loggingReminder;
+  int get fajrReminderMinutes => _fajrReminderMinutes;
 
   // Calculate progress
   double get overallProgress => _totalQualifyingDays / 16;
@@ -255,6 +263,21 @@ class ChallengeProvider extends ChangeNotifier {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
+  Future<void> updateNotificationSettings({
+    required bool notificationsEnabled,
+    required bool fajrReminder,
+    required bool loggingReminder,
+    required int fajrReminderMinutes,
+  }) async {
+    _notificationsEnabled = notificationsEnabled;
+    _fajrReminder = fajrReminder;
+    _loggingReminder = loggingReminder;
+    _fajrReminderMinutes = fajrReminderMinutes;
+
+    await _saveData();
+    notifyListeners();
+  }
+
   // Data persistence
   Future<void> _loadData() async {
     final startDateStr = prefs.getString('challengeStartDate');
@@ -271,6 +294,11 @@ class ChallengeProvider extends ChangeNotifier {
     _userLocation = prefs.getString('userLocation') ?? '';
     _userLatitude = prefs.getDouble('userLatitude') ?? 0.0;
     _userLongitude = prefs.getDouble('userLongitude') ?? 0.0;
+
+    _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
+    _fajrReminder = prefs.getBool('fajr_reminder') ?? true;
+    _loggingReminder = prefs.getBool('logging_reminder') ?? true;
+    _fajrReminderMinutes = prefs.getInt('fajr_reminder_minutes') ?? 15;
 
     final logsJson = prefs.getString('dayLogs');
     if (logsJson != null) {
@@ -293,6 +321,12 @@ class ChallengeProvider extends ChangeNotifier {
     await prefs.setString('userLocation', _userLocation);
     await prefs.setDouble('userLatitude', _userLatitude);
     await prefs.setDouble('userLongitude', _userLongitude);
+
+    // Add these lines for notification settings
+    await prefs.setBool('notifications_enabled', _notificationsEnabled);
+    await prefs.setBool('fajr_reminder', _fajrReminder);
+    await prefs.setBool('logging_reminder', _loggingReminder);
+    await prefs.setInt('fajr_reminder_minutes', _fajrReminderMinutes);
 
     final logsJson = json.encode(_dayLogs.map((e) => e.toJson()).toList());
     await prefs.setString('dayLogs', logsJson);

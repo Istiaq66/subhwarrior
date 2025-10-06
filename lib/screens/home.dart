@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/providers/challenge_provider.dart';
 import 'package:subh_warrior/providers/prayer_time_provider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -22,9 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadPrayerTimes();
-    });
+    _setup();
+  }
+
+  Future<void> _setup() async {
+    await _loadPrayerTimes();
+    _setupNotifications();
   }
 
   Future<void> _loadPrayerTimes() async {
@@ -37,6 +41,19 @@ class _HomeScreenState extends State<HomeScreen> {
         challengeProvider.userLongitude,
       );
     }
+  }
+
+  Future<void> _setupNotifications() async {
+    final challengeProvider = context.read<ChallengeProvider>();
+    final prayerProvider = context.read<PrayerTimeProvider>();
+    NotificationService.updateNotifications(
+      notificationsEnabled: challengeProvider.notificationsEnabled,
+      fajrReminder: challengeProvider.fajrReminder,
+      loggingReminder: challengeProvider.loggingReminder,
+      fajrReminderMinutes: challengeProvider.fajrReminderMinutes,
+      todayFajrTime: prayerProvider.todayFajrTime,
+      isChallengeActive: challengeProvider.isChallengeActive,
+    );
   }
 
   @override

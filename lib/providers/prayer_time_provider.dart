@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
@@ -5,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 
 class PrayerTimeProvider extends ChangeNotifier {
+  final SharedPreferences prefs;
   PrayerTimes? _todayPrayerTimes;
   PrayerTimes? _tomorrowPrayerTimes;
   bool _isLoading = false;
@@ -20,6 +22,15 @@ class PrayerTimeProvider extends ChangeNotifier {
   String get error => _error;
   int get calculationMethod => _calculationMethod;
   bool get useHanafiMethod => _useHanafiMethod;
+
+  PrayerTimeProvider(this.prefs) {
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    _calculationMethod = prefs.getInt('prayer_calculation_method') ?? 2;
+    _useHanafiMethod = prefs.getBool('prayer_hanafi_method') ?? false;
+  }
 
   // Get current Fajr time
   DateTime? get todayFajrTime {
@@ -170,12 +181,14 @@ class PrayerTimeProvider extends ChangeNotifier {
   // Update calculation method
   void updateCalculationMethod(int method) {
     _calculationMethod = method;
+    prefs.setInt('prayer_calculation_method', method);
     notifyListeners();
   }
 
   // Update juristic method (Hanafi vs Standard)
   void updateJuristicMethod(bool useHanafi) {
     _useHanafiMethod = useHanafi;
+    prefs.setBool('prayer_hanafi_method', useHanafi);
     notifyListeners();
   }
 

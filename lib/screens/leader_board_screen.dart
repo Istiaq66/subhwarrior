@@ -109,6 +109,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           return const Center(child: CircularProgressIndicator());
         }
 
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return _buildEmptyLeaderboard();
         }
@@ -134,7 +140,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
   }
 
   Widget _buildFriendsLeaderboard() {
-    // This would be implemented with friend system
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -177,7 +182,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () {
-                // Navigate to settings
+                Navigator.pushNamed(context, '/settings');
               },
               child: const Text('Set Location'),
             ),
@@ -186,23 +191,51 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
       );
     }
 
+    // FIXED: Remove the orderBy to avoid needing composite index
+    // Just filter by location
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('challenges')
           .where('location', isEqualTo: userLocation)
-          .orderBy('totalQualifyingDays', descending: true)
-          .limit(50)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
+        if (snapshot.hasError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 60, color: Colors.red),
+                const SizedBox(height: 16),
+                Text('Error loading leaderboard'),
+                const SizedBox(height: 8),
+                Text(
+                  snapshot.error.toString(),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
+
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return _buildEmptyLeaderboard(isLocal: true);
         }
 
-        final docs = snapshot.data!.docs;
+        // Sort in-memory after fetching
+        final docs = snapshot.data!.docs.toList();
+        docs.sort((a, b) {
+          final aData = a.data() as Map<String, dynamic>;
+          final bData = b.data() as Map<String, dynamic>;
+          final aScore = aData['totalQualifyingDays'] ?? 0;
+          final bScore = bData['totalQualifyingDays'] ?? 0;
+          return bScore.compareTo(aScore); // Descending order
+        });
+
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: docs.length,
@@ -244,7 +277,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: rankColor.withValues(alpha: 0.1),
+            color: rankColor.withOpacity(0.1),
             shape: BoxShape.circle,
             border: Border.all(
               color: rankColor,
@@ -304,7 +337,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           style: TextStyle(
             fontSize: 12,
             color: isCurrentUser
-                ? Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.7)
+                ? Theme.of(context)
+                .colorScheme
+                .onPrimaryContainer
+                .withOpacity(0.7)
                 : Colors.grey,
           ),
         ),
@@ -363,9 +399,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            isLocal
-                ? 'No warriors in your area yet!'
-                : 'No data available',
+            isLocal ? 'No warriors in your area yet!' : 'No data available',
             style: const TextStyle(fontSize: 18),
           ),
           const SizedBox(height: 8),

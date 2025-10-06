@@ -26,7 +26,7 @@ void main() async {
   tz.initializeTimeZones();
 
   // Initialize notifications
-  await NotificationService.initialize();
+  NotificationService.initialize();
 
   // Load preferences
   final prefs = await SharedPreferences.getInstance();
@@ -44,7 +44,7 @@ class SubhWarriorApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => PrayerTimeProvider()),
+        ChangeNotifierProvider(create: (_) => PrayerTimeProvider(prefs)),
         ChangeNotifierProvider(create: (_) => ChallengeProvider(prefs)),
       ],
       child: Consumer<ThemeProvider>(

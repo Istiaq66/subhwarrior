@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/providers/challenge_provider.dart';
 import 'package:subh_warrior/providers/prayer_time_provider.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
@@ -7,7 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -42,8 +43,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _loadCurrentSettings() {
     final challengeProvider = context.read<ChallengeProvider>();
+    final prayerProvider = context.read<PrayerTimeProvider>();
+
+    // Load user info
     _nameController.text = challengeProvider.userName;
     _locationController.text = challengeProvider.userLocation;
+
+    // Load notification settings from provider
+    _notificationsEnabled = challengeProvider.notificationsEnabled;
+    _fajrReminder = challengeProvider.fajrReminder;
+    _loggingReminder = challengeProvider.loggingReminder;
+    _fajrReminderMinutes = challengeProvider.fajrReminderMinutes;
+
+    // Load prayer method from provider
+    _useHanafiMethod = prayerProvider.useHanafiMethod;
   }
 
   @override
@@ -537,11 +550,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            ListTile(
+            const ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.apps),
-              title: const Text('App Version'),
-              subtitle: const Text('1.0.0'),
+              leading: Icon(Icons.apps),
+              title: Text('App Version'),
+              subtitle: Text('1.0.0'),
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -665,27 +678,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return;
     }
 
-    final provider = context.read<ChallengeProvider>();
+    final challengeProvider = context.read<ChallengeProvider>();
+    final prayerProvider = context.read<PrayerTimeProvider>();
 
-    // Parse location to get coordinates if needed
-    double lat = provider.userLatitude;
-    double lon = provider.userLongitude;
-
-    await provider.updateUserSettings(
+    // Save user profile
+    await challengeProvider.updateUserSettings(
       name: _nameController.text,
       location: _locationController.text,
-      latitude: lat,
-      longitude: lon,
+      latitude: challengeProvider.userLatitude,
+      longitude: challengeProvider.userLongitude,
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Settings saved successfully'),
-        backgroundColor: Colors.green,
-      ),
+    // Save notification settings
+    await challengeProvider.updateNotificationSettings(
+      notificationsEnabled: _notificationsEnabled,
+      fajrReminder: _fajrReminder,
+      loggingReminder: _loggingReminder,
+      fajrReminderMinutes: _fajrReminderMinutes,
     );
 
-    Navigator.pop(context);
+    // Schedule/cancel notifications based on settings
+    await NotificationService.updateNotifications(
+      notificationsEnabled: _notificationsEnabled,
+      fajrReminder: _fajrReminder,
+      loggingReminder: _loggingReminder,
+      fajrReminderMinutes: _fajrReminderMinutes,
+      todayFajrTime: prayerProvider.todayFajrTime,
+      isChallengeActive: challengeProvider.isChallengeActive,
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Settings saved successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pop(context);
+    }
   }
 
   void _showEndChallengeDialog(ChallengeProvider provider) {
