@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'package:subh_warrior/screens/onboarding_screen.dart';
 import 'package:subh_warrior/screens/settings_screen.dart';
 import 'package:subh_warrior/screens/splash_screen.dart';
-
 import 'firebase_options.dart';
 
 void main() async {
