@@ -38,6 +38,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return await challengeProvider.checkUsernameExists(username.trim());
   }
 
+  Future<void> _getCoordinatesFromText() async {
+    final text = _locationController.text.trim();
+    if (text.isEmpty) return;
+
+    try {
+      final locations = await locationFromAddress(text);
+      if (locations.isNotEmpty) {
+        final loc = locations.first;
+        setState(() {
+          _latitude = loc.latitude;
+          _longitude = loc.longitude;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not find that location. Please check spelling.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error finding location: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -452,14 +483,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     return;
                   }
                 }
-                if (_currentPage == 3 && _locationController.text.isEmpty && mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please set your location'),
-                      backgroundColor: Colors.orange,
-                    ),
-                  );
-                  return;
+                if (_currentPage == 3) {
+                  final locationText = _locationController.text.trim();
+
+                  if (locationText.isEmpty && mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please set your location'),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+                    return;
+                  }
+
+                  // If user typed manually and didn't use current location
+                  if (_latitude == 0.0 && _longitude == 0.0) {
+                    await _getCoordinatesFromText();
+
+                    // Still failed to get coordinates
+                    if (_latitude == 0.0 && _longitude == 0.0 && mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Unable to find coordinates for that location.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+                  }
                 }
                 _pageController.nextPage(
                   duration: const Duration(milliseconds: 300),
@@ -493,7 +544,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -502,7 +553,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Center(
