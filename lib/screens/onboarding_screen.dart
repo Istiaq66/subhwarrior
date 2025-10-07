@@ -23,6 +23,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   double _latitude = 0.0;
   double _longitude = 0.0;
 
+  ScrollPhysics get _pageScrollPhysics {
+    if (_currentPage == 2 && _nameController.text.isEmpty) {
+      return const NeverScrollableScrollPhysics();
+    }
+    if (_currentPage == 3 && _locationController.text.isEmpty) {
+      return const NeverScrollableScrollPhysics();
+    }
+    return const BouncingScrollPhysics();
+  }
+
+  Future<bool> _isNameDuplicate(String username) async {
+    final challengeProvider = context.read<ChallengeProvider>();
+    return await challengeProvider.checkUsernameExists(username.trim());
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,6 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           children: [
             Expanded(
               child: PageView(
+                physics: _pageScrollPhysics,
                 controller: _pageController,
                 onPageChanged: (index) {
                   setState(() {
@@ -410,17 +427,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           if (_currentPage < 4)
             TextButton(
-              onPressed: () {
-                if (_currentPage == 2 && _nameController.text.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please enter your name'),
-                      backgroundColor: Colors.orange,
-                    ),
-                  );
-                  return;
+              onPressed: () async {
+                if (_currentPage == 2) {
+                  final name = _nameController.text.trim();
+
+                  if (name.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please enter your name'),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+                    return;
+                  }
+
+                  final isDuplicate = await _isNameDuplicate(name);
+                  if (isDuplicate && mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('This username is already taken. Please choose another.'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
                 }
-                if (_currentPage == 3 && _locationController.text.isEmpty) {
+                if (_currentPage == 3 && _locationController.text.isEmpty && mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Please set your location'),
