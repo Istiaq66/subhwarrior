@@ -35,7 +35,7 @@ jobs:
 
       # 5. Build APK (release)
       - name: Build APK
-        run: flutter build apk --release --no-tree-shake-icons
+        run: flutter build apk --release
 
       # 6. Upload APK as artifact
       - name: Upload APK as Artifact
