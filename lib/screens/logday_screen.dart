@@ -616,7 +616,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
 
     final provider = context.read<ChallengeProvider>();
 
-    final success = await provider.logDay(
+    final result = await provider.logDay(
       prayedFajrOnTime: _prayedFajrOnTime,
       prayedAtMasjid: _prayedAtMasjid,
       minutesWorked: _minutesWorked,
@@ -633,7 +633,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
       _isSubmitting = false;
     });
 
-    if (success) {
+    if (result == LogResult.success) {
       final isQualifyingWork = _selectedWorkType != WorkType.passiveConsumption &&
           _selectedWorkType != WorkType.routineAdmin &&
           _selectedWorkType != WorkType.socialMedia;
@@ -680,11 +680,24 @@ class _LogDayScreenState extends State<LogDayScreen> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to log day. Please try again.'),
+        SnackBar(
+          content: Text(_logFailureMessage(result)),
           backgroundColor: Colors.red,
         ),
       );
+    }
+  }
+
+  String _logFailureMessage(LogResult result) {
+    switch (result) {
+      case LogResult.afterCutoff:
+        return 'Logging window closed — log before 8 AM.';
+      case LogResult.weekend:
+        return 'Weekends don\'t count toward the challenge.';
+      case LogResult.alreadyLogged:
+        return 'You\'ve already logged today.';
+      case LogResult.success:
+        return '';
     }
   }
 }

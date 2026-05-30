@@ -3,6 +3,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 
+/// Hour (24h) after which the daily logging window is closed.
+const int kLogCutoffHour = 8;
+
+/// Outcome of attempting to log a day, so the UI can show a precise reason.
+enum LogResult { success, afterCutoff, weekend, alreadyLogged }
+
 class ChallengeProvider extends ChangeNotifier {
   final SharedPreferences prefs;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -24,6 +30,7 @@ class ChallengeProvider extends ChangeNotifier {
   String _userLocation = '';
   double _userLatitude = 0.0;
   double _userLongitude = 0.0;
+  bool _hasLocation = false;
 
   // Sleep tracking
   final Map<DateTime, SleepPreparation> _sleepPreparations = {};
@@ -43,6 +50,10 @@ class ChallengeProvider extends ChangeNotifier {
   String get userLocation => _userLocation;
   double get userLatitude => _userLatitude;
   double get userLongitude => _userLongitude;
+
+  /// Whether the user has set a real location. Do NOT infer this from
+  /// `lat == 0 && lon == 0`: (0, 0) is a valid coordinate (Gulf of Guinea).
+  bool get hasLocation => _hasLocation;
   bool get notificationsEnabled => _notificationsEnabled;
   bool get fajrReminder => _fajrReminder;
   bool get loggingReminder => _loggingReminder;
@@ -86,8 +97,9 @@ class ChallengeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Log a day's completion
-  Future<bool> logDay({
+  // Log a day's completion. Returns a typed result so the UI can explain
+  // exactly why a log was rejected instead of a bare `false`.
+  Future<LogResult> logDay({
     required bool prayedFajrOnTime,
     required bool prayedAtMasjid,
     required int minutesWorked,
@@ -97,20 +109,20 @@ class ChallengeProvider extends ChangeNotifier {
   }) async {
     final now = DateTime.now();
 
-    // Check if it's before 8 AM
-    if (now.hour >= 8) {
-      return false; // Must log before 8 AM
+    // Logging window closes at 8 AM (08:00 is already closed).
+    if (now.hour >= kLogCutoffHour) {
+      return LogResult.afterCutoff;
     }
 
-    // Check if it's a weekend (cannot count weekends)
+    // Weekends don't qualify.
     if (now.weekday == DateTime.saturday || now.weekday == DateTime.sunday) {
-      return false; // Weekends don't qualify
+      return LogResult.weekend;
     }
 
-    // Check if already logged today
+    // Only one log per day.
     final today = DateTime(now.year, now.month, now.day);
     if (_dayLogs.any((log) => _isSameDay(log.date, today))) {
-      return false; // Already logged today
+      return LogResult.alreadyLogged;
     }
 
     // Validate work type
@@ -146,7 +158,7 @@ class ChallengeProvider extends ChangeNotifier {
     await _saveToFirestore();
     notifyListeners();
 
-    return true;
+    return LogResult.success;
   }
 
   // Log sleep preparation for next day
@@ -178,14 +190,20 @@ class ChallengeProvider extends ChangeNotifier {
   }
 
   Future<bool> checkUsernameExists(String username) async {
+    final normalized = username.trim().toLowerCase();
+    if (normalized.isEmpty) return false;
     try {
       final query = await _firestore
           .collection('challenges')
-          .where('userName', isEqualTo: username)
+          .where('userNameLower', isEqualTo: normalized)
           .limit(1)
           .get();
 
-      return query.docs.isNotEmpty;
+      // Ignore the user's own existing record when re-checking their name.
+      final taken = query.docs.any(
+        (doc) => (doc.data()['userName'] as String?)?.trim() != _userName.trim(),
+      );
+      return taken;
     } catch (e) {
       debugPrint('Error checking username: $e');
       return false;
@@ -209,15 +227,17 @@ class ChallengeProvider extends ChangeNotifier {
     _userLocation = location;
     _userLatitude = latitude;
     _userLongitude = longitude;
+    _hasLocation = location.trim().isNotEmpty;
 
     await _saveData();
+    await _saveToFirestore();
     notifyListeners();
   }
 
   // Check if user can log today
   bool canLogToday() {
     final now = DateTime.now();
-    if (now.hour >= 8) return false;
+    if (now.hour >= kLogCutoffHour) return false;
 
     final today = DateTime(now.year, now.month, now.day);
     return !_dayLogs.any((log) => _isSameDay(log.date, today));
@@ -315,6 +335,7 @@ class ChallengeProvider extends ChangeNotifier {
     _userLocation = prefs.getString('userLocation') ?? '';
     _userLatitude = prefs.getDouble('userLatitude') ?? 0.0;
     _userLongitude = prefs.getDouble('userLongitude') ?? 0.0;
+    _hasLocation = prefs.getBool('hasLocation') ?? _userLocation.isNotEmpty;
 
     _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
     _fajrReminder = prefs.getBool('fajr_reminder') ?? true;
@@ -342,6 +363,7 @@ class ChallengeProvider extends ChangeNotifier {
     await prefs.setString('userLocation', _userLocation);
     await prefs.setDouble('userLatitude', _userLatitude);
     await prefs.setDouble('userLongitude', _userLongitude);
+    await prefs.setBool('hasLocation', _hasLocation);
 
     // Add these lines for notification settings
     await prefs.setBool('notifications_enabled', _notificationsEnabled);
@@ -359,6 +381,7 @@ class ChallengeProvider extends ChangeNotifier {
     try {
       await _firestore.collection('challenges').doc(_userName).set({
         'userName': _userName,
+        'userNameLower': _userName.trim().toLowerCase(),
         'location': _userLocation,
         'startDate': _challengeStartDate?.toIso8601String(),
         'currentStreak': _currentStreak,

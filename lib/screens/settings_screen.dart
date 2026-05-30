@@ -23,7 +23,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _fajrReminder = true;
   bool _loggingReminder = true;
   int _fajrReminderMinutes = 15;
-  bool _useHanafiMethod = false; // Add this to track Hanafi method
 
   // Prayer calculation methods
   final Map<int, String> _calculationMethods = {
@@ -43,7 +42,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _loadCurrentSettings() {
     final challengeProvider = context.read<ChallengeProvider>();
-    final prayerProvider = context.read<PrayerTimeProvider>();
 
     // Load user info
     _nameController.text = challengeProvider.userName;
@@ -54,9 +52,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _fajrReminder = challengeProvider.fajrReminder;
     _loggingReminder = challengeProvider.loggingReminder;
     _fajrReminderMinutes = challengeProvider.fajrReminderMinutes;
-
-    // Load prayer method from provider
-    _useHanafiMethod = prayerProvider.useHanafiMethod;
   }
 
   @override
@@ -280,51 +275,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 12),
             Consumer<PrayerTimeProvider>(
               builder: (context, provider, _) {
-                _useHanafiMethod = provider.useHanafiMethod;
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Juristic Method'),
-                  subtitle: Text(_useHanafiMethod
-                      ? 'Hanafi (Later Asr time)'
-                      : 'Standard (Shafi, Maliki, Hanbali)'),
-                  trailing: Switch(
-                    value: _useHanafiMethod,
-                    onChanged: (value) {
-                      setState(() {
-                        _useHanafiMethod = value;
-                      });
-                      provider.updateJuristicMethod(value);
-                      _refreshPrayerTimes();
-                    },
-                  ),
+                // Drive directly from the provider — single source of truth.
+                final useHanafi = provider.useHanafiMethod;
+                return Column(
+                  children: [
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Juristic Method'),
+                      subtitle: Text(useHanafi
+                          ? 'Hanafi (Later Asr time)'
+                          : 'Standard (Shafi, Maliki, Hanbali)'),
+                      trailing: Switch(
+                        value: useHanafi,
+                        onChanged: (value) {
+                          provider.updateJuristicMethod(value);
+                          _refreshPrayerTimes();
+                        },
+                      ),
+                    ),
+                    if (useHanafi)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(top: 8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primaryContainer
+                              .withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 16,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Hanafi method calculates Asr time when shadow is twice the object length',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 );
               },
             ),
-            if (_useHanafiMethod)
-              Container(
-                padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.only(top: 8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Hanafi method calculates Asr time when shadow is twice the object length',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
           ],
         ),
       ),

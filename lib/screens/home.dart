@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final challengeProvider = context.read<ChallengeProvider>();
     final prayerProvider = context.read<PrayerTimeProvider>();
 
-    if (challengeProvider.userLatitude != 0 && challengeProvider.userLongitude != 0) {
+    if (challengeProvider.hasLocation) {
       await prayerProvider.fetchPrayerTimes(
         challengeProvider.userLatitude,
         challengeProvider.userLongitude,

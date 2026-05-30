@@ -345,8 +345,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
       ),
     );
 
-    if (log.workDescription.isEmpty) return;
-
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -404,7 +402,11 @@ class _ProgressScreenState extends State<ProgressScreen> {
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 8),
-            Text(log.workDescription),
+            Text(
+              log.workDescription.isNotEmpty
+                  ? log.workDescription
+                  : 'No details logged for this day.',
+            ),
             if (log.reflection != null && log.reflection!.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(

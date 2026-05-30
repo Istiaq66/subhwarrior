@@ -22,6 +22,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _isLoadingLocation = false;
   double _latitude = 0.0;
   double _longitude = 0.0;
+  // Explicit flag — (0, 0) is a valid coordinate, so never use it as "unset".
+  bool _hasCoordinates = false;
 
   ScrollPhysics get _pageScrollPhysics {
     if (_currentPage == 2 && _nameController.text.isEmpty) {
@@ -49,6 +51,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         setState(() {
           _latitude = loc.latitude;
           _longitude = loc.longitude;
+          _hasCoordinates = true;
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -309,6 +312,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const SizedBox(height: 32),
           TextField(
             controller: _locationController,
+            onChanged: (_) {
+              // Editing the text invalidates any previously resolved coords.
+              if (_hasCoordinates) setState(() => _hasCoordinates = false);
+            },
             decoration: InputDecoration(
               labelText: 'City/Location',
               hintText: 'e.g., New York, USA',
@@ -497,11 +504,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   }
 
                   // If user typed manually and didn't use current location
-                  if (_latitude == 0.0 && _longitude == 0.0) {
+                  if (!_hasCoordinates) {
                     await _getCoordinatesFromText();
 
                     // Still failed to get coordinates
-                    if (_latitude == 0.0 && _longitude == 0.0 && mounted) {
+                    if (!_hasCoordinates && mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Unable to find coordinates for that location.'),
@@ -655,6 +662,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
       _latitude = position.latitude;
       _longitude = position.longitude;
+      _hasCoordinates = true;
 
       // Reverse geocoding to get city name
       try {
@@ -707,7 +715,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
 
       // Fetch prayer times
-      if (_latitude != 0 && _longitude != 0) {
+      if (_hasCoordinates) {
         final prayerProvider = context.read<PrayerTimeProvider>();
         await prayerProvider.fetchPrayerTimes(_latitude, _longitude);
       }

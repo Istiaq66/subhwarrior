@@ -13,7 +13,6 @@ class LeaderboardScreen extends StatefulWidget {
 class _LeaderboardScreenState extends State<LeaderboardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _selectedPeriod = 'week';
 
   @override
   void initState() {
@@ -42,57 +41,16 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           ],
         ),
       ),
-      body: Column(
+      // Period filter (week/month/all-time) was removed: it changed the UI
+      // but never filtered the query. Re-add once per-period aggregates are
+      // stored server-side (see IMPROVEMENT_PLAN A3 / Phase D).
+      body: TabBarView(
+        controller: _tabController,
         children: [
-          _buildPeriodSelector(),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildGlobalLeaderboard(),
-                _buildFriendsLeaderboard(),
-                _buildLocalLeaderboard(),
-              ],
-            ),
-          ),
+          _buildGlobalLeaderboard(),
+          _buildFriendsLeaderboard(),
+          _buildLocalLeaderboard(),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPeriodSelector() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      color: Theme.of(context).colorScheme.surface,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildPeriodChip('Week', 'week'),
-          _buildPeriodChip('Month', 'month'),
-          _buildPeriodChip('All Time', 'all'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPeriodChip(String label, String value) {
-    final isSelected = _selectedPeriod == value;
-    return FilterChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (selected) {
-        if (selected) {
-          setState(() {
-            _selectedPeriod = value;
-          });
-        }
-      },
-      selectedColor: Theme.of(context).colorScheme.primary,
-      labelStyle: TextStyle(
-        color: isSelected
-            ? Theme.of(context).colorScheme.onPrimary
-            : Theme.of(context).textTheme.bodyMedium?.color,
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
     );
   }

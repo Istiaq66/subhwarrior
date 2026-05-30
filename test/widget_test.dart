@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:subh_warrior/main.dart';
+import 'package:subh_warrior/screens/splash_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    final prefs = await SharedPreferences.getInstance();
-    await tester.pumpWidget(SubhWarriorApp(prefs: prefs));
+  group('SplashScreen', () {
+    testWidgets('renders branding text', (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: SplashScreen()));
+      expect(find.text('Subh Warrior'), findsOneWidget);
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Regression for A1: navigating away (disposing) before the 2s timer
+    // fires must not throw "Navigator in disposed context".
+    testWidgets('cancels navigation timer on dispose', (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: SplashScreen()));
+      await tester.pumpWidget(const MaterialApp(home: SizedBox()));
+      // Advance past the splash duration; the cancelled timer must be a no-op.
+      await tester.pump(const Duration(seconds: 3));
+      expect(tester.takeException(), isNull);
+    });
   });
 }

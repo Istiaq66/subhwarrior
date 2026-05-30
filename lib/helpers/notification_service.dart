@@ -113,6 +113,10 @@ class NotificationService {
       return;
     }
 
+    // Guard against negative/zero offsets (would push the reminder *after*
+    // Fajr instead of before it).
+    final safeMinutesBefore = minutesBefore < 0 ? 0 : minutesBefore;
+
     try {
       final now = DateTime.now();
 
@@ -120,7 +124,8 @@ class NotificationService {
       debugPrint('🕌 Fajr time provided: $fajrTime');
 
       // Subtract reminder minutes
-      var reminderDateTime = fajrTime.subtract(Duration(minutes: minutesBefore));
+      var reminderDateTime =
+          fajrTime.subtract(Duration(minutes: safeMinutesBefore));
       debugPrint('⏰ Initial reminder time: $reminderDateTime');
 
       // If the reminder time has already passed today, schedule for tomorrow
@@ -138,7 +143,7 @@ class NotificationService {
 
       await scheduleNotification(
         id: 2,
-        title: '🕌 Fajr in $minutesBefore minutes',
+        title: '🕌 Fajr in $safeMinutesBefore minutes',
         body: 'Time to wake up for Fajr prayer!',
         scheduledDate: scheduledTime,
         payload: 'fajr_reminder',
