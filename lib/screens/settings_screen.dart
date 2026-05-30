@@ -6,6 +6,7 @@ import 'package:subh_warrior/providers/prayer_time_provider.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -23,6 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _fajrReminder = true;
   bool _loggingReminder = true;
   int _fajrReminderMinutes = 15;
+  String _appVersion = '';
 
   // Prayer calculation methods
   final Map<int, String> _calculationMethods = {
@@ -38,6 +40,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _loadCurrentSettings();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    if (!mounted) return;
+    setState(() {
+      _appVersion = '${info.version}+${info.buildNumber}';
+    });
   }
 
   void _loadCurrentSettings() {
@@ -553,11 +564,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            const ListTile(
+            ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.apps),
-              title: Text('App Version'),
-              subtitle: Text('1.0.0'),
+              leading: const Icon(Icons.apps),
+              title: const Text('App Version'),
+              subtitle: Text(_appVersion.isEmpty ? '…' : _appVersion),
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
