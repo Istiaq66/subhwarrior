@@ -134,7 +134,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.settings,color: Colors.white,),
+                    icon: const Icon(
+                      Icons.settings,
+                      color: Colors.white,
+                    ),
                     onPressed: () {
                       Navigator.pushNamed(context, '/settings');
                     },
@@ -193,8 +196,8 @@ class _HomeScreenState extends State<HomeScreen> {
         Text(
           provider.userName.isNotEmpty ? provider.userName : 'Warrior',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ],
     );
@@ -233,11 +236,11 @@ class _HomeScreenState extends State<HomeScreen> {
             if (todayLog != null) ...[
               _buildStatusRow(Icons.mosque, 'Fajr Prayer',
                   todayLog.prayedFajrOnTime ? 'On Time' : 'Missed'),
-              _buildStatusRow(Icons.work, 'Work Time',
-                  '${todayLog.minutesWorked} minutes'),
+              _buildStatusRow(
+                  Icons.work, 'Work Time', '${todayLog.minutesWorked} minutes'),
               if (todayLog.workDescription.isNotEmpty)
-                _buildStatusRow(Icons.description, 'Work',
-                    todayLog.workDescription),
+                _buildStatusRow(
+                    Icons.description, 'Work', todayLog.workDescription),
             ] else if (canLog) ...[
               Center(
                 child: ElevatedButton.icon(
@@ -263,8 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'Logging window closed (after 8 AM)',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                      color: Theme.of(context).colorScheme.error,
+                    ),
               ),
             ],
           ],
@@ -389,7 +392,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     radius: 30.0,
                     lineWidth: 5.0,
                     percent: provider.overallProgress.clamp(0, 1),
-                    center: Text('${(provider.overallProgress * 100).toInt()}%'),
+                    center:
+                        Text('${(provider.overallProgress * 100).toInt()}%'),
                     progressColor: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(height: 8),
@@ -433,9 +437,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               quotes[quoteIndex],
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontStyle: FontStyle.italic,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
+                    fontStyle: FontStyle.italic,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
               textAlign: TextAlign.center,
             ),
           ],

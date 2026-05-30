@@ -1,0 +1,6 @@
+# Copy to android/key.properties and fill in. NEVER commit the real file.
+# In CI these are written from repository secrets (see .github/workflows/ci.yml).
+storePassword=your-store-password
+keyPassword=your-key-password
+keyAlias=upload
+storeFile=/absolute/or/relative/path/to/upload-keystore.jks

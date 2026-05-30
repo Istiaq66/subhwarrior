@@ -49,33 +49,33 @@ class _LogDayScreenState extends State<LogDayScreen> {
       body: !canSubmit
           ? _buildTimeExpired()
           : isWeekend
-          ? _buildWeekendMessage()
-          : SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTimeWarning(currentTime),
-              const SizedBox(height: 20),
-              _buildPrayerTimeInfo(prayerProvider),
-              const SizedBox(height: 20),
-              _buildWakeUpSection(),
-              const SizedBox(height: 24),
-              _buildFajrPrayerSection(),
-              const SizedBox(height: 24),
-              _buildWorkSection(),
-              const SizedBox(height: 24),
-              _buildReflectionSection(),
-              const SizedBox(height: 32),
-              _buildQualificationStatus(),
-              const SizedBox(height: 24),
-              _buildSubmitButton(),
-            ],
-          ),
-        ),
-      ),
+              ? _buildWeekendMessage()
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTimeWarning(currentTime),
+                        const SizedBox(height: 20),
+                        _buildPrayerTimeInfo(prayerProvider),
+                        const SizedBox(height: 20),
+                        _buildWakeUpSection(),
+                        const SizedBox(height: 24),
+                        _buildFajrPrayerSection(),
+                        const SizedBox(height: 24),
+                        _buildWorkSection(),
+                        const SizedBox(height: 24),
+                        _buildReflectionSection(),
+                        const SizedBox(height: 32),
+                        _buildQualificationStatus(),
+                        const SizedBox(height: 24),
+                        _buildSubmitButton(),
+                      ],
+                    ),
+                  ),
+                ),
     );
   }
 
@@ -99,7 +99,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
             const SizedBox(height: 8),
             const Text(
               'Weekend days do not count toward the Subh Warrior Challenge.\n\n'
-                  'You need 4 qualifying weekdays per week.',
+              'You need 4 qualifying weekdays per week.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -151,7 +151,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
       currentTime.year,
       currentTime.month,
       currentTime.day,
-      8, 0,
+      8,
+      0,
     ).difference(currentTime);
 
     if (timeUntil8AM.isNegative) return const SizedBox();
@@ -478,7 +479,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
             TextFormField(
               controller: _reflectionController,
               decoration: const InputDecoration(
-                hintText: 'How did the early morning work feel?\nWhat did you accomplish?\nAny insights or breakthroughs?',
+                hintText:
+                    'How did the early morning work feel?\nWhat did you accomplish?\nAny insights or breakthroughs?',
                 border: OutlineInputBorder(),
               ),
               maxLines: 4,
@@ -508,9 +510,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
             : Theme.of(context).colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isQualifying
-              ? Colors.green
-              : Theme.of(context).colorScheme.error,
+          color:
+              isQualifying ? Colors.green : Theme.of(context).colorScheme.error,
           width: 2,
         ),
       ),
@@ -531,8 +532,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
                 child: Text(
                   isQualifying ? 'Qualifying Day!' : 'Not Qualifying Yet',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
             ],
@@ -634,9 +635,10 @@ class _LogDayScreenState extends State<LogDayScreen> {
     });
 
     if (result == LogResult.success) {
-      final isQualifyingWork = _selectedWorkType != WorkType.passiveConsumption &&
-          _selectedWorkType != WorkType.routineAdmin &&
-          _selectedWorkType != WorkType.socialMedia;
+      final isQualifyingWork =
+          _selectedWorkType != WorkType.passiveConsumption &&
+              _selectedWorkType != WorkType.routineAdmin &&
+              _selectedWorkType != WorkType.socialMedia;
 
       final isQualifying = _wokeUpForFajr &&
           _stayedAwakeAfter &&
@@ -663,8 +665,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
           content: Text(
             isQualifying
                 ? (_prayedAtMasjid
-                ? 'Outstanding! You prayed at the masjid AND completed your morning work. True Subh Warrior spirit! 🌟'
-                : 'You\'ve earned a qualifying day! Keep up the great work!')
+                    ? 'Outstanding! You prayed at the masjid AND completed your morning work. True Subh Warrior spirit! 🌟'
+                    : 'You\'ve earned a qualifying day! Keep up the great work!')
                 : 'Day logged successfully. Review the requirements and try again tomorrow!',
           ),
           actions: [

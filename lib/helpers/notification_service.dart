@@ -6,24 +6,24 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notifications =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   Future<void> initBackground() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings initializationSettingsIOS =
-    DarwinInitializationSettings(
+        DarwinInitializationSettings(
       requestSoundPermission: false,
       requestBadgePermission: false,
       requestAlertPermission: false,
     );
 
     const InitializationSettings initializationSettings =
-    InitializationSettings(
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
@@ -131,7 +131,8 @@ class NotificationService {
       // If the reminder time has already passed today, schedule for tomorrow
       if (reminderDateTime.isBefore(now)) {
         reminderDateTime = reminderDateTime.add(const Duration(days: 1));
-        debugPrint('⏭️ Reminder time passed, moved to tomorrow: $reminderDateTime');
+        debugPrint(
+            '⏭️ Reminder time passed, moved to tomorrow: $reminderDateTime');
       }
 
       // Convert to TZDateTime for local timezone
@@ -139,7 +140,8 @@ class NotificationService {
 
       debugPrint('✅ FAJR NOTIFICATION SCHEDULED FOR: $scheduledTime');
       debugPrint('   Timezone: ${scheduledTime.timeZoneName}');
-      debugPrint('   Time until notification: ${scheduledTime.difference(now)}');
+      debugPrint(
+          '   Time until notification: ${scheduledTime.difference(now)}');
 
       await scheduleNotification(
         id: 2,
@@ -175,7 +177,8 @@ class NotificationService {
 
       debugPrint('✅ LOGGING NOTIFICATION SCHEDULED FOR: $scheduledTime');
       debugPrint('   Timezone: ${scheduledTime.timeZoneName}');
-      debugPrint('   Time until notification: ${scheduledTime.difference(now)}');
+      debugPrint(
+          '   Time until notification: ${scheduledTime.difference(now)}');
 
       await scheduleNotification(
         id: 3,

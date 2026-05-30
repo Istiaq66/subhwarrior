@@ -71,16 +71,16 @@ class _ProgressScreenState extends State<ProgressScreen> {
           Text(
             '$percentage%',
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Challenge Progress',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Colors.white,
-            ),
+                  color: Colors.white,
+                ),
           ),
           const SizedBox(height: 20),
           Row(
@@ -88,7 +88,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
             children: [
               _buildStatColumn('Completed', '$daysCompleted', Colors.white),
               _buildStatColumn('Remaining', '$daysRemaining', Colors.white),
-              _buildStatColumn('Streak', '${provider.currentStreak}', Colors.white),
+              _buildStatColumn(
+                  'Streak', '${provider.currentStreak}', Colors.white),
             ],
           ),
         ],
@@ -130,7 +131,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
         .toSet();
     final firstDay = provider.challengeStartDate ?? DateTime.now();
     final lastDay = firstDay.add(const Duration(days: 28));
-    final effectiveFocusedDay = _focusedDay.isBefore(firstDay) ? firstDay : _focusedDay;
+    final effectiveFocusedDay =
+        _focusedDay.isBefore(firstDay) ? firstDay : _focusedDay;
     return Card(
       margin: const EdgeInsets.all(16),
       child: Padding(
@@ -303,20 +305,17 @@ class _ProgressScreenState extends State<ProgressScreen> {
               final log = sortedLogs[index];
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: log.isQualifying
-                      ? Colors.green
-                      : Colors.orange,
+                  backgroundColor:
+                      log.isQualifying ? Colors.green : Colors.orange,
                   child: Icon(
-                    log.isQualifying
-                        ? Icons.check
-                        : Icons.close,
+                    log.isQualifying ? Icons.check : Icons.close,
                     color: Colors.white,
                   ),
                 ),
                 title: Text(DateFormat('EEEE, MMM d').format(log.date)),
                 subtitle: Text(
                   '${log.prayedFajrOnTime ? "✓ Fajr" : "✗ Fajr"} • '
-                      '${log.minutesWorked} min work',
+                  '${log.minutesWorked} min work',
                 ),
                 trailing: log.isQualifying
                     ? const Icon(Icons.star, color: Colors.amber)
@@ -332,7 +331,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   void _showDayDetails(ChallengeProvider provider, DateTime day) {
     final log = provider.dayLogs.firstWhere(
-          (log) => isSameDay(log.date, day),
+      (log) => isSameDay(log.date, day),
       orElse: () => DayLog(
         date: day,
         prayedFajrOnTime: false,
@@ -341,7 +340,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
         isQualifying: false,
         loggedAt: day,
         workType: WorkType.learning,
-
       ),
     );
 
@@ -373,9 +371,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
-                        log.isQualifying ? 'Qualifying Day' : 'Non-Qualifying Day',
+                        log.isQualifying
+                            ? 'Qualifying Day'
+                            : 'Non-Qualifying Day',
                         style: TextStyle(
-                          color: log.isQualifying ? Colors.green : Colors.orange,
+                          color:
+                              log.isQualifying ? Colors.green : Colors.orange,
                         ),
                       ),
                     ],
@@ -422,7 +423,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value, bool success) {
+  Widget _buildDetailRow(
+      IconData icon, String label, String value, bool success) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(

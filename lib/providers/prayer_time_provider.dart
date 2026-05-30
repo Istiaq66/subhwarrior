@@ -107,9 +107,9 @@ class PrayerTimeProvider extends ChangeNotifier {
 
       if (tomorrowResponse.statusCode == 200) {
         final tomorrowData = json.decode(tomorrowResponse.body);
-        _tomorrowPrayerTimes = PrayerTimes.fromJson(tomorrowData['data']['timings']);
+        _tomorrowPrayerTimes =
+            PrayerTimes.fromJson(tomorrowData['data']['timings']);
       }
-
     } catch (e) {
       _error = 'Failed to fetch prayer times: $e';
     } finally {
@@ -134,7 +134,8 @@ class PrayerTimeProvider extends ChangeNotifier {
     try {
       final today = DateTime.now();
       final school = _useHanafiMethod ? 1 : 0;
-      final todayUrl = 'http://api.aladhan.com/v1/timingsByCity/${today.day}-${today.month}-${today.year}'
+      final todayUrl =
+          'http://api.aladhan.com/v1/timingsByCity/${today.day}-${today.month}-${today.year}'
           '?city=$city&country=$country&method=$_calculationMethod&school=$school';
 
       final todayResponse = await http.get(Uri.parse(todayUrl));
@@ -146,16 +147,17 @@ class PrayerTimeProvider extends ChangeNotifier {
 
       // Fetch tomorrow's times
       final tomorrow = today.add(const Duration(days: 1));
-      final tomorrowUrl = 'http://api.aladhan.com/v1/timingsByCity/${tomorrow.day}-${tomorrow.month}-${tomorrow.year}'
+      final tomorrowUrl =
+          'http://api.aladhan.com/v1/timingsByCity/${tomorrow.day}-${tomorrow.month}-${tomorrow.year}'
           '?city=$city&country=$country&method=$_calculationMethod&school=$school';
 
       final tomorrowResponse = await http.get(Uri.parse(tomorrowUrl));
 
       if (tomorrowResponse.statusCode == 200) {
         final tomorrowData = json.decode(tomorrowResponse.body);
-        _tomorrowPrayerTimes = PrayerTimes.fromJson(tomorrowData['data']['timings']);
+        _tomorrowPrayerTimes =
+            PrayerTimes.fromJson(tomorrowData['data']['timings']);
       }
-
     } catch (e) {
       _error = 'Failed to fetch prayer times: $e';
     } finally {

@@ -226,9 +226,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      color: isCurrentUser
-          ? Theme.of(context).colorScheme.primaryContainer
-          : null,
+      color:
+          isCurrentUser ? Theme.of(context).colorScheme.primaryContainer : null,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
@@ -245,17 +244,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           child: Center(
             child: medal != null
                 ? Text(
-              medal,
-              style: const TextStyle(fontSize: 24),
-            )
+                    medal,
+                    style: const TextStyle(fontSize: 24),
+                  )
                 : Text(
-              '$rank',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: rankColor,
-              ),
-            ),
+                    '$rank',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: rankColor,
+                    ),
+                  ),
           ),
         ),
         title: Row(
@@ -296,9 +295,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
             fontSize: 12,
             color: isCurrentUser
                 ? Theme.of(context)
-                .colorScheme
-                .onPrimaryContainer
-                .withOpacity(0.7)
+                    .colorScheme
+                    .onPrimaryContainer
+                    .withOpacity(0.7)
                 : Colors.grey,
           ),
         ),

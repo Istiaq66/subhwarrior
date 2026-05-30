@@ -56,7 +56,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Could not find that location. Please check spelling.'),
+            content:
+                Text('Could not find that location. Please check spelling.'),
             backgroundColor: Colors.orange,
           ),
         );
@@ -70,8 +71,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -119,8 +118,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             'Welcome to\nSubh Warrior',
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -175,8 +174,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             'Challenge Rules',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 24),
           _buildRuleCard(
@@ -250,8 +249,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             'What\'s your name?',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -300,8 +299,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             'Set Your Location',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -334,10 +333,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             onPressed: _isLoadingLocation ? null : _getCurrentLocation,
             icon: _isLoadingLocation
                 ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : const Icon(Icons.my_location),
             label: Text(_isLoadingLocation
                 ? 'Getting Location...'
@@ -378,8 +377,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             'You\'re All Set!',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           Text(
@@ -400,8 +399,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ? 'Welcome, ${_nameController.text}!'
                       : 'Welcome, Warrior!',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 if (_locationController.text.isNotEmpty)
@@ -483,7 +482,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   if (isDuplicate && mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('This username is already taken. Please choose another.'),
+                        content: Text(
+                            'This username is already taken. Please choose another.'),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -511,7 +511,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     if (!_hasCoordinates && mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Unable to find coordinates for that location.'),
+                          content: Text(
+                              'Unable to find coordinates for that location.'),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -543,7 +544,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildRuleCard(String number, String title, String description, IconData icon) {
+  Widget _buildRuleCard(
+      String number, String title, String description, IconData icon) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -560,7 +562,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -606,7 +609,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       if (!serviceEnabled) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Location services are disabled. Please enable them in settings.'),
+            content: Text(
+                'Location services are disabled. Please enable them in settings.'),
             backgroundColor: Colors.orange,
           ),
         );
@@ -639,7 +643,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       if (permission == LocationPermission.deniedForever) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Location permissions are permanently denied. Please enable them in app settings.'),
+            content: const Text(
+                'Location permissions are permanently denied. Please enable them in app settings.'),
             backgroundColor: Colors.red,
             action: SnackBarAction(
               label: 'Settings',
@@ -673,20 +678,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
         if (placemarks.isNotEmpty) {
           final place = placemarks.first;
-          final location = '${place.locality ?? place.administrativeArea ?? 'Unknown'}, ${place.country ?? ''}';
+          final location =
+              '${place.locality ?? place.administrativeArea ?? 'Unknown'}, ${place.country ?? ''}';
 
           setState(() {
             _locationController.text = location;
           });
         } else {
           setState(() {
-            _locationController.text = 'Location set (${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)})';
+            _locationController.text =
+                'Location set (${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)})';
           });
         }
       } catch (e) {
         // If geocoding fails, just show coordinates
         setState(() {
-          _locationController.text = 'Location set (${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)})';
+          _locationController.text =
+              'Location set (${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)})';
         });
       }
     } catch (e) {

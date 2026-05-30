@@ -19,13 +19,13 @@ class StreakCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           gradient: currentStreak > 0
               ? LinearGradient(
-            colors: [
-              Colors.orange.shade400,
-              Colors.deepOrange.shade400,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )
+                  colors: [
+                    Colors.orange.shade400,
+                    Colors.deepOrange.shade400,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
               : null,
         ),
         child: Padding(
@@ -138,7 +138,9 @@ class StreakCard extends StatelessWidget {
                   valueColor: AlwaysStoppedAnimation<Color>(
                     currentStreak > 0
                         ? Colors.white
-                        : (isOnTrack ? Colors.green : Theme.of(context).colorScheme.primary),
+                        : (isOnTrack
+                            ? Colors.green
+                            : Theme.of(context).colorScheme.primary),
                   ),
                 ),
               ),

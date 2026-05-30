@@ -59,9 +59,9 @@ class PrayerTimeCard extends StatelessWidget {
                 colors: isWithinWindow
                     ? [Colors.green.shade400, Colors.green.shade600]
                     : [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.secondary,
-                ],
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.secondary,
+                      ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -84,10 +84,13 @@ class PrayerTimeCard extends StatelessWidget {
                           const SizedBox(width: 12),
                           Text(
                             'Fajr Prayer',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),
@@ -204,12 +207,12 @@ class PrayerTimeCard extends StatelessWidget {
   }
 
   Widget _buildTimeColumn(
-      BuildContext context,
-      String label,
-      String time, {
-        bool isHighlighted = false,
-        bool isCountdown = false,
-      }) {
+    BuildContext context,
+    String label,
+    String time, {
+    bool isHighlighted = false,
+    bool isCountdown = false,
+  }) {
     return Column(
       children: [
         Text(

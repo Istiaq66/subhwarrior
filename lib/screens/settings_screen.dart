@@ -109,8 +109,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(
                   'Profile',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -135,9 +135,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 return Column(
                   children: [
-                    _buildStatRow('Total Days', '${provider.totalQualifyingDays}'),
-                    _buildStatRow('Current Streak', '${provider.currentStreak}'),
-                    _buildStatRow('Challenge Week', '${provider.currentWeek}/4'),
+                    _buildStatRow(
+                        'Total Days', '${provider.totalQualifyingDays}'),
+                    _buildStatRow(
+                        'Current Streak', '${provider.currentStreak}'),
+                    _buildStatRow(
+                        'Challenge Week', '${provider.currentWeek}/4'),
                   ],
                 );
               },
@@ -166,8 +169,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(
                   'Location',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -190,10 +193,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onPressed: _isLoadingLocation ? null : _getCurrentLocation,
                 icon: _isLoadingLocation
                     ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Icon(Icons.my_location),
                 label: Text(_isLoadingLocation
                     ? 'Getting Location...'
@@ -238,8 +241,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(
                   'Prayer Settings',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -349,8 +352,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(
                   'Notifications',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -440,8 +443,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(
                   'Appearance',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -488,8 +491,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Text(
                       'Challenge',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ),
@@ -544,8 +547,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(
                   'About',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -597,8 +600,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Text(
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
         ],
       ),
@@ -659,7 +662,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final challengeProvider = context.read<ChallengeProvider>();
     final prayerProvider = context.read<PrayerTimeProvider>();
 
-    if (challengeProvider.userLatitude != 0 && challengeProvider.userLongitude != 0) {
+    if (challengeProvider.userLatitude != 0 &&
+        challengeProvider.userLongitude != 0) {
       await prayerProvider.fetchPrayerTimes(
         challengeProvider.userLatitude,
         challengeProvider.userLongitude,
@@ -737,7 +741,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: const Text('End Challenge?'),
         content: const Text(
           'Are you sure you want to end the challenge? '
-              'Your progress will be saved but the challenge will be marked as incomplete.',
+          'Your progress will be saved but the challenge will be marked as incomplete.',
         ),
         actions: [
           TextButton(
@@ -768,24 +772,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: const SingleChildScrollView(
           child: Text(
             '🌅 SUBH WARRIOR CHALLENGE\n\n'
-                '✓ Wake up at or before Fajr time\n'
-                '✓ Stay awake and alert\n'
-                '✓ Pray Fajr within the prayer window\n'
-                '✓ Complete 60+ minutes of productive work\n'
-                '✓ Log before 8 AM daily\n'
-                '✓ Complete 16+ days over 4 weeks\n'
-                '✓ Minimum 4 qualifying days per week\n\n'
-                'QUALIFYING WORK:\n'
-                '• Deep work tasks\n'
-                '• Strategic planning\n'
-                '• Learning/skill development\n'
-                '• Creative projects\n'
-                '• Important communication\n\n'
-                'NON-QUALIFYING:\n'
-                '• Passive content consumption\n'
-                '• Routine administrative tasks\n'
-                '• Social media\n\n'
-                'Note: Weekends do not count as qualifying days.',
+            '✓ Wake up at or before Fajr time\n'
+            '✓ Stay awake and alert\n'
+            '✓ Pray Fajr within the prayer window\n'
+            '✓ Complete 60+ minutes of productive work\n'
+            '✓ Log before 8 AM daily\n'
+            '✓ Complete 16+ days over 4 weeks\n'
+            '✓ Minimum 4 qualifying days per week\n\n'
+            'QUALIFYING WORK:\n'
+            '• Deep work tasks\n'
+            '• Strategic planning\n'
+            '• Learning/skill development\n'
+            '• Creative projects\n'
+            '• Important communication\n\n'
+            'NON-QUALIFYING:\n'
+            '• Passive content consumption\n'
+            '• Routine administrative tasks\n'
+            '• Social media\n\n'
+            'Note: Weekends do not count as qualifying days.',
           ),
         ),
         actions: [

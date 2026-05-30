@@ -201,7 +201,8 @@ class ChallengeProvider extends ChangeNotifier {
 
       // Ignore the user's own existing record when re-checking their name.
       final taken = query.docs.any(
-        (doc) => (doc.data()['userName'] as String?)?.trim() != _userName.trim(),
+        (doc) =>
+            (doc.data()['userName'] as String?)?.trim() != _userName.trim(),
       );
       return taken;
     } catch (e) {
@@ -248,7 +249,7 @@ class ChallengeProvider extends ChangeNotifier {
     final today = DateTime.now();
     try {
       return _dayLogs.firstWhere(
-            (log) => _isSameDay(log.date, today),
+        (log) => _isSameDay(log.date, today),
       );
     } catch (e) {
       return null;
@@ -351,7 +352,8 @@ class ChallengeProvider extends ChangeNotifier {
 
   Future<void> _saveData() async {
     if (_challengeStartDate != null) {
-      await prefs.setString('challengeStartDate', _challengeStartDate!.toIso8601String());
+      await prefs.setString(
+          'challengeStartDate', _challengeStartDate!.toIso8601String());
     }
 
     await prefs.setBool('isChallengeActive', _isChallengeActive);
@@ -419,28 +421,28 @@ class DayLog {
   });
 
   Map<String, dynamic> toJson() => {
-    'date': date.toIso8601String(),
-    'prayedFajrOnTime': prayedFajrOnTime,
-    'prayedAtMasjid': prayedAtMasjid,
-    'minutesWorked': minutesWorked,
-    'workDescription': workDescription,
-    'workType': workType.index,
-    'reflection': reflection,
-    'isQualifying': isQualifying,
-    'loggedAt': loggedAt.toIso8601String(),
-  };
+        'date': date.toIso8601String(),
+        'prayedFajrOnTime': prayedFajrOnTime,
+        'prayedAtMasjid': prayedAtMasjid,
+        'minutesWorked': minutesWorked,
+        'workDescription': workDescription,
+        'workType': workType.index,
+        'reflection': reflection,
+        'isQualifying': isQualifying,
+        'loggedAt': loggedAt.toIso8601String(),
+      };
 
   factory DayLog.fromJson(Map<String, dynamic> json) => DayLog(
-    date: DateTime.parse(json['date']),
-    prayedFajrOnTime: json['prayedFajrOnTime'],
-    prayedAtMasjid: json['prayedAtMasjid'] ?? false,
-    minutesWorked: json['minutesWorked'],
-    workDescription: json['workDescription'],
-    workType: WorkType.values[json['workType'] ?? 0],
-    reflection: json['reflection'],
-    isQualifying: json['isQualifying'],
-    loggedAt: DateTime.parse(json['loggedAt']),
-  );
+        date: DateTime.parse(json['date']),
+        prayedFajrOnTime: json['prayedFajrOnTime'],
+        prayedAtMasjid: json['prayedAtMasjid'] ?? false,
+        minutesWorked: json['minutesWorked'],
+        workDescription: json['workDescription'],
+        workType: WorkType.values[json['workType'] ?? 0],
+        reflection: json['reflection'],
+        isQualifying: json['isQualifying'],
+        loggedAt: DateTime.parse(json['loggedAt']),
+      );
 }
 
 enum WorkType {
@@ -469,21 +471,22 @@ class SleepPreparation {
 
   bool get isOptimal =>
       bedTime.hour <= 23 && // Bed by 11 PM
-          noScreens60Min &&
-          hydratedWell &&
-          avoidedCaffeine4Hours;
+      noScreens60Min &&
+      hydratedWell &&
+      avoidedCaffeine4Hours;
 
   Map<String, dynamic> toJson() => {
-    'bedTime': bedTime.toIso8601String(),
-    'noScreens60Min': noScreens60Min,
-    'hydratedWell': hydratedWell,
-    'avoidedCaffeine4Hours': avoidedCaffeine4Hours,
-  };
+        'bedTime': bedTime.toIso8601String(),
+        'noScreens60Min': noScreens60Min,
+        'hydratedWell': hydratedWell,
+        'avoidedCaffeine4Hours': avoidedCaffeine4Hours,
+      };
 
-  factory SleepPreparation.fromJson(Map<String, dynamic> json) => SleepPreparation(
-    bedTime: DateTime.parse(json['bedTime']),
-    noScreens60Min: json['noScreens60Min'],
-    hydratedWell: json['hydratedWell'],
-    avoidedCaffeine4Hours: json['avoidedCaffeine4Hours'],
-  );
+  factory SleepPreparation.fromJson(Map<String, dynamic> json) =>
+      SleepPreparation(
+        bedTime: DateTime.parse(json['bedTime']),
+        noScreens60Min: json['noScreens60Min'],
+        hydratedWell: json['hydratedWell'],
+        avoidedCaffeine4Hours: json['avoidedCaffeine4Hours'],
+      );
 }

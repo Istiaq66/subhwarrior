@@ -5,11 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const int NOTIFICATION_PERMISSION_LAUNCH_LIMIT = 31;
 const int NOTIFICATION_PERMISSION_LAUNCH_INTERVAL = 10;
-const String KEY_LAUNCH_COUNT_FOR_NOTIFICATION_PERMISSION = 'launch_count_notification_permission';
+const String KEY_LAUNCH_COUNT_FOR_NOTIFICATION_PERMISSION =
+    'launch_count_notification_permission';
 
 Future<void> ensureNotificationPermission(BuildContext context) async {
   var pref = await SharedPreferences.getInstance();
-  int launchCount = pref.getInt(KEY_LAUNCH_COUNT_FOR_NOTIFICATION_PERMISSION) ?? 0;
+  int launchCount =
+      pref.getInt(KEY_LAUNCH_COUNT_FOR_NOTIFICATION_PERMISSION) ?? 0;
 
   if (launchCount <= NOTIFICATION_PERMISSION_LAUNCH_LIMIT &&
       launchCount % NOTIFICATION_PERMISSION_LAUNCH_INTERVAL == 1) {
