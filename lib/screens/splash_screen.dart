@@ -9,12 +9,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  static const Duration _splashDuration = Duration(seconds: 2);
+  Timer? _navigationTimer;
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), () {
+    _navigationTimer = Timer(_splashDuration, () {
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, "/home");
     });
+  }
+
+  @override
+  void dispose() {
+    _navigationTimer?.cancel();
+    super.dispose();
   }
 
   @override
