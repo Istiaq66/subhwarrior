@@ -135,7 +135,7 @@ class PrayerTimeProvider extends ChangeNotifier {
       final today = DateTime.now();
       final school = _useHanafiMethod ? 1 : 0;
       final todayUrl =
-          'http://api.aladhan.com/v1/timingsByCity/${today.day}-${today.month}-${today.year}'
+          'https://api.aladhan.com/v1/timingsByCity/${today.day}-${today.month}-${today.year}'
           '?city=$city&country=$country&method=$_calculationMethod&school=$school';
 
       final todayResponse = await http.get(Uri.parse(todayUrl));
@@ -148,7 +148,7 @@ class PrayerTimeProvider extends ChangeNotifier {
       // Fetch tomorrow's times
       final tomorrow = today.add(const Duration(days: 1));
       final tomorrowUrl =
-          'http://api.aladhan.com/v1/timingsByCity/${tomorrow.day}-${tomorrow.month}-${tomorrow.year}'
+          'https://api.aladhan.com/v1/timingsByCity/${tomorrow.day}-${tomorrow.month}-${tomorrow.year}'
           '?city=$city&country=$country&method=$_calculationMethod&school=$school';
 
       final tomorrowResponse = await http.get(Uri.parse(tomorrowUrl));
@@ -199,7 +199,7 @@ class PrayerTimeProvider extends ChangeNotifier {
     final dateStr = '${date.day}-${date.month}-${date.year}';
     // Add school parameter: 0 for Standard (Shafi), 1 for Hanafi
     final school = _useHanafiMethod ? 1 : 0;
-    return 'http://api.aladhan.com/v1/timings/$dateStr'
+    return 'https://api.aladhan.com/v1/timings/$dateStr'
         '?latitude=$latitude&longitude=$longitude&method=$_calculationMethod&school=$school';
   }
 
