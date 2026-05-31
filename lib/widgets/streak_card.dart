@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme/app_colors.dart';
+
 class StreakCard extends StatelessWidget {
   final int currentStreak;
   final int totalDays;
@@ -19,10 +21,7 @@ class StreakCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           gradient: currentStreak > 0
               ? LinearGradient(
-                  colors: [
-                    Colors.orange.shade400,
-                    Colors.deepOrange.shade400,
-                  ],
+                  colors: context.appColors.streakGradient,
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 )
@@ -38,7 +37,7 @@ class StreakCard extends StatelessWidget {
                 height: 60,
                 width: 1,
                 color: currentStreak > 0
-                    ? Colors.white.withOpacity(0.3)
+                    ? Colors.white.withValues(alpha: 0.3)
                     : Theme.of(context).dividerColor,
               ),
               _buildTotalDaysSection(context),
@@ -89,7 +88,7 @@ class StreakCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               color: hasStreak
-                  ? Colors.white.withOpacity(0.9)
+                  ? Colors.white.withValues(alpha: 0.9)
                   : Theme.of(context).textTheme.bodyMedium?.color,
             ),
           ),
@@ -98,7 +97,7 @@ class StreakCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -133,13 +132,13 @@ class StreakCard extends StatelessWidget {
                   value: progress,
                   strokeWidth: 6,
                   backgroundColor: currentStreak > 0
-                      ? Colors.white.withOpacity(0.3)
-                      : Colors.grey.shade300,
+                      ? Colors.white.withValues(alpha: 0.3)
+                      : Theme.of(context).colorScheme.surfaceContainerHighest,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     currentStreak > 0
                         ? Colors.white
                         : (isOnTrack
-                            ? Colors.green
+                            ? context.appColors.success
                             : Theme.of(context).colorScheme.primary),
                   ),
                 ),
@@ -161,7 +160,7 @@ class StreakCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       color: currentStreak > 0
-                          ? Colors.white.withOpacity(0.8)
+                          ? Colors.white.withValues(alpha: 0.8)
                           : Theme.of(context).textTheme.bodySmall?.color,
                     ),
                   ),
@@ -175,7 +174,7 @@ class StreakCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               color: currentStreak > 0
-                  ? Colors.white.withOpacity(0.9)
+                  ? Colors.white.withValues(alpha: 0.9)
                   : Theme.of(context).textTheme.bodyMedium?.color,
             ),
           ),
@@ -183,7 +182,7 @@ class StreakCard extends StatelessWidget {
             const SizedBox(height: 4),
             Icon(
               Icons.emoji_events,
-              color: currentStreak > 0 ? Colors.white : Colors.amber,
+              color: currentStreak > 0 ? Colors.white : context.appColors.gold,
               size: 20,
             ),
           ],

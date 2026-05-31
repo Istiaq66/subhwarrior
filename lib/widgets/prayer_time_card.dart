@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/providers/prayer_time_provider.dart';
+import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/shared/widgets/error_view.dart';
+import 'package:subh_warrior/shared/widgets/loading_view.dart';
 import 'package:intl/intl.dart';
 
 class PrayerTimeCard extends StatelessWidget {
@@ -11,35 +14,19 @@ class PrayerTimeCard extends StatelessWidget {
     return Consumer<PrayerTimeProvider>(
       builder: (context, prayerProvider, _) {
         if (prayerProvider.isLoading) {
-          return Card(
-            child: SizedBox(
-              height: 120,
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
+          return const Card(
+            child: SizedBox(height: 120, child: LoadingView()),
           );
         }
 
         if (prayerProvider.error.isNotEmpty) {
           return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const Icon(Icons.error_outline, color: Colors.red),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Unable to load prayer times',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      await prayerProvider.fetchPrayerTimesForCurrentLocation();
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
+            child: SizedBox(
+              height: 160,
+              child: ErrorView(
+                message: 'Unable to load prayer times',
+                onRetry: () =>
+                    prayerProvider.fetchPrayerTimesForCurrentLocation(),
               ),
             ),
           );
@@ -57,7 +44,10 @@ class PrayerTimeCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               gradient: LinearGradient(
                 colors: isWithinWindow
-                    ? [Colors.green.shade400, Colors.green.shade600]
+                    ? [
+                        context.appColors.success,
+                        context.appColors.success.withValues(alpha: 0.85),
+                      ]
                     : [
                         Theme.of(context).colorScheme.primary,
                         Theme.of(context).colorScheme.secondary,
@@ -76,7 +66,7 @@ class PrayerTimeCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.mosque,
                             color: Colors.white,
                             size: 28,
@@ -101,11 +91,11 @@ class PrayerTimeCard extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Row(
-                            children: const [
+                          child: const Row(
+                            children: [
                               Icon(
                                 Icons.circle,
                                 color: Colors.white,
@@ -140,7 +130,7 @@ class PrayerTimeCard extends StatelessWidget {
                       Container(
                         height: 40,
                         width: 1,
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                       ),
                       _buildTimeColumn(
                         context,
@@ -167,7 +157,7 @@ class PrayerTimeCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -218,7 +208,7 @@ class PrayerTimeCard extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
@@ -242,7 +232,7 @@ class PrayerTimeCard extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             fontSize: 10,
           ),
         ),

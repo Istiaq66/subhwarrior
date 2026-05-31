@@ -343,8 +343,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 fillColor: isQualifyingWork
-                    ? Colors.green.withOpacity(0.1)
-                    : Colors.red.withOpacity(0.1),
+                    ? Colors.green.withValues(alpha: 0.1)
+                    : Colors.red.withValues(alpha: 0.1),
                 filled: true,
               ),
               items: const [
@@ -393,7 +393,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
@@ -506,7 +506,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isQualifying
-            ? Colors.green.withOpacity(0.1)
+            ? Colors.green.withValues(alpha: 0.1)
             : Theme.of(context).colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(

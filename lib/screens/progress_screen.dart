@@ -112,7 +112,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           label,
           style: TextStyle(
             fontSize: 12,
-            color: color.withOpacity(0.9),
+            color: color.withValues(alpha: 0.9),
           ),
         ),
       ],

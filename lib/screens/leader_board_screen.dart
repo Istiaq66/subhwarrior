@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/providers/challenge_provider.dart';
+import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/shared/widgets/empty_view.dart';
+import 'package:subh_warrior/shared/widgets/error_view.dart';
+import 'package:subh_warrior/shared/widgets/loading_view.dart';
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
@@ -64,13 +68,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const LoadingView();
         }
 
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
+          return ErrorView(detail: snapshot.error.toString());
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -98,27 +100,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
   }
 
   Widget _buildFriendsLeaderboard() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.people_outline,
-            size: 80,
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Friend leaderboard coming soon!',
-            style: TextStyle(fontSize: 18),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Connect with friends to compete together',
-            style: TextStyle(color: Colors.grey),
-          ),
-        ],
-      ),
+    return const EmptyView(
+      icon: Icons.people_outline,
+      title: 'Friend leaderboard coming soon!',
+      subtitle: 'Connect with friends to compete together',
     );
   }
 
@@ -126,25 +111,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     final userLocation = context.read<ChallengeProvider>().userLocation;
 
     if (userLocation.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.location_off,
-              size: 80,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 16),
-            const Text('Set your location to see local warriors'),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/settings');
-              },
-              child: const Text('Set Location'),
-            ),
-          ],
+      return EmptyView(
+        icon: Icons.location_off,
+        title: 'Set your location to see local warriors',
+        action: ElevatedButton(
+          onPressed: () => Navigator.pushNamed(context, '/settings'),
+          child: const Text('Set Location'),
         ),
       );
     }
@@ -158,25 +130,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const LoadingView();
         }
 
         if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 60, color: Colors.red),
-                const SizedBox(height: 16),
-                Text('Error loading leaderboard'),
-                const SizedBox(height: 8),
-                Text(
-                  snapshot.error.toString(),
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
+          return ErrorView(
+            message: 'Error loading leaderboard',
+            detail: snapshot.error.toString(),
           );
         }
 
@@ -234,7 +194,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: rankColor.withOpacity(0.1),
+            color: rankColor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
             border: Border.all(
               color: rankColor,
@@ -297,8 +257,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                 ? Theme.of(context)
                     .colorScheme
                     .onPrimaryContainer
-                    .withOpacity(0.7)
-                : Colors.grey,
+                    .withValues(alpha: 0.7)
+                : Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         trailing: Column(
@@ -308,7 +268,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.check_circle, size: 16, color: Colors.green),
+                Icon(Icons.check_circle,
+                    size: 16, color: context.appColors.success),
                 const SizedBox(width: 4),
                 Text(
                   '$qualifyingDays days',
@@ -326,14 +287,16 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                 Icon(
                   Icons.local_fire_department,
                   size: 14,
-                  color: currentStreak > 0 ? Colors.orange : Colors.grey,
+                  color: currentStreak > 0
+                      ? context.appColors.warning
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   '$currentStreak streak',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -345,29 +308,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
   }
 
   Widget _buildEmptyLeaderboard({bool isLocal = false}) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.emoji_events_outlined,
-            size: 80,
-            color: Colors.grey.shade400,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            isLocal ? 'No warriors in your area yet!' : 'No data available',
-            style: const TextStyle(fontSize: 18),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            isLocal
-                ? 'Be the first to start the challenge'
-                : 'Start your challenge to appear here',
-            style: TextStyle(color: Colors.grey.shade600),
-          ),
-        ],
-      ),
+    return EmptyView(
+      icon: Icons.emoji_events_outlined,
+      title: isLocal ? 'No warriors in your area yet!' : 'No data available',
+      subtitle: isLocal
+          ? 'Be the first to start the challenge'
+          : 'Start your challenge to appear here',
     );
   }
 
@@ -392,11 +338,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
   Color _getRankColor(int rank) {
     switch (rank) {
       case 1:
-        return Colors.amber;
+        return context.appColors.gold;
       case 2:
-        return Colors.grey.shade400;
+        return context.appColors.silver;
       case 3:
-        return Colors.brown.shade400;
+        return context.appColors.bronze;
       default:
         return Theme.of(context).colorScheme.primary;
     }

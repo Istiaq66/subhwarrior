@@ -315,7 +315,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           color: Theme.of(context)
                               .colorScheme
                               .primaryContainer
-                              .withOpacity(0.3),
+                              .withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -462,13 +462,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 8),
             Consumer<ThemeProvider>(
               builder: (context, themeProvider, _) {
-                return SwitchListTile(
-                  title: const Text('Dark Mode'),
-                  subtitle: const Text('Easier on eyes for Fajr time'),
-                  value: themeProvider.isDarkMode,
-                  onChanged: (value) {
-                    themeProvider.toggleTheme();
-                  },
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Theme'),
+                    const SizedBox(height: 8),
+                    SegmentedButton<ThemeMode>(
+                      segments: const [
+                        ButtonSegment(
+                          value: ThemeMode.system,
+                          label: Text('System'),
+                          icon: Icon(Icons.brightness_auto),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.light,
+                          label: Text('Light'),
+                          icon: Icon(Icons.light_mode),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.dark,
+                          label: Text('Dark'),
+                          icon: Icon(Icons.dark_mode),
+                        ),
+                      ],
+                      selected: {themeProvider.themeMode},
+                      onSelectionChanged: (selection) {
+                        themeProvider.setThemeMode(selection.first);
+                      },
+                    ),
+                  ],
                 );
               },
             ),
