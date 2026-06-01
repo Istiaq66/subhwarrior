@@ -5,7 +5,7 @@ import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:subh_warrior/screens/leader_board_screen.dart';
+import 'package:subh_warrior/features/leaderboard/presentation/leaderboard_screen.dart';
 import 'package:subh_warrior/screens/progress_screen.dart';
 import 'package:subh_warrior/widgets/prayer_time_card.dart';
 import 'package:subh_warrior/widgets/streak_card.dart';

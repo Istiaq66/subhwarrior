@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/features/leaderboard/data/leaderboard_repository.dart';
+import 'package:subh_warrior/features/leaderboard/domain/leaderboard_entry.dart';
 import 'package:subh_warrior/shared/widgets/empty_view.dart';
 import 'package:subh_warrior/shared/widgets/error_view.dart';
 import 'package:subh_warrior/shared/widgets/loading_view.dart';
@@ -17,6 +18,7 @@ class LeaderboardScreen extends StatefulWidget {
 class _LeaderboardScreenState extends State<LeaderboardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final LeaderboardRepository _repository = LeaderboardRepositoryImpl();
 
   @override
   void initState() {
@@ -60,42 +62,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
   }
 
   Widget _buildGlobalLeaderboard() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('challenges')
-          .orderBy('totalQualifyingDays', descending: true)
-          .limit(100)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const LoadingView();
-        }
-
-        if (snapshot.hasError) {
-          return ErrorView(detail: snapshot.error.toString());
-        }
-
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return _buildEmptyLeaderboard();
-        }
-
-        final docs = snapshot.data!.docs;
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: docs.length,
-          itemBuilder: (context, index) {
-            final data = docs[index].data() as Map<String, dynamic>;
-            return _buildLeaderboardItem(
-              rank: index + 1,
-              name: data['userName'] ?? 'Anonymous',
-              location: data['location'] ?? '',
-              qualifyingDays: data['totalQualifyingDays'] ?? 0,
-              currentStreak: data['currentStreak'] ?? 0,
-              isCurrentUser: _isCurrentUser(data['userName']),
-            );
-          },
-        );
-      },
+    return _buildEntryStream(
+      stream: _repository.global(),
+      emptyBuilder: () => _buildEmptyLeaderboard(),
     );
   }
 
@@ -121,13 +90,19 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
       );
     }
 
-    // FIXED: Remove the orderBy to avoid needing composite index
-    // Just filter by location
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('challenges')
-          .where('location', isEqualTo: userLocation)
-          .snapshots(),
+    return _buildEntryStream(
+      stream: _repository.local(userLocation),
+      emptyBuilder: () => _buildEmptyLeaderboard(isLocal: true),
+    );
+  }
+
+  /// Shared list/loading/error/empty handling for an entry stream.
+  Widget _buildEntryStream({
+    required Stream<List<LeaderboardEntry>> stream,
+    required Widget Function() emptyBuilder,
+  }) {
+    return StreamBuilder<List<LeaderboardEntry>>(
+      stream: stream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const LoadingView();
@@ -140,32 +115,20 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           );
         }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return _buildEmptyLeaderboard(isLocal: true);
+        final entries = snapshot.data ?? const [];
+        if (entries.isEmpty) {
+          return emptyBuilder();
         }
-
-        // Sort in-memory after fetching
-        final docs = snapshot.data!.docs.toList();
-        docs.sort((a, b) {
-          final aData = a.data() as Map<String, dynamic>;
-          final bData = b.data() as Map<String, dynamic>;
-          final aScore = aData['totalQualifyingDays'] ?? 0;
-          final bScore = bData['totalQualifyingDays'] ?? 0;
-          return bScore.compareTo(aScore); // Descending order
-        });
 
         return ListView.builder(
           padding: const EdgeInsets.all(16),
-          itemCount: docs.length,
+          itemCount: entries.length,
           itemBuilder: (context, index) {
-            final data = docs[index].data() as Map<String, dynamic>;
+            final entry = entries[index];
             return _buildLeaderboardItem(
               rank: index + 1,
-              name: data['userName'] ?? 'Anonymous',
-              location: data['location'] ?? '',
-              qualifyingDays: data['totalQualifyingDays'] ?? 0,
-              currentStreak: data['currentStreak'] ?? 0,
-              isCurrentUser: _isCurrentUser(data['userName']),
+              entry: entry,
+              isCurrentUser: _isCurrentUser(entry.userName),
             );
           },
         );
@@ -175,10 +138,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
 
   Widget _buildLeaderboardItem({
     required int rank,
-    required String name,
-    required String location,
-    required int qualifyingDays,
-    required int currentStreak,
+    required LeaderboardEntry entry,
     bool isCurrentUser = false,
   }) {
     final medal = _getMedal(rank);
@@ -221,7 +181,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           children: [
             Expanded(
               child: Text(
-                name,
+                entry.userName,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -250,7 +210,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
           ],
         ),
         subtitle: Text(
-          location,
+          entry.location,
           style: TextStyle(
             fontSize: 12,
             color: isCurrentUser
@@ -272,7 +232,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                     size: 16, color: context.appColors.success),
                 const SizedBox(width: 4),
                 Text(
-                  '$qualifyingDays days',
+                  '${entry.qualifyingDays} days',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -287,13 +247,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                 Icon(
                   Icons.local_fire_department,
                   size: 14,
-                  color: currentStreak > 0
+                  color: entry.currentStreak > 0
                       ? context.appColors.warning
                       : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '$currentStreak streak',
+                  '${entry.currentStreak} streak',
                   style: TextStyle(
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
