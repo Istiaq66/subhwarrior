@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:subh_warrior/helpers/notification_permission.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
-import 'package:subh_warrior/providers/prayer_time_provider.dart';
+import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:subh_warrior/screens/leader_board_screen.dart';
 import 'package:subh_warrior/screens/progress_screen.dart';

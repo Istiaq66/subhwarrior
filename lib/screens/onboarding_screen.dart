@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
-import 'package:subh_warrior/providers/prayer_time_provider.dart';
+import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 

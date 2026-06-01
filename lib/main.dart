@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
-import 'package:subh_warrior/providers/prayer_time_provider.dart';
+import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:subh_warrior/core/theme/app_theme.dart';
 import 'package:subh_warrior/screens/home.dart';
@@ -40,7 +40,8 @@ class SubhWarriorApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => PrayerTimeProvider(prefs)),
+        ChangeNotifierProvider(
+            create: (_) => PrayerTimeProvider.fromPrefs(prefs)),
         ChangeNotifierProvider(
             create: (_) => ChallengeProvider.fromPrefs(prefs)),
       ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:subh_warrior/providers/prayer_time_provider.dart';
+import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/shared/widgets/error_view.dart';
 import 'package:subh_warrior/shared/widgets/loading_view.dart';
