@@ -6,7 +6,7 @@ import 'package:subh_warrior/features/challenge/presentation/challenge_controlle
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:subh_warrior/core/theme/app_theme.dart';
-import 'package:subh_warrior/screens/home.dart';
+import 'package:subh_warrior/features/home/presentation/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/screens/onboarding_screen.dart';
 import 'package:subh_warrior/screens/settings_screen.dart';
