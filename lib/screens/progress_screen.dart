@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/challenge/domain/day_log.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
+import 'package:subh_warrior/features/challenge/presentation/widgets/day_detail_sheet.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
@@ -52,7 +54,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
   Widget _buildProgressSummary(ChallengeProvider provider) {
     final percentage = (provider.overallProgress * 100).toInt();
     final daysCompleted = provider.totalQualifyingDays;
-    final daysRemaining = 16 - daysCompleted;
+    final daysRemaining = AppConstants.qualifyingDaysGoal - daysCompleted;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -132,7 +134,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
         .map((log) => DateTime(log.date.year, log.date.month, log.date.day))
         .toSet();
     final firstDay = provider.challengeStartDate ?? DateTime.now();
-    final lastDay = firstDay.add(const Duration(days: 28));
+    final lastDay =
+        firstDay.add(const Duration(days: AppConstants.challengeDays));
     final effectiveFocusedDay =
         _focusedDay.isBefore(firstDay) ? firstDay : _focusedDay;
     return Card(
@@ -200,6 +203,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   Widget _buildWeeklyChart(ChallengeProvider provider) {
     final weekProgress = provider.weeklyProgress;
+    const weeklyTarget =
+        AppConstants.qualifyingDaysGoal ~/ AppConstants.challengeWeeks;
 
     return Card(
       margin: const EdgeInsets.all(16),
@@ -218,7 +223,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
-                  maxY: 4,
+                  maxY: weeklyTarget.toDouble(),
                   barTouchData: BarTouchData(enabled: true),
                   titlesData: FlTitlesData(
                     show: true,
@@ -247,7 +252,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
                     ),
                   ),
                   borderData: FlBorderData(show: false),
-                  barGroups: List.generate(4, (index) {
+                  barGroups:
+                      List.generate(AppConstants.challengeWeeks, (index) {
                     final week = index + 1;
                     final progress = weekProgress[week]?.toDouble() ?? 0;
 
@@ -256,7 +262,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                       barRods: [
                         BarChartRodData(
                           toY: progress,
-                          color: progress >= 4
+                          color: progress >= weeklyTarget
                               ? Colors.green
                               : Theme.of(context).colorScheme.primary,
                           width: 30,
@@ -350,100 +356,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  log.isQualifying ? Icons.check_circle : Icons.warning,
-                  color: log.isQualifying ? Colors.green : Colors.orange,
-                  size: 32,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        DateFormat('EEEE, MMMM d').format(log.date),
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      Text(
-                        log.isQualifying
-                            ? 'Qualifying Day'
-                            : 'Non-Qualifying Day',
-                        style: TextStyle(
-                          color:
-                              log.isQualifying ? Colors.green : Colors.orange,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _buildDetailRow(
-              Icons.mosque,
-              'Fajr Prayer',
-              log.prayedFajrOnTime ? 'On Time' : 'Missed',
-              log.prayedFajrOnTime,
-            ),
-            _buildDetailRow(
-              Icons.timer,
-              'Work Duration',
-              '${log.minutesWorked} minutes',
-              log.minutesWorked >= 60,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Work Description',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              log.workDescription.isNotEmpty
-                  ? log.workDescription
-                  : 'No details logged for this day.',
-            ),
-            if (log.reflection != null && log.reflection!.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(
-                'Reflection',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              const SizedBox(height: 8),
-              Text(log.reflection!),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(
-      IconData icon, String label, String value, bool success) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 20),
-          const SizedBox(width: 12),
-          Text(label),
-          const Spacer(),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: success ? Colors.green : null,
-            ),
-          ),
-        ],
-      ),
+      builder: (context) => DayDetailSheet(log: log),
     );
   }
 }
