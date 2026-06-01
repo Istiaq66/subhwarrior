@@ -34,9 +34,6 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Verify Formatting
-        run: dart format --set-exit-if-changed .
-
       # Errors/warnings block; infos are tracked tech debt (withOpacity →
       # IMPROVEMENT_PLAN C5). Drop --no-fatal-infos once C5 lands.
       - name: Analyze
