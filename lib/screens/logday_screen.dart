@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/challenge/domain/log_result.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
@@ -7,7 +8,7 @@ import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_con
 import 'package:intl/intl.dart';
 
 class LogDayScreen extends StatefulWidget {
-  const LogDayScreen({Key? key}) : super(key: key);
+  const LogDayScreen({super.key});
 
   @override
   State<LogDayScreen> createState() => _LogDayScreenState();
@@ -28,6 +29,18 @@ class _LogDayScreenState extends State<LogDayScreen> {
   bool _wokeUpForFajr = false;
   bool _stayedAwakeAfter = false;
 
+  /// Whether the selected work type counts toward a qualifying day.
+  bool get _isQualifyingWork => _selectedWorkType.isQualifying;
+
+  /// Whether the current form state would produce a qualifying day. Single
+  /// source of truth — used by the live status card and the submit handler.
+  bool get _isQualifyingDay =>
+      _wokeUpForFajr &&
+      _stayedAwakeAfter &&
+      _prayedFajrOnTime &&
+      _minutesWorked >= AppConstants.minDeepWorkMinutes &&
+      _isQualifyingWork;
+
   @override
   void dispose() {
     _workDescriptionController.dispose();
@@ -39,7 +52,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
   Widget build(BuildContext context) {
     final prayerProvider = context.watch<PrayerTimeProvider>();
     final currentTime = DateTime.now();
-    final canSubmit = currentTime.hour < 8;
+    final canSubmit = currentTime.hour < AppConstants.logCutoffHour;
     final isWeekend = currentTime.weekday == DateTime.saturday ||
         currentTime.weekday == DateTime.sunday;
 
@@ -318,9 +331,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
   }
 
   Widget _buildWorkSection() {
-    final isQualifyingWork = _selectedWorkType != WorkType.passiveConsumption &&
-        _selectedWorkType != WorkType.routineAdmin &&
-        _selectedWorkType != WorkType.socialMedia;
+    final isQualifyingWork = _isQualifyingWork;
 
     return Card(
       child: Padding(
@@ -433,9 +444,9 @@ class _LogDayScreenState extends State<LogDayScreen> {
                 });
               },
             ),
-            if (_minutesWorked < 60)
+            if (_minutesWorked < AppConstants.minDeepWorkMinutes)
               Text(
-                'Minimum 60 minutes required for qualification',
+                'Minimum ${AppConstants.minDeepWorkMinutes} minutes required for qualification',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.error,
                   fontSize: 12,
@@ -494,15 +505,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
   }
 
   Widget _buildQualificationStatus() {
-    final isQualifyingWork = _selectedWorkType != WorkType.passiveConsumption &&
-        _selectedWorkType != WorkType.routineAdmin &&
-        _selectedWorkType != WorkType.socialMedia;
-
-    final isQualifying = _wokeUpForFajr &&
-        _stayedAwakeAfter &&
-        _prayedFajrOnTime &&
-        _minutesWorked >= 60 &&
-        isQualifyingWork;
+    final isQualifyingWork = _isQualifyingWork;
+    final isQualifying = _isQualifyingDay;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -544,7 +548,9 @@ class _LogDayScreenState extends State<LogDayScreen> {
           _buildRequirement('Awake at/before Fajr', _wokeUpForFajr),
           _buildRequirement('Stayed awake and alert', _stayedAwakeAfter),
           _buildRequirement('Prayed Fajr on time', _prayedFajrOnTime),
-          _buildRequirement('60+ minutes of work', _minutesWorked >= 60),
+          _buildRequirement(
+              '${AppConstants.minDeepWorkMinutes}+ minutes of work',
+              _minutesWorked >= AppConstants.minDeepWorkMinutes),
           _buildRequirement('Qualifying work type', isQualifyingWork),
           if (_prayedAtMasjid) ...[
             const SizedBox(height: 8),
@@ -637,51 +643,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
     });
 
     if (result == LogResult.success) {
-      final isQualifyingWork =
-          _selectedWorkType != WorkType.passiveConsumption &&
-              _selectedWorkType != WorkType.routineAdmin &&
-              _selectedWorkType != WorkType.socialMedia;
-
-      final isQualifying = _wokeUpForFajr &&
-          _stayedAwakeAfter &&
-          _prayedFajrOnTime &&
-          _minutesWorked >= 60 &&
-          isQualifyingWork;
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          icon: Icon(
-            isQualifying
-                ? (_prayedAtMasjid ? Icons.stars : Icons.celebration)
-                : Icons.check_circle,
-            size: 48,
-            color: isQualifying ? Colors.green : Colors.orange,
-          ),
-          title: Text(
-            isQualifying
-                ? (_prayedAtMasjid ? 'Exceptional!' : 'Excellent!')
-                : 'Day Logged',
-          ),
-          content: Text(
-            isQualifying
-                ? (_prayedAtMasjid
-                    ? 'Outstanding! You prayed at the masjid AND completed your morning work. True Subh Warrior spirit! 🌟'
-                    : 'You\'ve earned a qualifying day! Keep up the great work!')
-                : 'Day logged successfully. Review the requirements and try again tomorrow!',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Continue'),
-            ),
-          ],
-        ),
-      );
+      _showSuccessDialog(isQualifying: _isQualifyingDay);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -690,6 +652,46 @@ class _LogDayScreenState extends State<LogDayScreen> {
         ),
       );
     }
+  }
+
+  /// Confirmation dialog shown after a successful log. Tone scales with whether
+  /// the day qualified and whether the user prayed at the masjid. Pops both the
+  /// dialog and the log screen on "Continue".
+  void _showSuccessDialog({required bool isQualifying}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        icon: Icon(
+          isQualifying
+              ? (_prayedAtMasjid ? Icons.stars : Icons.celebration)
+              : Icons.check_circle,
+          size: 48,
+          color: isQualifying ? Colors.green : Colors.orange,
+        ),
+        title: Text(
+          isQualifying
+              ? (_prayedAtMasjid ? 'Exceptional!' : 'Excellent!')
+              : 'Day Logged',
+        ),
+        content: Text(
+          isQualifying
+              ? (_prayedAtMasjid
+                  ? 'Outstanding! You prayed at the masjid AND completed your morning work. True Subh Warrior spirit! 🌟'
+                  : 'You\'ve earned a qualifying day! Keep up the great work!')
+              : 'Day logged successfully. Review the requirements and try again tomorrow!',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+            child: const Text('Continue'),
+          ),
+        ],
+      ),
+    );
   }
 
   String _logFailureMessage(LogResult result) {
