@@ -37,8 +37,7 @@ abstract final class AppTheme {
             horizontal: AppSpacing.xl,
             vertical: AppSpacing.md,
           ),
-          shape:
-              const RoundedRectangleBorder(borderRadius: AppRadius.brMd),
+          shape: const RoundedRectangleBorder(borderRadius: AppRadius.brMd),
         ),
       ),
       inputDecorationTheme: const InputDecorationTheme(

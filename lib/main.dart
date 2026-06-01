@@ -41,7 +41,8 @@ class SubhWarriorApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => PrayerTimeProvider(prefs)),
-        ChangeNotifierProvider(create: (_) => ChallengeProvider(prefs)),
+        ChangeNotifierProvider(
+            create: (_) => ChallengeProvider.fromPrefs(prefs)),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
