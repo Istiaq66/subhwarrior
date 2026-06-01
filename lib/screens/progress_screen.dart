@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:subh_warrior/providers/challenge_provider.dart';
+import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
+import 'package:subh_warrior/features/challenge/domain/day_log.dart';
+import 'package:subh_warrior/features/challenge/domain/work_type.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';

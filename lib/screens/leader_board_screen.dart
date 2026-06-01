@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import 'package:subh_warrior/providers/challenge_provider.dart';
+import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/shared/widgets/empty_view.dart';
 import 'package:subh_warrior/shared/widgets/error_view.dart';

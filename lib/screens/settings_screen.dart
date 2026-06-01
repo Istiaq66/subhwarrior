@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
-import 'package:subh_warrior/providers/challenge_provider.dart';
+import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/providers/prayer_time_provider.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:geolocator/geolocator.dart';

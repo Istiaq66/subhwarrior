@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
-import 'package:subh_warrior/providers/challenge_provider.dart';
+import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/providers/prayer_time_provider.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:subh_warrior/core/theme/app_theme.dart';

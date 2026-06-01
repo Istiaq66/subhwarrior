@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/helpers/notification_permission.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
-import 'package:subh_warrior/providers/challenge_provider.dart';
+import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/providers/prayer_time_provider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:subh_warrior/screens/leader_board_screen.dart';
