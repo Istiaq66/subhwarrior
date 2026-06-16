@@ -25,7 +25,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _isSigningInWithGoogle = false;
   double _latitude = 0.0;
   double _longitude = 0.0;
-  // Explicit flag — (0, 0) is a valid coordinate, so never use it as "unset".
   bool _hasCoordinates = false;
 
   ScrollPhysics get _pageScrollPhysics {
@@ -309,16 +308,52 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     setState(() => _isSigningInWithGoogle = true);
     try {
       final cred = await context.read<AuthService>().signInWithGoogle();
-      // Prefill the name with the Google display name if the field is empty.
-      final displayName = cred.user?.displayName?.trim();
-      if (mounted && displayName != null && displayName.isNotEmpty) {
-        if (_nameController.text.trim().isEmpty) {
-          _nameController.text =
-              displayName.length > AppConstants.usernameMaxLength
-                  ? displayName.substring(0, AppConstants.usernameMaxLength)
-                  : displayName;
+      // Prefill the name. Prefer the Google display name; fall back to the
+      // email local-part when the account has no display name.
+      var prefill = cred.user?.displayName?.trim() ?? '';
+      if (prefill.isEmpty) {
+        final email = cred.user?.email ?? '';
+        final at = email.indexOf('@');
+        if (at > 0) prefill = email.substring(0, at);
+      }
+
+      prefill = prefill
+          .replaceAll(RegExp(r'[^A-Za-z0-9_ ]'), ' ')
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim();
+      if (mounted && prefill.isNotEmpty && _nameController.text.trim().isEmpty) {
+        _nameController.text = prefill.length > AppConstants.usernameMaxLength
+            ? prefill.substring(0, AppConstants.usernameMaxLength)
+            : prefill;
+      }
+      // Validate the prefilled name the same way the manual "Next" button does
+      // before advancing. A duplicate stays on the name page so the user can
+      // pick another.
+      final name = _nameController.text.trim();
+      if (mounted && name.isNotEmpty) {
+        final isDuplicate = await _isNameDuplicate(name);
+        if (!mounted) return;
+        if (isDuplicate) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'This username is already taken. Please choose another.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
         }
-        setState(() {});
+        // Advance past the name page once signed in. Deferred to the next frame
+        // so the rebuilt PageView picks up scrollable physics first (the name
+        // page uses NeverScrollableScrollPhysics while the field is empty, which
+        // also blocks programmatic nextPage()).
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          _pageController.nextPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        });
       }
     } catch (e) {
       if (mounted) {
@@ -332,6 +367,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     } finally {
       if (mounted) setState(() => _isSigningInWithGoogle = false);
     }
+    setState(() {});
   }
 
   Widget _buildLocationPage() {

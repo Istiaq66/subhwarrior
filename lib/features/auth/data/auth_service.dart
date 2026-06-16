@@ -57,39 +57,50 @@ class AuthService {
     if (googleServerClientId.isEmpty) {
       throw GoogleSignInNotConfigured();
     }
-
-    final signIn = GoogleSignIn.instance;
-    if (!_googleInitialized) {
-      await signIn.initialize(serverClientId: googleServerClientId);
-      _googleInitialized = true;
-    }
-
-    final account = await signIn.authenticate();
-    final idToken = account.authentication.idToken;
-    if (idToken == null) {
-      throw FirebaseAuthException(
-        code: 'missing-google-id-token',
-        message: 'Google sign-in returned no ID token.',
-      );
-    }
-
-    final credential = GoogleAuthProvider.credential(idToken: idToken);
-    final user = _auth.currentUser;
-
-    // Prefer linking so the anonymous uid (and its Firestore doc) survives.
-    if (user != null && user.isAnonymous) {
-      try {
-        return await user.linkWithCredential(credential);
-      } on FirebaseAuthException catch (e) {
-        // Google account already attached to another user — sign into it.
-        if (e.code == 'credential-already-in-use' ||
-            e.code == 'email-already-in-use') {
-          return await _auth.signInWithCredential(credential);
-        }
-        rethrow;
+    try {
+      final signIn = GoogleSignIn.instance;
+      if (!_googleInitialized) {
+        await signIn.initialize(serverClientId: googleServerClientId);
+        _googleInitialized = true;
       }
+      final account = await signIn.authenticate();
+      final idToken = account.authentication.idToken;
+      if (idToken == null) {
+        throw FirebaseAuthException(
+          code: 'missing-google-id-token',
+          message: 'Google sign-in returned no ID token.',
+        );
+      }
+
+      final credential = GoogleAuthProvider.credential(idToken: idToken);
+      final user = _auth.currentUser;
+
+      // Prefer linking so the anonymous uid (and its Firestore doc) survives.
+      if (user != null && user.isAnonymous) {
+        try {
+          return await user.linkWithCredential(credential);
+        } on FirebaseAuthException catch (e) {
+          // Google account already attached to another user — sign into it.
+          if (e.code == 'credential-already-in-use' ||
+              e.code == 'email-already-in-use') {
+            return await _auth.signInWithCredential(credential);
+          }
+          rethrow;
+        }
+      }
+      return await _auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Google sign-in FirebaseAuthException: '
+          '${e.code} — ${e.message}');
+      rethrow;
+    } on GoogleSignInException catch (e) {
+      debugPrint('Google sign-in cancelled/failed: '
+          '${e.code} — ${e.description}');
+      rethrow;
+    } catch (e, st) {
+      debugPrint('Google sign-in error: $e\n$st');
+      rethrow;
     }
-    return await _auth.signInWithCredential(credential);
   }
 
   Future<void> signOut() async {
