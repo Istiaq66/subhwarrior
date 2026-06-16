@@ -172,18 +172,35 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildAppBar(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    // Primary + its `on` color is a guaranteed-contrast pair in both light and
+    // dark mode — no washout, no hardcoded colors.
+    final onBanner = scheme.onPrimary;
     return SliverAppBar(
-      expandedHeight: 120,
+      expandedHeight: 96,
       pinned: true,
+      // Solid primary when collapsed (the gradient lives in flexibleSpace and
+      // fades out on collapse, otherwise the bar shows surface = looks
+      // transparent over the scrolling content).
+      backgroundColor: scheme.primary,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      foregroundColor: onBanner,
       flexibleSpace: FlexibleSpaceBar(
-        title: const Text('Subh Warrior'),
-        background: Container(
+        centerTitle: true,
+        titlePadding: const EdgeInsets.only(bottom: 14),
+        title: Text(
+          'Subh Warrior',
+          style: TextStyle(
+            color: onBanner,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        background: DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Theme.of(context).colorScheme.primary,
-                Theme.of(context).colorScheme.secondary,
-              ],
+              colors: [scheme.primary, scheme.tertiary],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -192,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.settings, color: Colors.white),
+          icon: Icon(Icons.settings, color: onBanner),
           onPressed: () => Navigator.pushNamed(context, '/settings'),
         ),
       ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/theme/app_colors.dart';
 
 /// Per-week qualifying-day progress bars for the challenge.
 class WeeklyProgressCard extends StatelessWidget {
@@ -57,10 +58,11 @@ class WeeklyProgressCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     LinearProgressIndicator(
                       value: progress / _weeklyTarget,
-                      backgroundColor: Colors.grey[300],
+                      backgroundColor:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
                       valueColor: AlwaysStoppedAnimation<Color>(
                         progress >= _weeklyTarget
-                            ? Colors.green
+                            ? context.appColors.success
                             : Theme.of(context).colorScheme.primary,
                       ),
                     ),

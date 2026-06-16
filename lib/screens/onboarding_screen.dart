@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
@@ -57,10 +58,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content:
-                Text('Could not find that location. Please check spelling.'),
-            backgroundColor: Colors.orange,
+          SnackBar(
+            content: const Text(
+                'Could not find that location. Please check spelling.'),
+            backgroundColor: context.appColors.warning,
           ),
         );
       }
@@ -68,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error finding location: ${e.toString()}'),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
@@ -209,12 +210,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.1),
+              color: context.appColors.warning.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
-                const Icon(Icons.info, color: Colors.orange),
+                Icon(Icons.info, color: context.appColors.warning),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -335,10 +336,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         if (!mounted) return;
         if (isDuplicate) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
+            SnackBar(
+              content: const Text(
                   'This username is already taken. Please choose another.'),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
           return;
@@ -360,7 +361,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -461,10 +462,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.rocket_launch,
               size: 64,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           const SizedBox(height: 32),
@@ -551,7 +552,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   shape: BoxShape.circle,
                   color: _currentPage == index
                       ? Theme.of(context).colorScheme.primary
-                      : Colors.grey.shade300,
+                      : Theme.of(context).colorScheme.surfaceContainerHighest,
                 ),
               );
             }),
@@ -564,9 +565,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                   if (name.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please enter your name'),
-                        backgroundColor: Colors.orange,
+                      SnackBar(
+                        content: const Text('Please enter your name'),
+                        backgroundColor: context.appColors.warning,
                       ),
                     );
                     return;
@@ -575,10 +576,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   final isDuplicate = await _isNameDuplicate(name);
                   if (isDuplicate && mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
+                      SnackBar(
+                        content: const Text(
                             'This username is already taken. Please choose another.'),
-                        backgroundColor: Colors.red,
+                        backgroundColor: Theme.of(context).colorScheme.error,
                       ),
                     );
                     return;
@@ -589,9 +590,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                   if (locationText.isEmpty && mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please set your location'),
-                        backgroundColor: Colors.orange,
+                      SnackBar(
+                        content: const Text('Please set your location'),
+                        backgroundColor: context.appColors.warning,
                       ),
                     );
                     return;
@@ -604,10 +605,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     // Still failed to get coordinates
                     if (!_hasCoordinates && mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
+                        SnackBar(
+                          content: const Text(
                               'Unable to find coordinates for that location.'),
-                          backgroundColor: Colors.red,
+                          backgroundColor: Theme.of(context).colorScheme.error,
                         ),
                       );
                       return;
@@ -702,10 +703,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
+          SnackBar(
+            content: const Text(
                 'Location services are disabled. Please enable them in settings.'),
-            backgroundColor: Colors.orange,
+            backgroundColor: context.appColors.warning,
           ),
         );
         setState(() {
@@ -722,9 +723,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
         if (permission == LocationPermission.denied) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Location permissions are denied'),
-              backgroundColor: Colors.red,
+            SnackBar(
+              content: const Text('Location permissions are denied'),
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
           setState(() {
@@ -739,7 +740,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SnackBar(
             content: const Text(
                 'Location permissions are permanently denied. Please enable them in app settings.'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
             action: SnackBarAction(
               label: 'Settings',
               onPressed: () {
@@ -795,7 +796,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error getting location: ${e.toString()}'),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     } finally {
@@ -835,7 +836,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
             duration: const Duration(seconds: 3),
           ),
         );

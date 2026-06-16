@@ -6,23 +6,46 @@ import 'package:flutter/material.dart';
 abstract final class AppPalette {
   AppPalette._();
 
-  /// Islamic green — the seed for the Material 3 [ColorScheme].
-  static const Color seed = Color(0xFF1B5E20);
+  // ── Brand roles (light) ──────────────────────────────────────────────
+  static const Color primary = Color(0xFF3F72AF);
+  static const Color primaryContainer = Color(0xFFDCEBFF);
+  static const Color secondary = Color(0xFFF4B942); // amber
+  static const Color accent = Color(0xFFFFB38A); // peach
+  static const Color background = Color(0xFFFAFBFC);
+  static const Color surface = Color(0xFFF2F7FF);
+  static const Color text = Color(0xFF1E2A38); // primary text / onSurface
 
-  // Semantic source colors (tuned per brightness in [AppColorsX]).
-  static const Color success = Color(0xFF2E7D32);
-  static const Color successDark = Color(0xFF66BB6A);
-  static const Color warning = Color(0xFFEF6C00);
-  static const Color warningDark = Color(0xFFFFB74D);
+  /// Seed for harmonising the roles the brand palette doesn't name
+  /// (error, the full container ramp, etc.).
+  static const Color seed = primary;
 
-  // Streak flame gradient.
-  static const Color streakStart = Color(0xFFFF6D00);
-  static const Color streakEnd = Color(0xFFFFA726);
+  // ── Semantic source colors (tuned per brightness in [AppColorsX]) ─────
+  // success = Emerald (no brand swatch; green-for-good convention).
+  static const Color success = Color(0xFF2E9E6B);
+  static const Color successDark = Color(0xFF34D399);
+  // warning reuses the brand secondary amber.
+  static const Color warning = secondary;
+  static const Color warningDark = Color(0xFFFBBF24);
+
+  // error = a true red (the seed-derived M3 error reads pinkish on blue).
+  static const Color error = Color(0xFFDC2626); // red-600
+  static const Color errorContainer = Color(0xFFFEE2E2); // red-100
+  static const Color onErrorContainer = Color(0xFF7F1D1D); // red-900
+  static const Color errorDark = Color(0xFFF87171); // red-400
+  static const Color onErrorDark = Color(0xFF450A0A); // red-950
+
+  // Streak flame gradient (peach accent → amber secondary).
+  static const Color streakStart = accent;
+  static const Color streakEnd = secondary;
 
   // Leaderboard rank medals.
-  static const Color gold = Color(0xFFFFC107);
-  static const Color silver = Color(0xFFBDBDBD);
-  static const Color bronze = Color(0xFF8D6E63);
+  static const Color gold = secondary;
+  static const Color silver = Color(0xFF94A3B8);
+  static const Color bronze = Color(0xFFB45309);
+
+  // Text/icon colors that sit on the semantic surfaces above.
+  static const Color onSuccessDark = Color(0xFF022C22);
+  static const Color onWarningDark = Color(0xFF422006);
 }
 
 /// Semantic colors that have no direct Material 3 [ColorScheme] role.
@@ -61,7 +84,7 @@ class AppColorsX extends ThemeExtension<AppColorsX> {
     success: AppPalette.success,
     onSuccess: Colors.white,
     warning: AppPalette.warning,
-    onWarning: Colors.white,
+    onWarning: AppPalette.text,
     streakGradientStart: AppPalette.streakStart,
     streakGradientEnd: AppPalette.streakEnd,
     gold: AppPalette.gold,
@@ -71,9 +94,9 @@ class AppColorsX extends ThemeExtension<AppColorsX> {
 
   static const dark = AppColorsX(
     success: AppPalette.successDark,
-    onSuccess: Color(0xFF003300),
+    onSuccess: AppPalette.onSuccessDark,
     warning: AppPalette.warningDark,
-    onWarning: Color(0xFF3E2600),
+    onWarning: AppPalette.onWarningDark,
     streakGradientStart: AppPalette.streakStart,
     streakGradientEnd: AppPalette.streakEnd,
     gold: AppPalette.gold,

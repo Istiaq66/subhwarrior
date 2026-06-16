@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/domain/day_log.dart';
 
 /// Bottom-sheet content showing the details of a single logged day. Renders a
@@ -23,7 +24,9 @@ class DayDetailSheet extends StatelessWidget {
             children: [
               Icon(
                 log.isQualifying ? Icons.check_circle : Icons.warning,
-                color: log.isQualifying ? Colors.green : Colors.orange,
+                color: log.isQualifying
+                    ? context.appColors.success
+                    : context.appColors.warning,
                 size: 32,
               ),
               const SizedBox(width: 12),
@@ -40,7 +43,9 @@ class DayDetailSheet extends StatelessWidget {
                           ? 'Qualifying Day'
                           : 'Non-Qualifying Day',
                       style: TextStyle(
-                        color: log.isQualifying ? Colors.green : Colors.orange,
+                        color: log.isQualifying
+                            ? context.appColors.success
+                            : context.appColors.warning,
                       ),
                     ),
                   ],
@@ -114,7 +119,7 @@ class _DetailRow extends StatelessWidget {
             value,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: success ? Colors.green : null,
+              color: success ? context.appColors.success : null,
             ),
           ),
         ],
