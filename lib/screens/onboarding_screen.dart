@@ -203,7 +203,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           _buildRuleCard(
             '4',
             'Log',
-            'Submit your day before 8 AM (weekdays only)',
+            'Submit your day before ${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)} (weekdays only)',
             Icons.check_circle,
           ),
           const SizedBox(height: 24),

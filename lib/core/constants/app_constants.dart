@@ -7,6 +7,10 @@ class AppConstants {
   /// 08:00 is already closed — the rule is "logged before 8 AM".
   static const int logCutoffHour = 8;
 
+  /// Wall-clock time of the daily "log your day" reminder notification (07:30).
+  static const int logReminderHour = 7;
+  static const int logReminderMinute = 30;
+
   /// Total length of the challenge in days (28-day morning routine).
   static const int challengeDays = 28;
 

@@ -4,7 +4,6 @@ import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_con
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/shared/widgets/error_view.dart';
 import 'package:subh_warrior/shared/widgets/loading_view.dart';
-import 'package:intl/intl.dart';
 
 class PrayerTimeCard extends StatelessWidget {
   const PrayerTimeCard({super.key});
@@ -122,9 +121,7 @@ class PrayerTimeCard extends StatelessWidget {
                       _buildTimeColumn(
                         context,
                         'Today',
-                        fajrTime != null
-                            ? DateFormat('hh:mm a').format(fajrTime)
-                            : '--:--',
+                        prayerProvider.formatTime(fajrTime),
                         isHighlighted: isWithinWindow,
                       ),
                       Container(
@@ -135,9 +132,7 @@ class PrayerTimeCard extends StatelessWidget {
                       _buildTimeColumn(
                         context,
                         'Tomorrow',
-                        tomorrowFajr != null
-                            ? DateFormat('hh:mm a').format(tomorrowFajr)
-                            : '--:--',
+                        prayerProvider.formatTime(tomorrowFajr),
                       ),
                       Container(
                         height: 40,
@@ -166,27 +161,32 @@ class PrayerTimeCard extends StatelessWidget {
                           _buildSmallTimeInfo(
                             context,
                             'Sunrise',
-                            prayerProvider.todayPrayerTimes!.sunrise,
+                            prayerProvider.formatTimeString(
+                                prayerProvider.todayPrayerTimes!.sunrise),
                           ),
                           _buildSmallTimeInfo(
                             context,
                             'Dhuhr',
-                            prayerProvider.todayPrayerTimes!.dhuhr,
+                            prayerProvider.formatTimeString(
+                                prayerProvider.todayPrayerTimes!.dhuhr),
                           ),
                           _buildSmallTimeInfo(
                             context,
                             'Asr',
-                            prayerProvider.todayPrayerTimes!.asr,
+                            prayerProvider.formatTimeString(
+                                prayerProvider.todayPrayerTimes!.asr),
                           ),
                           _buildSmallTimeInfo(
                             context,
                             'Maghrib',
-                            prayerProvider.todayPrayerTimes!.maghrib,
+                            prayerProvider.formatTimeString(
+                                prayerProvider.todayPrayerTimes!.maghrib),
                           ),
                           _buildSmallTimeInfo(
                             context,
                             'Isha',
-                            prayerProvider.todayPrayerTimes!.isha,
+                            prayerProvider.formatTimeString(
+                                prayerProvider.todayPrayerTimes!.isha),
                           ),
                         ],
                       ),

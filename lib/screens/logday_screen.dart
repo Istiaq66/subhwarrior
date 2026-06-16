@@ -6,7 +6,6 @@ import 'package:subh_warrior/features/challenge/presentation/challenge_controlle
 import 'package:subh_warrior/features/challenge/domain/log_result.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
-import 'package:intl/intl.dart';
 
 class LogDayScreen extends StatefulWidget {
   const LogDayScreen({super.key});
@@ -147,8 +146,9 @@ class _LogDayScreenState extends State<LogDayScreen> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Daily logs must be submitted before 8:00 AM.',
+            Text(
+              'Daily logs must be submitted before '
+              '${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)}.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -232,15 +232,13 @@ class _LogDayScreenState extends State<LogDayScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              fajrTime != null
-                  ? DateFormat('hh:mm a').format(fajrTime)
-                  : 'Loading...',
+              fajrTime != null ? provider.formatTime(fajrTime) : 'Loading...',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             if (provider.todayPrayerTimes != null) ...[
               const SizedBox(height: 4),
               Text(
-                'Sunrise: ${provider.todayPrayerTimes!.sunrise}',
+                'Sunrise: ${provider.formatTimeString(provider.todayPrayerTimes!.sunrise)}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -654,7 +652,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_logFailureMessage(result)),
+          content: Text(_logFailureMessage(result, context)),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -703,10 +701,11 @@ class _LogDayScreenState extends State<LogDayScreen> {
     );
   }
 
-  String _logFailureMessage(LogResult result) {
+  String _logFailureMessage(LogResult result, BuildContext context) {
     switch (result) {
       case LogResult.afterCutoff:
-        return 'Logging window closed — log before 8 AM.';
+        return 'Logging window closed — log before '
+            '${context.read<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)}.';
       case LogResult.weekend:
         return 'Weekends don\'t count toward the challenge.';
       case LogResult.alreadyLogged:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
@@ -424,7 +425,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const Divider(),
               SwitchListTile(
                 title: const Text('Daily Logging Reminder'),
-                subtitle: const Text('Remind at 7:30 AM to log day'),
+                subtitle: Text('Remind at '
+                    '${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logReminderHour, AppConstants.logReminderMinute)}'
+                    ' to log day'),
                 value: _loggingReminder,
                 onChanged: (value) {
                   setState(() {
@@ -491,6 +494,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       selected: {themeProvider.themeMode},
                       onSelectionChanged: (selection) {
                         themeProvider.setThemeMode(selection.first);
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            Consumer<PrayerTimeProvider>(
+              builder: (context, prayerProvider, _) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Time Format'),
+                    const SizedBox(height: 8),
+                    SegmentedButton<bool>(
+                      segments: const [
+                        ButtonSegment(
+                          value: false,
+                          label: Text('12-hour'),
+                          icon: Icon(Icons.schedule),
+                        ),
+                        ButtonSegment(
+                          value: true,
+                          label: Text('24-hour'),
+                          icon: Icon(Icons.access_time),
+                        ),
+                      ],
+                      selected: {prayerProvider.use24HourFormat},
+                      onSelectionChanged: (selection) {
+                        prayerProvider.updateTimeFormat(selection.first);
                       },
                     ),
                   ],
@@ -875,14 +908,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Challenge Guidelines'),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Text(
             '🌅 SUBH WARRIOR CHALLENGE\n\n'
             '✓ Wake up at or before Fajr time\n'
             '✓ Stay awake and alert\n'
             '✓ Pray Fajr within the prayer window\n'
             '✓ Complete 60+ minutes of productive work\n'
-            '✓ Log before 8 AM daily\n'
+            '✓ Log before ${context.read<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)} daily\n'
             '✓ Complete 16+ days over 4 weeks\n'
             '✓ Minimum 4 qualifying days per week\n\n'
             'QUALIFYING WORK:\n'
