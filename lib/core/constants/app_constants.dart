@@ -7,6 +7,10 @@ class AppConstants {
   /// 08:00 is already closed — the rule is "logged before 8 AM".
   static const int logCutoffHour = 8;
 
+  /// Wall-clock time of the daily "log your day" reminder notification (07:30).
+  static const int logReminderHour = 7;
+  static const int logReminderMinute = 30;
+
   /// Total length of the challenge in days (28-day morning routine).
   static const int challengeDays = 28;
 
@@ -22,4 +26,19 @@ class AppConstants {
 
   /// Default lead time (minutes) for the Fajr reminder.
   static const int defaultFajrReminderMinutes = 15;
+
+  // --- Input limits (IMPROVEMENT_PLAN D5) ---
+
+  /// Username length bounds (inclusive). Charset enforced separately.
+  static const int usernameMinLength = 3;
+  static const int usernameMaxLength = 20;
+
+  /// Allowed username characters: letters, digits, underscore, single spaces.
+  static final RegExp usernamePattern = RegExp(r'^[A-Za-z0-9_ ]+$');
+
+  /// Max length of a day's free-text work description.
+  static const int workDescriptionMaxLength = 280;
+
+  /// Max length of a day's free-text reflection.
+  static const int reflectionMaxLength = 500;
 }

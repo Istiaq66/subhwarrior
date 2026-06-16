@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/challenge/domain/day_log.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
@@ -75,7 +76,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           Text(
             '$percentage%',
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
                 ),
           ),
@@ -83,17 +84,19 @@ class _ProgressScreenState extends State<ProgressScreen> {
           Text(
             'Challenge Progress',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
           ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatColumn('Completed', '$daysCompleted', Colors.white),
-              _buildStatColumn('Remaining', '$daysRemaining', Colors.white),
-              _buildStatColumn(
-                  'Streak', '${provider.currentStreak}', Colors.white),
+              _buildStatColumn('Completed', '$daysCompleted',
+                  Theme.of(context).colorScheme.onPrimary),
+              _buildStatColumn('Remaining', '$daysRemaining',
+                  Theme.of(context).colorScheme.onPrimary),
+              _buildStatColumn('Streak', '${provider.currentStreak}',
+                  Theme.of(context).colorScheme.onPrimary),
             ],
           ),
         ],
@@ -167,18 +170,18 @@ class _ProgressScreenState extends State<ProgressScreen> {
               if (qualifyingDays.contains(normalizedDay)) {
                 return Container(
                   margin: const EdgeInsets.only(top: 6),
-                  child: const Icon(
+                  child: Icon(
                     Icons.check_circle,
-                    color: Colors.green,
+                    color: context.appColors.success,
                     size: 16,
                   ),
                 );
               } else if (nonQualifyingDays.contains(normalizedDay)) {
                 return Container(
                   margin: const EdgeInsets.only(top: 6),
-                  child: const Icon(
+                  child: Icon(
                     Icons.circle,
-                    color: Colors.orange,
+                    color: context.appColors.warning,
                     size: 16,
                   ),
                 );
@@ -263,7 +266,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                         BarChartRodData(
                           toY: progress,
                           color: progress >= weeklyTarget
-                              ? Colors.green
+                              ? context.appColors.success
                               : Theme.of(context).colorScheme.primary,
                           width: 30,
                           borderRadius: const BorderRadius.vertical(
@@ -313,11 +316,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
               final log = sortedLogs[index];
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor:
-                      log.isQualifying ? Colors.green : Colors.orange,
+                  backgroundColor: log.isQualifying
+                      ? context.appColors.success
+                      : context.appColors.warning,
                   child: Icon(
                     log.isQualifying ? Icons.check : Icons.close,
-                    color: Colors.white,
+                    color: log.isQualifying
+                        ? context.appColors.onSuccess
+                        : context.appColors.onWarning,
                   ),
                 ),
                 title: Text(DateFormat('EEEE, MMM d').format(log.date)),
@@ -326,7 +332,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   '${log.minutesWorked} min work',
                 ),
                 trailing: log.isQualifying
-                    ? const Icon(Icons.star, color: Colors.amber)
+                    ? Icon(Icons.star, color: context.appColors.gold)
                     : null,
                 onTap: () => _showDayDetails(provider, log.date),
               );

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/domain/day_log.dart';
+import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/screens/logday_screen.dart';
 
 /// Dashboard card summarizing today's log state: qualifying/logged/pending/
@@ -43,16 +46,27 @@ class TodayStatusCard extends StatelessWidget {
   }
 
   Widget _statusChip(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final String label;
     final Color color;
+    final Color onColor;
     if (todayLog != null) {
-      label = todayLog!.isQualifying ? 'Qualifying ✓' : 'Logged';
-      color = todayLog!.isQualifying ? Colors.green : Colors.orange;
+      final qualifying = todayLog!.isQualifying;
+      label = qualifying ? 'Qualifying ✓' : 'Logged';
+      color = qualifying ? context.appColors.success : context.appColors.warning;
+      onColor =
+          qualifying ? context.appColors.onSuccess : context.appColors.onWarning;
     } else {
       label = canLog ? 'Pending' : 'Time\'s Up';
-      color = canLog ? Colors.blue : Colors.red;
+      color = canLog ? scheme.primary : scheme.error;
+      onColor = canLog ? scheme.onPrimary : scheme.onError;
     }
-    return Chip(label: Text(label), backgroundColor: color);
+    return Chip(
+      label: Text(label, style: TextStyle(color: onColor)),
+      backgroundColor: color,
+      side: BorderSide.none,
+      visualDensity: VisualDensity.compact,
+    );
   }
 
   List<Widget> _buildBody(BuildContext context) {
@@ -98,7 +112,8 @@ class TodayStatusCard extends StatelessWidget {
 
     return [
       Text(
-        'Logging window closed (after ${AppConstants.logCutoffHour} AM)',
+        'Logging window closed (after '
+            '${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)})',
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.error,
             ),

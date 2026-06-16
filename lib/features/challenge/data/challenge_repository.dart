@@ -19,6 +19,10 @@ abstract class ChallengeRepository {
 
   /// Whether [username] is taken by someone other than [currentUserName].
   Future<bool> usernameExists(String username, String currentUserName);
+
+  /// Atomically reserves [desired] for the current user, releasing [previous]
+  /// on rename. Returns `true` on success, `false` if already taken.
+  Future<bool> reserveUsername(String desired, String previous);
 }
 
 class ChallengeRepositoryImpl implements ChallengeRepository {
@@ -28,10 +32,14 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
   ChallengeRepositoryImpl(this._local, this._remote);
 
   /// Convenience constructor wiring the default local + remote data sources.
-  factory ChallengeRepositoryImpl.fromPrefs(SharedPreferences prefs) =>
+  /// [uid] is the signed-in user's stable Firebase Auth id (doc key).
+  factory ChallengeRepositoryImpl.fromPrefs(
+    SharedPreferences prefs, {
+    required String uid,
+  }) =>
       ChallengeRepositoryImpl(
         ChallengeLocalDataSource(prefs),
-        ChallengeRemoteDataSource(),
+        ChallengeRemoteDataSource(uid: uid),
       );
 
   @override
@@ -49,4 +57,8 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
   @override
   Future<bool> usernameExists(String username, String currentUserName) =>
       _remote.usernameExists(username, currentUserName);
+
+  @override
+  Future<bool> reserveUsername(String desired, String previous) =>
+      _remote.reserveUsername(desired, previous);
 }

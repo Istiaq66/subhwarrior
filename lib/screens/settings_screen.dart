@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
+import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
@@ -25,6 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _loggingReminder = true;
   int _fajrReminderMinutes = 15;
   String _appVersion = '';
+  bool _isAccountBusy = false;
 
   // Prayer calculation methods
   final Map<int, String> _calculationMethods = {
@@ -421,7 +425,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const Divider(),
               SwitchListTile(
                 title: const Text('Daily Logging Reminder'),
-                subtitle: const Text('Remind at 7:30 AM to log day'),
+                subtitle: Text('Remind at '
+                    '${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logReminderHour, AppConstants.logReminderMinute)}'
+                    ' to log day'),
                 value: _loggingReminder,
                 onChanged: (value) {
                   setState(() {
@@ -494,6 +500,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               },
             ),
+            const SizedBox(height: 16),
+            Consumer<PrayerTimeProvider>(
+              builder: (context, prayerProvider, _) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Time Format'),
+                    const SizedBox(height: 8),
+                    SegmentedButton<bool>(
+                      segments: const [
+                        ButtonSegment(
+                          value: false,
+                          label: Text('12-hour'),
+                          icon: Icon(Icons.schedule),
+                        ),
+                        ButtonSegment(
+                          value: true,
+                          label: Text('24-hour'),
+                          icon: Icon(Icons.access_time),
+                        ),
+                      ],
+                      selected: {prayerProvider.use24HourFormat},
+                      onSelectionChanged: (selection) {
+                        prayerProvider.updateTimeFormat(selection.first);
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -545,13 +581,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onPressed: () {
                     _showEndChallengeDialog(provider);
                   },
-                  icon: const Icon(Icons.stop, color: Colors.red),
-                  label: const Text(
+                  icon: Icon(Icons.stop,
+                      color: Theme.of(context).colorScheme.error),
+                  label: Text(
                     'End Challenge',
-                    style: TextStyle(color: Colors.red),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.red),
+                    side: BorderSide(color: Theme.of(context).colorScheme.error),
                   ),
                 ),
               ],
@@ -592,6 +630,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: const Text('App Version'),
               subtitle: Text(_appVersion.isEmpty ? '…' : _appVersion),
             ),
+            _buildAccountTile(),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.book),
@@ -618,6 +657,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  /// Account status + Google upgrade. Anonymous users (the default) can link a
+  /// Google account; signed-in users can sign out (IMPROVEMENT_PLAN D1).
+  Widget _buildAccountTile() {
+    final auth = context.read<AuthService>();
+    return StreamBuilder(
+      stream: auth.authStateChanges(),
+      builder: (context, _) {
+        final isAnon = auth.isAnonymous;
+        final configured = AuthService.googleServerClientId.isNotEmpty;
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: Icon(isAnon ? Icons.person_outline : Icons.verified_user),
+          title: Text(isAnon ? 'Guest account' : 'Signed in with Google'),
+          subtitle: Text(isAnon
+              ? (configured
+                  ? 'Tap to back up your progress with Google'
+                  : 'Progress is saved on this device')
+              : (auth.currentUser?.email ?? 'Synced')),
+          trailing: _isAccountBusy
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : null,
+          onTap: _isAccountBusy
+              ? null
+              : (isAnon
+                  ? (configured ? _linkGoogle : null)
+                  : _signOutAccount),
+        );
+      },
+    );
+  }
+
+  Future<void> _linkGoogle() async {
+    setState(() => _isAccountBusy = true);
+    try {
+      await context.read<AuthService>().signInWithGoogle();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Signed in with Google.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isAccountBusy = false);
+    }
+  }
+
+  Future<void> _signOutAccount() async {
+    setState(() => _isAccountBusy = true);
+    try {
+      await context.read<AuthService>().signOut();
+    } finally {
+      if (mounted) setState(() => _isAccountBusy = false);
+    }
   }
 
   Widget _buildStatRow(String label, String value) {
@@ -681,7 +787,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error getting location: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     } finally {
@@ -707,9 +813,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _saveSettings() async {
     if (_nameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your name'),
-          backgroundColor: Colors.orange,
+        SnackBar(
+          content: const Text('Please enter your name'),
+          backgroundColor: context.appColors.warning,
         ),
       );
       return;
@@ -747,9 +853,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Settings saved successfully'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('Settings saved successfully'),
+            backgroundColor: context.appColors.success,
           ),
         );
         Navigator.pop(context);
@@ -759,7 +865,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -787,9 +893,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const Text(
+            child: Text(
               'End Challenge',
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
         ],
@@ -802,14 +908,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Challenge Guidelines'),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Text(
             '🌅 SUBH WARRIOR CHALLENGE\n\n'
             '✓ Wake up at or before Fajr time\n'
             '✓ Stay awake and alert\n'
             '✓ Pray Fajr within the prayer window\n'
             '✓ Complete 60+ minutes of productive work\n'
-            '✓ Log before 8 AM daily\n'
+            '✓ Log before ${context.read<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)} daily\n'
             '✓ Complete 16+ days over 4 weeks\n'
             '✓ Minimum 4 qualifying days per week\n\n'
             'QUALIFYING WORK:\n'

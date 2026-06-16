@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:subh_warrior/core/utils/date_time_utils.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_data.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_repository.dart';
+import 'package:subh_warrior/features/challenge/domain/log_result.dart';
+import 'package:subh_warrior/features/challenge/domain/work_type.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 
 /// In-memory fake repository — possible only because the controller depends on
@@ -11,6 +13,8 @@ class FakeChallengeRepository implements ChallengeRepository {
   ChallengeData stored;
   int saveCount = 0;
   bool usernameTaken = false;
+  int reserveCount = 0;
+  String? lastReservePrevious;
 
   FakeChallengeRepository([ChallengeData? initial])
       : stored = initial ?? ChallengeData();
@@ -33,6 +37,13 @@ class FakeChallengeRepository implements ChallengeRepository {
   @override
   Future<bool> usernameExists(String username, String currentUserName) async =>
       usernameTaken;
+
+  @override
+  Future<bool> reserveUsername(String desired, String previous) async {
+    reserveCount++;
+    lastReservePrevious = previous;
+    return !usernameTaken;
+  }
 }
 
 void main() {
@@ -77,6 +88,36 @@ void main() {
       );
     });
 
+    test('rejects an invalid username before reserving (D5)', () async {
+      final repo = FakeChallengeRepository();
+      final controller = ChallengeProvider(repo);
+
+      await expectLater(
+        controller.updateUserSettings(
+          name: 'a/b', // disallowed char
+          location: 'Dhaka',
+          latitude: 23.8,
+          longitude: 90.4,
+        ),
+        throwsA(isA<Exception>()),
+      );
+      expect(repo.reserveCount, 0); // never hit the network
+    });
+
+    test('reserves the name atomically on change (D4/A6)', () async {
+      final repo = FakeChallengeRepository();
+      final controller = ChallengeProvider(repo);
+
+      await controller.updateUserSettings(
+        name: 'warrior',
+        location: 'Dhaka',
+        latitude: 23.8,
+        longitude: 90.4,
+      );
+      expect(repo.reserveCount, 1);
+      expect(repo.lastReservePrevious, ''); // previous name released on rename
+    });
+
     test('sets hasLocation true only for a non-empty location', () async {
       final repo = FakeChallengeRepository();
       final controller = ChallengeProvider(repo);
@@ -96,6 +137,23 @@ void main() {
         longitude: 0,
       );
       expect(controller.hasLocation, isFalse);
+    });
+  });
+
+  group('logDay input validation (D5)', () {
+    test('returns invalidInput for an over-long work description', () async {
+      final repo = FakeChallengeRepository();
+      final controller = ChallengeProvider(repo);
+
+      final result = await controller.logDay(
+        prayedFajrOnTime: true,
+        prayedAtMasjid: true,
+        minutesWorked: 60,
+        workDescription: 'x' * 1000,
+        workType: WorkType.deepWork,
+      );
+      expect(result, LogResult.invalidInput);
+      expect(controller.dayLogs, isEmpty); // nothing persisted
     });
   });
 

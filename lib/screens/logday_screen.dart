@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/challenge/domain/log_result.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
-import 'package:intl/intl.dart';
 
 class LogDayScreen extends StatefulWidget {
   const LogDayScreen({super.key});
@@ -146,8 +146,9 @@ class _LogDayScreenState extends State<LogDayScreen> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Daily logs must be submitted before 8:00 AM.',
+            Text(
+              'Daily logs must be submitted before '
+              '${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)}.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -223,23 +224,21 @@ class _LogDayScreenState extends State<LogDayScreen> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 if (isWithinWindow)
-                  const Chip(
-                    label: Text('Prayer Time Now'),
-                    backgroundColor: Colors.green,
+                  Chip(
+                    label: const Text('Prayer Time Now'),
+                    backgroundColor: context.appColors.success,
                   ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              fajrTime != null
-                  ? DateFormat('hh:mm a').format(fajrTime)
-                  : 'Loading...',
+              fajrTime != null ? provider.formatTime(fajrTime) : 'Loading...',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             if (provider.todayPrayerTimes != null) ...[
               const SizedBox(height: 4),
               Text(
-                'Sunrise: ${provider.todayPrayerTimes!.sunrise}',
+                'Sunrise: ${provider.formatTimeString(provider.todayPrayerTimes!.sunrise)}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -321,7 +320,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
                     _prayedAtMasjid = value;
                   });
                 },
-                activeColor: Colors.green,
+                activeColor: context.appColors.success,
               ),
             ],
           ],
@@ -356,8 +355,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 fillColor: isQualifyingWork
-                    ? Colors.green.withValues(alpha: 0.1)
-                    : Colors.red.withValues(alpha: 0.1),
+                    ? context.appColors.success.withValues(alpha: 0.1)
+                    : Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
                 filled: true,
               ),
               items: const [
@@ -406,12 +405,13 @@ class _LogDayScreenState extends State<LogDayScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.warning, color: Colors.red, size: 16),
+                    Icon(Icons.warning,
+                        color: Theme.of(context).colorScheme.error, size: 16),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -512,12 +512,13 @@ class _LogDayScreenState extends State<LogDayScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isQualifying
-            ? Colors.green.withValues(alpha: 0.1)
+            ? context.appColors.success.withValues(alpha: 0.1)
             : Theme.of(context).colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color:
-              isQualifying ? Colors.green : Theme.of(context).colorScheme.error,
+          color: isQualifying
+              ? context.appColors.success
+              : Theme.of(context).colorScheme.error,
           width: 2,
         ),
       ),
@@ -529,7 +530,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
               Icon(
                 isQualifying ? Icons.check_circle : Icons.warning,
                 color: isQualifying
-                    ? Colors.green
+                    ? context.appColors.success
                     : Theme.of(context).colorScheme.error,
                 size: 32,
               ),
@@ -545,20 +546,21 @@ class _LogDayScreenState extends State<LogDayScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          _buildRequirement('Awake at/before Fajr', _wokeUpForFajr),
-          _buildRequirement('Stayed awake and alert', _stayedAwakeAfter),
-          _buildRequirement('Prayed Fajr on time', _prayedFajrOnTime),
+          _buildRequirement(context, 'Awake at/before Fajr', _wokeUpForFajr),
+          _buildRequirement(context, 'Stayed awake and alert', _stayedAwakeAfter),
+          _buildRequirement(context, 'Prayed Fajr on time', _prayedFajrOnTime),
           _buildRequirement(
+              context,
               '${AppConstants.minDeepWorkMinutes}+ minutes of work',
               _minutesWorked >= AppConstants.minDeepWorkMinutes),
-          _buildRequirement('Qualifying work type', isQualifyingWork),
+          _buildRequirement(context, 'Qualifying work type', isQualifyingWork),
           if (_prayedAtMasjid) ...[
             const SizedBox(height: 8),
             Row(
-              children: const [
-                Icon(Icons.star, color: Colors.amber, size: 16),
-                SizedBox(width: 8),
-                Text('Bonus: Prayed at Masjid! 🌟'),
+              children: [
+                Icon(Icons.star, color: context.appColors.gold, size: 16),
+                const SizedBox(width: 8),
+                const Text('Bonus: Prayed at Masjid! 🌟'),
               ],
             ),
           ],
@@ -567,14 +569,16 @@ class _LogDayScreenState extends State<LogDayScreen> {
     );
   }
 
-  Widget _buildRequirement(String label, bool met) {
+  Widget _buildRequirement(BuildContext context, String label, bool met) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
           Icon(
             met ? Icons.check : Icons.close,
-            color: met ? Colors.green : Colors.red,
+            color: met
+                ? context.appColors.success
+                : Theme.of(context).colorScheme.error,
             size: 16,
           ),
           const SizedBox(width: 8),
@@ -582,7 +586,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
             label,
             style: TextStyle(
               decoration: met ? null : TextDecoration.lineThrough,
-              color: met ? null : Colors.grey,
+              color: met ? null : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -599,7 +603,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
           padding: const EdgeInsets.symmetric(vertical: 16),
         ),
         child: _isSubmitting
-            ? const CircularProgressIndicator(color: Colors.white)
+            ? CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.onPrimary)
             : const Text('Submit Log'),
       ),
     );
@@ -611,9 +616,9 @@ class _LogDayScreenState extends State<LogDayScreen> {
     // Additional validation
     if (!_wokeUpForFajr || !_stayedAwakeAfter) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('You must be awake and alert for Fajr'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: const Text('You must be awake and alert for Fajr'),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -647,8 +652,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_logFailureMessage(result)),
-          backgroundColor: Colors.red,
+          content: Text(_logFailureMessage(result, context)),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
@@ -667,7 +672,9 @@ class _LogDayScreenState extends State<LogDayScreen> {
               ? (_prayedAtMasjid ? Icons.stars : Icons.celebration)
               : Icons.check_circle,
           size: 48,
-          color: isQualifying ? Colors.green : Colors.orange,
+          color: isQualifying
+              ? context.appColors.success
+              : context.appColors.warning,
         ),
         title: Text(
           isQualifying
@@ -694,14 +701,17 @@ class _LogDayScreenState extends State<LogDayScreen> {
     );
   }
 
-  String _logFailureMessage(LogResult result) {
+  String _logFailureMessage(LogResult result, BuildContext context) {
     switch (result) {
       case LogResult.afterCutoff:
-        return 'Logging window closed — log before 8 AM.';
+        return 'Logging window closed — log before '
+            '${context.read<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)}.';
       case LogResult.weekend:
         return 'Weekends don\'t count toward the challenge.';
       case LogResult.alreadyLogged:
         return 'You\'ve already logged today.';
+      case LogResult.invalidInput:
+        return 'Your notes are too long — please shorten them.';
       case LogResult.success:
         return '';
     }

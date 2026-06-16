@@ -4,7 +4,6 @@ import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_con
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/shared/widgets/error_view.dart';
 import 'package:subh_warrior/shared/widgets/loading_view.dart';
-import 'package:intl/intl.dart';
 
 class PrayerTimeCard extends StatelessWidget {
   const PrayerTimeCard({super.key});
@@ -66,9 +65,9 @@ class PrayerTimeCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.mosque,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             size: 28,
                           ),
                           const SizedBox(width: 12),
@@ -78,7 +77,7 @@ class PrayerTimeCard extends StatelessWidget {
                                 .textTheme
                                 .titleLarge
                                 ?.copyWith(
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),
@@ -91,21 +90,21 @@ class PrayerTimeCard extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.3),
+                            color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
                               Icon(
                                 Icons.circle,
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.onPrimary,
                                 size: 8,
                               ),
-                              SizedBox(width: 6),
+                              const SizedBox(width: 6),
                               Text(
                                 'NOW',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -122,27 +121,23 @@ class PrayerTimeCard extends StatelessWidget {
                       _buildTimeColumn(
                         context,
                         'Today',
-                        fajrTime != null
-                            ? DateFormat('hh:mm a').format(fajrTime)
-                            : '--:--',
+                        prayerProvider.formatTime(fajrTime),
                         isHighlighted: isWithinWindow,
                       ),
                       Container(
                         height: 40,
                         width: 1,
-                        color: Colors.white.withValues(alpha: 0.3),
+                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
                       ),
                       _buildTimeColumn(
                         context,
                         'Tomorrow',
-                        tomorrowFajr != null
-                            ? DateFormat('hh:mm a').format(tomorrowFajr)
-                            : '--:--',
+                        prayerProvider.formatTime(tomorrowFajr),
                       ),
                       Container(
                         height: 40,
                         width: 1,
-                        color: Colors.white.withValues(alpha: 0.3),
+                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
                       ),
                       _buildTimeColumn(
                         context,
@@ -157,31 +152,41 @@ class PrayerTimeCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           _buildSmallTimeInfo(
+                            context,
                             'Sunrise',
-                            prayerProvider.todayPrayerTimes!.sunrise,
+                            prayerProvider.formatTimeString(
+                                prayerProvider.todayPrayerTimes!.sunrise),
                           ),
                           _buildSmallTimeInfo(
+                            context,
                             'Dhuhr',
-                            prayerProvider.todayPrayerTimes!.dhuhr,
+                            prayerProvider.formatTimeString(
+                                prayerProvider.todayPrayerTimes!.dhuhr),
                           ),
                           _buildSmallTimeInfo(
+                            context,
                             'Asr',
-                            prayerProvider.todayPrayerTimes!.asr,
+                            prayerProvider.formatTimeString(
+                                prayerProvider.todayPrayerTimes!.asr),
                           ),
                           _buildSmallTimeInfo(
+                            context,
                             'Maghrib',
-                            prayerProvider.todayPrayerTimes!.maghrib,
+                            prayerProvider.formatTimeString(
+                                prayerProvider.todayPrayerTimes!.maghrib),
                           ),
                           _buildSmallTimeInfo(
+                            context,
                             'Isha',
-                            prayerProvider.todayPrayerTimes!.isha,
+                            prayerProvider.formatTimeString(
+                                prayerProvider.todayPrayerTimes!.isha),
                           ),
                         ],
                       ),
@@ -208,7 +213,7 @@ class PrayerTimeCard extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.8),
+            color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
@@ -217,7 +222,7 @@ class PrayerTimeCard extends StatelessWidget {
         Text(
           time,
           style: TextStyle(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
             fontSize: isCountdown ? 18 : 20,
             fontWeight: FontWeight.bold,
           ),
@@ -226,21 +231,21 @@ class PrayerTimeCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSmallTimeInfo(String label, String time) {
+  Widget _buildSmallTimeInfo(BuildContext context, String label, String time) {
     return Column(
       children: [
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.7),
+            color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
             fontSize: 10,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           time,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),

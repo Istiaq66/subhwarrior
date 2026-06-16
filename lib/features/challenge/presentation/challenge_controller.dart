@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/date_time_utils.dart';
+import '../../../core/utils/input_validators.dart';
 import '../data/challenge_data.dart';
 import '../data/challenge_repository.dart';
 import '../domain/day_log.dart';
@@ -29,9 +30,14 @@ class ChallengeProvider extends ChangeNotifier {
   }
 
   /// Convenience constructor used by app wiring — builds the default
-  /// repository from [prefs]. Keeps `ChangeNotifierProvider` call sites simple.
-  factory ChallengeProvider.fromPrefs(SharedPreferences prefs) =>
-      ChallengeProvider(ChallengeRepositoryImpl.fromPrefs(prefs));
+  /// repository from [prefs]. [uid] is the signed-in user's Firebase Auth id,
+  /// used as the Firestore document key. Keeps `ChangeNotifierProvider` call
+  /// sites simple.
+  factory ChallengeProvider.fromPrefs(
+    SharedPreferences prefs, {
+    required String uid,
+  }) =>
+      ChallengeProvider(ChallengeRepositoryImpl.fromPrefs(prefs, uid: uid));
 
   // Getters
   DateTime? get challengeStartDate => _data.challengeStartDate;
@@ -105,6 +111,12 @@ class ChallengeProvider extends ChangeNotifier {
     String? reflection,
   }) async {
     final now = DateTime.now();
+
+    // Reject over-long free text before doing any work (IMPROVEMENT_PLAN D5).
+    if (InputValidators.workDescription(workDescription) != null ||
+        InputValidators.reflection(reflection) != null) {
+      return LogResult.invalidInput;
+    }
 
     // Logging window closes at 8 AM (08:00 is already closed).
     if (now.hour >= AppConstants.logCutoffHour) {
@@ -184,13 +196,25 @@ class ChallengeProvider extends ChangeNotifier {
     required double latitude,
     required double longitude,
   }) async {
-    if (name != _data.userName) {
-      final exists = await checkUsernameExists(name);
-      if (exists) {
+    final trimmedName = name.trim();
+
+    // Validate format before any network call (IMPROVEMENT_PLAN D5).
+    final nameError = InputValidators.username(trimmedName);
+    if (nameError != null) {
+      throw Exception(nameError);
+    }
+
+    // Atomically reserve the name if it changed; closes the claim race and
+    // username-keyed overwrite (IMPROVEMENT_PLAN A6/D4).
+    if (trimmedName.toLowerCase() != _data.userName.trim().toLowerCase()) {
+      final reserved =
+          await _repository.reserveUsername(trimmedName, _data.userName);
+      if (!reserved) {
         throw Exception('Username already taken. Please choose another name.');
       }
     }
-    _data.userName = name;
+
+    _data.userName = trimmedName;
     _data.userLocation = location;
     _data.userLatitude = latitude;
     _data.userLongitude = longitude;

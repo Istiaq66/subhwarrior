@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -163,7 +164,8 @@ class NotificationService {
       debugPrint('📅 Current time: $now');
 
       // Create reminder time at 7:30 AM
-      var reminderTime = DateTime(now.year, now.month, now.day, 7, 30);
+      var reminderTime = DateTime(now.year, now.month, now.day,
+          AppConstants.logReminderHour, AppConstants.logReminderMinute);
       debugPrint('⏰ Initial reminder time (7:30 AM): $reminderTime');
 
       // If 7:30 AM has passed today, schedule for tomorrow

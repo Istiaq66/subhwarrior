@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
+import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
@@ -21,29 +22,42 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Ensure a signed-in user (anonymous at minimum) before any Firestore I/O.
+  // The uid is the stable Firestore document key (IMPROVEMENT_PLAN D1/A6).
+  final authService = AuthService();
+  final uid = await authService.ensureSignedIn();
+
   // Initialize notifications
   NotificationService().initBackground();
 
   // Load preferences
   final prefs = await SharedPreferences.getInstance();
 
-  runApp(SubhWarriorApp(prefs: prefs));
+  runApp(SubhWarriorApp(prefs: prefs, authService: authService, uid: uid));
 }
 
 class SubhWarriorApp extends StatelessWidget {
   final SharedPreferences prefs;
+  final AuthService authService;
+  final String uid;
 
-  const SubhWarriorApp({super.key, required this.prefs});
+  const SubhWarriorApp({
+    super.key,
+    required this.prefs,
+    required this.authService,
+    required this.uid,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<AuthService>.value(value: authService),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(
             create: (_) => PrayerTimeProvider.fromPrefs(prefs)),
         ChangeNotifierProvider(
-            create: (_) => ChallengeProvider.fromPrefs(prefs)),
+            create: (_) => ChallengeProvider.fromPrefs(prefs, uid: uid)),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
