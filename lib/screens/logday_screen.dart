@@ -702,6 +702,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
         return 'Weekends don\'t count toward the challenge.';
       case LogResult.alreadyLogged:
         return 'You\'ve already logged today.';
+      case LogResult.invalidInput:
+        return 'Your notes are too long — please shorten them.';
       case LogResult.success:
         return '';
     }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:geolocator/geolocator.dart';
@@ -20,6 +22,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   int _currentPage = 0;
   bool _isLoadingLocation = false;
+  bool _isSigningInWithGoogle = false;
   double _latitude = 0.0;
   double _longitude = 0.0;
   // Explicit flag — (0, 0) is a valid coordinate, so never use it as "unset".
@@ -262,6 +265,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const SizedBox(height: 32),
           TextField(
             controller: _nameController,
+            maxLength: AppConstants.usernameMaxLength,
             decoration: InputDecoration(
               labelText: 'Your Name',
               hintText: 'Enter your name',
@@ -274,9 +278,60 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 18),
           ),
+          if (AuthService.googleServerClientId.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            const Text('OR'),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: _isSigningInWithGoogle ? null : _signInWithGoogle,
+              icon: _isSigningInWithGoogle
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.login),
+              label: Text(_isSigningInWithGoogle
+                  ? 'Signing in...'
+                  : 'Continue with Google'),
+              style: OutlinedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() => _isSigningInWithGoogle = true);
+    try {
+      final cred = await context.read<AuthService>().signInWithGoogle();
+      // Prefill the name with the Google display name if the field is empty.
+      final displayName = cred.user?.displayName?.trim();
+      if (mounted && displayName != null && displayName.isNotEmpty) {
+        if (_nameController.text.trim().isEmpty) {
+          _nameController.text =
+              displayName.length > AppConstants.usernameMaxLength
+                  ? displayName.substring(0, AppConstants.usernameMaxLength)
+                  : displayName;
+        }
+        setState(() {});
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSigningInWithGoogle = false);
+    }
   }
 
   Widget _buildLocationPage() {

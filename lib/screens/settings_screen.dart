@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
+import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
@@ -25,6 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _loggingReminder = true;
   int _fajrReminderMinutes = 15;
   String _appVersion = '';
+  bool _isAccountBusy = false;
 
   // Prayer calculation methods
   final Map<int, String> _calculationMethods = {
@@ -592,6 +594,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: const Text('App Version'),
               subtitle: Text(_appVersion.isEmpty ? '…' : _appVersion),
             ),
+            _buildAccountTile(),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.book),
@@ -618,6 +621,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  /// Account status + Google upgrade. Anonymous users (the default) can link a
+  /// Google account; signed-in users can sign out (IMPROVEMENT_PLAN D1).
+  Widget _buildAccountTile() {
+    final auth = context.read<AuthService>();
+    return StreamBuilder(
+      stream: auth.authStateChanges(),
+      builder: (context, _) {
+        final isAnon = auth.isAnonymous;
+        final configured = AuthService.googleServerClientId.isNotEmpty;
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: Icon(isAnon ? Icons.person_outline : Icons.verified_user),
+          title: Text(isAnon ? 'Guest account' : 'Signed in with Google'),
+          subtitle: Text(isAnon
+              ? (configured
+                  ? 'Tap to back up your progress with Google'
+                  : 'Progress is saved on this device')
+              : (auth.currentUser?.email ?? 'Synced')),
+          trailing: _isAccountBusy
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : null,
+          onTap: _isAccountBusy
+              ? null
+              : (isAnon
+                  ? (configured ? _linkGoogle : null)
+                  : _signOutAccount),
+        );
+      },
+    );
+  }
+
+  Future<void> _linkGoogle() async {
+    setState(() => _isAccountBusy = true);
+    try {
+      await context.read<AuthService>().signInWithGoogle();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Signed in with Google.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isAccountBusy = false);
+    }
+  }
+
+  Future<void> _signOutAccount() async {
+    setState(() => _isAccountBusy = true);
+    try {
+      await context.read<AuthService>().signOut();
+    } finally {
+      if (mounted) setState(() => _isAccountBusy = false);
+    }
   }
 
   Widget _buildStatRow(String label, String value) {

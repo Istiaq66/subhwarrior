@@ -12,7 +12,20 @@
           "package_name": "com.subhwarrior.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "798483347271-67f7bheilskhrrtjvafddu93ogocodn0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.subhwarrior.app",
+            "certificate_hash": "e3a58d668b4db7d8aa8156986aa33e4afca9e9e2"
+          }
+        },
+        {
+          "client_id": "798483347271-55srhmpqcn2vc0n366b2oh42bko433fu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB68s1VhzCPi-2yw_bnTvx0L3SXP0Onokg"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "798483347271-55srhmpqcn2vc0n366b2oh42bko433fu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "798483347271-879ufmets7dhidi6r584ccsjuvdfrpe1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.subhwarrior.app"
+              }
+            }
+          ]
         }
       }
     }

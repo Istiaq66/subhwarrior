@@ -1,0 +1,53 @@
+rules_version = '2';
+
+// Subh Warrior Firestore security rules (IMPROVEMENT_PLAN D2).
+// Model: docs are keyed by the Firebase Auth uid. Leaderboard reads are public;
+// every write must be authenticated and may only touch the caller's own data.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Challenge / leaderboard documents, keyed by uid.
+    match /challenges/{uid} {
+      // Public read so the leaderboard can rank everyone.
+      allow read: if true;
+
+      // Only the owner may create/update their own document, and the stored
+      // uid must match the doc id and the caller (no spoofing another user).
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.userName is string
+        && request.resource.data.userName.size() >= 3
+        && request.resource.data.userName.size() <= 20
+        && request.resource.data.totalQualifyingDays is int
+        && request.resource.data.totalQualifyingDays >= 0
+        && request.resource.data.currentStreak is int
+        && request.resource.data.currentStreak >= 0;
+
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Username reservations, keyed by the lowercased name.
+    // Public read (cheap existence check); a name can only be claimed by, or
+    // released by, the uid that owns it.
+    match /usernames/{name} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+
+      // Reclaiming/overwriting only if you already own the reservation.
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid;
+
+      allow delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+    }
+
+    // Everything else is denied by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
