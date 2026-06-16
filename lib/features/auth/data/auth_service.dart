@@ -21,13 +21,15 @@ class AuthService {
 
   AuthService({FirebaseAuth? auth}) : _auth = auth ?? FirebaseAuth.instance;
 
-  /// OAuth 2.0 **Web** client ID from the Firebase console (Authentication →
-  /// Sign-in method → Google → Web SDK configuration). Required by
-  /// google_sign_in 7.x on Android to obtain a Firebase-usable `idToken`.
-  /// Empty until the console step is done — Google sign-in is disabled until then.
+  /// OAuth 2.0 **Web** client ID (google_sign_in 7.x needs it on Android to
+  /// obtain a Firebase-usable `idToken`). This is the `client_type: 3` entry in
+  /// the committed `android/app/google-services.json` — it is public config,
+  /// not a secret, so it is safe to hardcode as the default. Overridable per
+  /// build via `--dart-define=GOOGLE_SERVER_CLIENT_ID=...`.
   static const String googleServerClientId = String.fromEnvironment(
     'GOOGLE_SERVER_CLIENT_ID',
-    defaultValue: '',
+    defaultValue:
+        '798483347271-55srhmpqcn2vc0n366b2oh42bko433fu.apps.googleusercontent.com',
   );
 
   bool _googleInitialized = false;
