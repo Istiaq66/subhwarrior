@@ -745,7 +745,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!launched && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('No email app found. Reach us at $_feedbackEmail'),
+          content: const Text('No email app found. Reach us at $_feedbackEmail'),
           backgroundColor: context.appColors.warning,
         ),
       );
