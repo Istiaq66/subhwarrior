@@ -10,6 +10,8 @@ import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -641,17 +643,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.feedback),
               title: const Text('Send Feedback'),
-              onTap: () {
-                // Open feedback form or email
-              },
+              onTap: _sendFeedback,
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.share),
               title: const Text('Share App'),
-              onTap: () {
-                // Share app link
-              },
+              onTap: _shareApp,
             ),
           ],
         ),
@@ -724,6 +722,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } finally {
       if (mounted) setState(() => _isAccountBusy = false);
     }
+  }
+
+  /// Where "Send Feedback" mails are delivered.
+  static const String _feedbackEmail = 'ahmedboby66@gmail.com';
+
+  /// Opens the device email composer pre-filled to the support address, with the
+  /// app version in the body so reports carry useful context.
+  Future<void> _sendFeedback() async {
+    final info = await PackageInfo.fromPlatform();
+    final uri = Uri(
+      scheme: 'mailto',
+      path: _feedbackEmail,
+      query: _encodeQuery({
+        'subject': 'Subh Warrior Feedback',
+        'body': '\n\n\n---\nApp version: ${info.version} (${info.buildNumber})',
+      }),
+    );
+    if (!mounted) return;
+    final launched =
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No email app found. Reach us at $_feedbackEmail'),
+          backgroundColor: context.appColors.warning,
+        ),
+      );
+    }
+  }
+
+  String _encodeQuery(Map<String, String> params) => params.entries
+      .map((e) =>
+          '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      .join('&');
+
+  /// Opens the system share sheet with an invite message. No store link yet
+  /// (unpublished) — add the Play/App Store URL here once live.
+  Future<void> _shareApp() async {
+    const message =
+        'Build powerful mornings with Subh Warrior — wake for Fajr, stay '
+        'productive, and finish the 28-day challenge. 🌅';
+    await Share.share(message, subject: 'Subh Warrior');
   }
 
   Widget _buildStatRow(String label, String value) {
