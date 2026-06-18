@@ -19,8 +19,13 @@ class FakeChallengeRepository implements ChallengeRepository {
   FakeChallengeRepository([ChallengeData? initial])
       : stored = initial ?? ChallengeData();
 
+  ChallengeData? remote;
+
   @override
   ChallengeData load() => stored;
+
+  @override
+  Future<ChallengeData?> fetchRemote() async => remote;
 
   @override
   Future<void> save(ChallengeData data) async {
@@ -168,6 +173,37 @@ void main() {
       expect(controller.totalQualifyingDays, 12);
       // 12 / 16 qualifying-days goal.
       expect(controller.overallProgress, closeTo(0.75, 1e-9));
+    });
+  });
+
+  group('remote restore on construction', () {
+    test('pulls remote into local when local profile is empty', () async {
+      final repo = FakeChallengeRepository(ChallengeData()) // empty local
+        ..remote = ChallengeData(
+          userName: 'Restored',
+          userLocation: 'Mecca',
+          hasLocation: true,
+          currentStreak: 7,
+        );
+      final controller = ChallengeProvider(repo);
+
+      // _syncFromRemote is fire-and-forget; let microtasks drain.
+      await Future<void>.delayed(Duration.zero);
+
+      expect(controller.userName, 'Restored');
+      expect(controller.hasLocation, isTrue);
+      expect(controller.currentStreak, 7);
+    });
+
+    test('does not overwrite a populated local profile from remote', () async {
+      final repo = FakeChallengeRepository(ChallengeData(userName: 'Local'))
+        ..remote = ChallengeData(userName: 'Remote', currentStreak: 99);
+      final controller = ChallengeProvider(repo);
+
+      await Future<void>.delayed(Duration.zero);
+
+      expect(controller.userName, 'Local');
+      expect(controller.currentStreak, 0);
     });
   });
 }

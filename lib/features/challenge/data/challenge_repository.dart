@@ -10,6 +10,8 @@ abstract class ChallengeRepository {
   /// Loads the persisted challenge state from local storage.
   ChallengeData load();
 
+  Future<ChallengeData?> fetchRemote();
+
   /// Persists state locally and (best-effort) syncs to the remote.
   Future<void> save(ChallengeData data);
 
@@ -44,6 +46,9 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
 
   @override
   ChallengeData load() => _local.load();
+
+  @override
+  Future<ChallengeData?> fetchRemote() => _remote.fetchChallenge();
 
   @override
   Future<void> save(ChallengeData data) async {

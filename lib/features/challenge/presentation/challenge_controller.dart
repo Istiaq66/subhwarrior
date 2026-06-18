@@ -27,6 +27,27 @@ class ChallengeProvider extends ChangeNotifier {
 
   ChallengeProvider(this._repository) {
     _data = _repository.load();
+    _syncFromRemote();
+  }
+
+
+  Future<void> _syncFromRemote() async {
+    if (_data.userName.trim().isNotEmpty) return;
+    try {
+      final remote = await _repository.fetchRemote();
+      if (remote == null || remote.userName.trim().isEmpty) return;
+
+      remote.notificationsEnabled = _data.notificationsEnabled;
+      remote.fajrReminder = _data.fajrReminder;
+      remote.loggingReminder = _data.loggingReminder;
+      remote.fajrReminderMinutes = _data.fajrReminderMinutes;
+
+      _data = remote;
+      await _repository.saveLocal(_data);
+      notifyListeners();
+    } catch (_) {
+      // Offline or no remote doc → keep the local cache.
+    }
   }
 
   /// Convenience constructor used by app wiring — builds the default

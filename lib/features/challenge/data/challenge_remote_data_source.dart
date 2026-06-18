@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
+import '../domain/day_log.dart';
 import 'challenge_data.dart';
 
 class _UsernameTakenException implements Exception {}
@@ -83,14 +84,55 @@ class ChallengeRemoteDataSource {
         'userName': data.userName,
         'userNameLower': data.userName.trim().toLowerCase(),
         'location': data.userLocation,
+        'latitude': data.userLatitude,
+        'longitude': data.userLongitude,
         'startDate': data.challengeStartDate?.toIso8601String(),
+        'isChallengeActive': data.isChallengeActive,
         'currentStreak': data.currentStreak,
+        'currentWeek': data.currentWeek,
         'totalQualifyingDays': data.totalQualifyingDays,
         'lastUpdated': FieldValue.serverTimestamp(),
         'logs': data.dayLogs.map((e) => e.toJson()).toList(),
       });
     } catch (e) {
       debugPrint('Error saving to Firestore: $e');
+    }
+  }
+  
+  Future<ChallengeData?> fetchChallenge() async {
+    try {
+      final snap = await _firestore.collection(_collection).doc(uid).get();
+      if (!snap.exists) return null;
+      final map = snap.data();
+      if (map == null) return null;
+
+      final userName = (map['userName'] as String?)?.trim() ?? '';
+      if (userName.isEmpty) return null;
+
+      final location = (map['location'] as String?) ?? '';
+      final startDateStr = map['startDate'] as String?;
+      final logsRaw = (map['logs'] as List?) ?? const [];
+
+      return ChallengeData(
+        userName: userName,
+        userLocation: location,
+        userLatitude: (map['latitude'] as num?)?.toDouble() ?? 0.0,
+        userLongitude: (map['longitude'] as num?)?.toDouble() ?? 0.0,
+        hasLocation: location.trim().isNotEmpty,
+        challengeStartDate:
+            startDateStr != null ? DateTime.tryParse(startDateStr) : null,
+        isChallengeActive:
+            (map['isChallengeActive'] as bool?) ?? (startDateStr != null),
+        currentStreak: (map['currentStreak'] as num?)?.toInt() ?? 0,
+        currentWeek: (map['currentWeek'] as num?)?.toInt() ?? 1,
+        totalQualifyingDays: (map['totalQualifyingDays'] as num?)?.toInt() ?? 0,
+        dayLogs: logsRaw
+            .map((e) => DayLog.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
+    } catch (e) {
+      debugPrint('Error fetching from Firestore: $e');
+      return null;
     }
   }
 }

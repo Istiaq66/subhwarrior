@@ -156,37 +156,46 @@ class PrayerTimeCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildSmallTimeInfo(
-                            context,
-                            'Sunrise',
-                            prayerProvider.formatTimeString(
-                                prayerProvider.todayPrayerTimes!.sunrise),
+                          Expanded(
+                            child: _buildSmallTimeInfo(
+                              context,
+                              'Sunrise',
+                              prayerProvider.formatTimeString(
+                                  prayerProvider.todayPrayerTimes!.sunrise),
+                            ),
                           ),
-                          _buildSmallTimeInfo(
-                            context,
-                            'Dhuhr',
-                            prayerProvider.formatTimeString(
-                                prayerProvider.todayPrayerTimes!.dhuhr),
+                          Expanded(
+                            child: _buildSmallTimeInfo(
+                              context,
+                              'Dhuhr',
+                              prayerProvider.formatTimeString(
+                                  prayerProvider.todayPrayerTimes!.dhuhr),
+                            ),
                           ),
-                          _buildSmallTimeInfo(
-                            context,
-                            'Asr',
-                            prayerProvider.formatTimeString(
-                                prayerProvider.todayPrayerTimes!.asr),
+                          Expanded(
+                            child: _buildSmallTimeInfo(
+                              context,
+                              'Asr',
+                              prayerProvider.formatTimeString(
+                                  prayerProvider.todayPrayerTimes!.asr),
+                            ),
                           ),
-                          _buildSmallTimeInfo(
-                            context,
-                            'Maghrib',
-                            prayerProvider.formatTimeString(
-                                prayerProvider.todayPrayerTimes!.maghrib),
+                          Expanded(
+                            child: _buildSmallTimeInfo(
+                              context,
+                              'Maghrib',
+                              prayerProvider.formatTimeString(
+                                  prayerProvider.todayPrayerTimes!.maghrib),
+                            ),
                           ),
-                          _buildSmallTimeInfo(
-                            context,
-                            'Isha',
-                            prayerProvider.formatTimeString(
-                                prayerProvider.todayPrayerTimes!.isha),
+                          Expanded(
+                            child: _buildSmallTimeInfo(
+                              context,
+                              'Isha',
+                              prayerProvider.formatTimeString(
+                                  prayerProvider.todayPrayerTimes!.isha),
+                            ),
                           ),
                         ],
                       ),
@@ -236,18 +245,25 @@ class PrayerTimeCard extends StatelessWidget {
       children: [
         Text(
           label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
-            fontSize: 10,
+            fontSize: 11,
           ),
         ),
-        const SizedBox(height: 2),
-        Text(
-          time,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
+        const SizedBox(height: 4),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            time,
+            maxLines: 1,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
