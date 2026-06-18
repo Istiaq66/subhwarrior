@@ -38,7 +38,7 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
     required String uid,
   }) =>
       ChallengeRepositoryImpl(
-        ChallengeLocalDataSource(prefs),
+        ChallengeLocalDataSource(prefs, uid: uid),
         ChallengeRemoteDataSource(uid: uid),
       );
 

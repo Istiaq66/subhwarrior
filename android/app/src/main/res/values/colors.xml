@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window background shown behind the Flutter UI (e.g. while the system
+         Credential Manager / Google sign-in sheet is up). Matches the app's
+         light surface so it doesn't flash black. -->
+    <color name="window_background">#FAFBFC</color>
+</resources>
