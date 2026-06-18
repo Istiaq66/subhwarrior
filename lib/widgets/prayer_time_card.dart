@@ -241,32 +241,36 @@ class PrayerTimeCard extends StatelessWidget {
   }
 
   Widget _buildSmallTimeInfo(BuildContext context, String label, String time) {
-    return Column(
-      children: [
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
-            fontSize: 11,
-          ),
-        ),
-        const SizedBox(height: 4),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            time,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      child: Column(
+        children: [
+          Text(
+            label,
             maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimary,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+              color:
+                  Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
+              fontSize: 11,
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 6),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              time,
+              maxLines: 1,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
