@@ -103,12 +103,13 @@ class AuthService {
     }
   }
   
-  Future<UserCredential> registerWithEmail({
+  Future<UserCredential?> registerWithEmail({
     required String email,
     required String password,
   }) async {
+    final normalizedEmail = email.trim();
     final credential = EmailAuthProvider.credential(
-      email: email.trim(),
+      email: normalizedEmail,
       password: password,
     );
     final user = _auth.currentUser;
@@ -117,11 +118,20 @@ class AuthService {
         return await user.linkWithCredential(credential);
       }
       return await _auth.createUserWithEmailAndPassword(
-        email: email.trim(),
+        email: normalizedEmail,
         password: password,
       );
     } on FirebaseAuthException catch (e) {
       debugPrint('Email register FirebaseAuthException: ${e.code} — ${e.message}');
+      final current = _auth.currentUser;
+      final isOwnEmail =
+          current?.email?.toLowerCase() == normalizedEmail.toLowerCase();
+      if (isOwnEmail &&
+          (e.code == 'email-already-in-use' ||
+              e.code == 'credential-already-in-use' ||
+              e.code == 'provider-already-linked')) {
+        return null;
+      }
       rethrow;
     }
   }
@@ -146,6 +156,10 @@ class AuthService {
     await _auth.sendPasswordResetEmail(email: email.trim());
   }
 
+  /// Signs out, then immediately re-establishes a fresh anonymous session so the
+  /// app always has a stable uid. This keeps the unauthenticated UI working and,
+  /// crucially, lets a subsequent register *link* (uid stable) instead of
+  /// creating a new user mid-flow (which would switch uid and strand the write).
   Future<void> signOut() async {
     try {
       await GoogleSignIn.instance.signOut();
@@ -153,5 +167,6 @@ class AuthService {
       debugPrint('Google signOut: $e');
     }
     await _auth.signOut();
+    await _auth.signInAnonymously();
   }
 }

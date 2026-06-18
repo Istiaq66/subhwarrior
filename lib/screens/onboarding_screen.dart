@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
@@ -645,29 +644,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _completeOnboarding() async {
     try {
-      // Save user settings
       final challengeProvider = context.read<ChallengeProvider>();
+      final prayerProvider = context.read<PrayerTimeProvider>();
+
+
+      if (_hasCoordinates) {
+        try {
+          await prayerProvider.fetchPrayerTimes(_latitude, _longitude);
+        } catch (_) {}
+      }
+
+
       await challengeProvider.updateUserSettings(
         name: _nameController.text,
         location: _locationController.text,
         latitude: _latitude,
         longitude: _longitude,
       );
-
-      // Fetch prayer times
-      if (_hasCoordinates) {
-        final prayerProvider = context.read<PrayerTimeProvider>();
-        await prayerProvider.fetchPrayerTimes(_latitude, _longitude);
-      }
-
-      // Mark onboarding as complete
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isFirstTime', false);
-
-      // Navigate to home
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

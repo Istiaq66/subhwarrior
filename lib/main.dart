@@ -77,7 +77,7 @@ class SubhWarriorApp extends StatelessWidget {
                   theme: AppTheme.light(),
                   darkTheme: AppTheme.dark(),
                   themeMode: themeProvider.themeMode,
-                  home: _RootRouter(prefs: prefs, user: user),
+                  home: _RootRouter(user: user),
                   routes: {
                     '/auth': (context) => const AuthScreen(),
                     '/home': (context) => const HomeScreen(),
@@ -95,19 +95,25 @@ class SubhWarriorApp extends StatelessWidget {
 }
 
 
+
 class _RootRouter extends StatelessWidget {
-  final SharedPreferences prefs;
   final User? user;
 
-  const _RootRouter({required this.prefs, required this.user});
+  const _RootRouter({required this.user});
 
   @override
   Widget build(BuildContext context) {
+    // Signed out → entry screen.
     if (user == null) return const AuthScreen();
 
-    final isFirstTime = prefs.getBool('isFirstTime') ?? true;
-    if (isFirstTime) return const AuthScreen();
-    
+    final challenge = context.watch<ChallengeProvider>();
+
+    // No username yet (anonymous boot, or signed in without a profile) → auth.
+    if (challenge.userName.trim().isEmpty) return const AuthScreen();
+
+    // Registered but no location → finish onboarding.
+    if (!challenge.hasLocation) return const OnboardingScreen();
+
     return const HomeScreen();
   }
 }

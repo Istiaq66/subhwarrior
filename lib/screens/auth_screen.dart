@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/utils/input_validators.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
@@ -113,57 +112,30 @@ class _AuthScreenState extends State<AuthScreen> {
       return;
     }
 
-    // Links to the anonymous user → preserves uid and any progress.
     await _auth.registerWithEmail(email: email, password: password);
 
-    // Authoritative username reservation + profile write. Throws on a race.
     await challenge.updateUserSettings(
       name: username,
       location: '',
       latitude: 0,
       longitude: 0,
     );
-
-    if (!mounted) return;
-    // Collect location next. uid is unchanged (linked), so the route stack is
-    // intact and this navigation is safe.
-    Navigator.pushReplacementNamed(context, '/onboarding');
   }
 
   Future<void> _login() async {
-    final prefs = await SharedPreferences.getInstance();
-    // Mark onboarding done before the sign-in so the post-login rebuild routes
-    // straight to the app rather than back to this screen. Reverted on failure.
-    await prefs.setBool('isFirstTime', false);
-    try {
-      await _auth.signInWithEmail(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
-      // Success: the auth StreamBuilder in main.dart rekeys on the new uid and
-      // routes to the app. No manual navigation needed.
-    } catch (e) {
-      await prefs.setBool('isFirstTime', true);
-      rethrow;
-    }
+    await _auth.signInWithEmail(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
   }
 
   Future<void> _signInWithGoogle() async {
     setState(() => _busy = true);
-    final prefs = await SharedPreferences.getInstance();
-    // Set before sign-in: if Google switches to an EXISTING account the uid
-    // changes, the auth StreamBuilder rekeys and disposes this screen mid-await.
-    // The rebuilt router must then route into the app, not back to auth.
-    // Reverted on failure.
-    await prefs.setBool('isFirstTime', false);
     try {
       final cred = await _auth.signInWithGoogle();
-      // Disposed by the rekey → existing account. The rebuilt router handles
-      // navigation (isFirstTime is already false).
       if (!mounted) return;
 
-      // Same uid (linked to the anonymous user) → fresh account. Derive a
-      // username if none is set, then collect the location in onboarding.
+
       final challenge = context.read<ChallengeProvider>();
       if (challenge.userName.trim().isEmpty) {
         final unique =
@@ -175,10 +147,7 @@ class _AuthScreenState extends State<AuthScreen> {
           longitude: 0,
         );
       }
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/onboarding');
     } catch (e) {
-      await prefs.setBool('isFirstTime', true);
       _showError(_authErrorMessage(e));
     } finally {
       if (mounted) setState(() => _busy = false);
