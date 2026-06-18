@@ -671,7 +671,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return ListTile(
           contentPadding: EdgeInsets.zero,
           leading: Icon(isAnon ? Icons.person_outline : Icons.verified_user),
-          title: Text(isAnon ? 'Guest account' : 'Signed in with Google'),
+          title: Text(isAnon ? 'Guest account' : 'Signed in'),
           subtitle: Text(isAnon
               ? (configured
                   ? 'Tap to back up your progress with Google'

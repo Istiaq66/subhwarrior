@@ -102,6 +102,49 @@ class AuthService {
       rethrow;
     }
   }
+  
+  Future<UserCredential> registerWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    final credential = EmailAuthProvider.credential(
+      email: email.trim(),
+      password: password,
+    );
+    final user = _auth.currentUser;
+    try {
+      if (user != null && user.isAnonymous) {
+        return await user.linkWithCredential(credential);
+      }
+      return await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Email register FirebaseAuthException: ${e.code} — ${e.message}');
+      rethrow;
+    }
+  }
+
+  Future<UserCredential> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      return await _auth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Email sign-in FirebaseAuthException: ${e.code} — ${e.message}');
+      rethrow;
+    }
+  }
+
+  /// Sends a password-reset email. Throws [FirebaseAuthException] on bad input.
+  Future<void> sendPasswordReset(String email) async {
+    await _auth.sendPasswordResetEmail(email: email.trim());
+  }
 
   Future<void> signOut() async {
     try {

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,6 +10,7 @@ import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:subh_warrior/core/theme/app_theme.dart';
 import 'package:subh_warrior/features/home/presentation/home_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:subh_warrior/screens/auth_screen.dart';
 import 'package:subh_warrior/screens/onboarding_screen.dart';
 import 'package:subh_warrior/screens/settings_screen.dart';
 import 'package:subh_warrior/screens/splash_screen.dart';
@@ -23,9 +25,9 @@ void main() async {
   );
 
   // Ensure a signed-in user (anonymous at minimum) before any Firestore I/O.
-  // The uid is the stable Firestore document key (IMPROVEMENT_PLAN D1/A6).
+  // The auth StreamBuilder in the app derives the live uid from here on.
   final authService = AuthService();
-  final uid = await authService.ensureSignedIn();
+  await authService.ensureSignedIn();
 
   // Initialize notifications
   NotificationService().initBackground();
@@ -33,19 +35,17 @@ void main() async {
   // Load preferences
   final prefs = await SharedPreferences.getInstance();
 
-  runApp(SubhWarriorApp(prefs: prefs, authService: authService, uid: uid));
+  runApp(SubhWarriorApp(prefs: prefs, authService: authService));
 }
 
 class SubhWarriorApp extends StatelessWidget {
   final SharedPreferences prefs;
   final AuthService authService;
-  final String uid;
 
   const SubhWarriorApp({
     super.key,
     required this.prefs,
     required this.authService,
-    required this.uid,
   });
 
   @override
@@ -56,34 +56,55 @@ class SubhWarriorApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(
             create: (_) => PrayerTimeProvider.fromPrefs(prefs)),
-        ChangeNotifierProvider(
-            create: (_) => ChallengeProvider.fromPrefs(prefs, uid: uid)),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
-          return MaterialApp(
-            title: 'Subh Warrior Challenge',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light(),
-            darkTheme: AppTheme.dark(),
-            themeMode: themeProvider.themeMode,
-            home: _getInitialScreen(),
-            routes: {
-              '/home': (context) => const HomeScreen(),
-              '/onboarding': (context) => const OnboardingScreen(),
-              '/settings': (context) => const SettingsScreen(),
+          return StreamBuilder<User?>(
+            stream: authService.authStateChanges(),
+            initialData: authService.currentUser,
+            builder: (context, snapshot) {
+              final user = snapshot.data;
+              final uid = user?.uid ?? '';
+              return ChangeNotifierProvider<ChallengeProvider>(
+                key: ValueKey(uid),
+                create: (_) => ChallengeProvider.fromPrefs(prefs, uid: uid),
+                child: MaterialApp(
+                  title: 'Subh Warrior Challenge',
+                  debugShowCheckedModeBanner: false,
+                  theme: AppTheme.light(),
+                  darkTheme: AppTheme.dark(),
+                  themeMode: themeProvider.themeMode,
+                  home: _RootRouter(prefs: prefs, user: user),
+                  routes: {
+                    '/auth': (context) => const AuthScreen(),
+                    '/home': (context) => const HomeScreen(),
+                    '/onboarding': (context) => const OnboardingScreen(),
+                    '/settings': (context) => const SettingsScreen(),
+                  },
+                ),
+              );
             },
           );
         },
       ),
     );
   }
+}
 
-  Widget _getInitialScreen() {
+
+class _RootRouter extends StatelessWidget {
+  final SharedPreferences prefs;
+  final User? user;
+
+  const _RootRouter({required this.prefs, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    if (user == null) return const AuthScreen();
+
     final isFirstTime = prefs.getBool('isFirstTime') ?? true;
-    if (isFirstTime) {
-      return const OnboardingScreen();
-    }
+    if (isFirstTime) return const AuthScreen();
+
     return const SplashScreen();
   }
 }

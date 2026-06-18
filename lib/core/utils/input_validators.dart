@@ -20,6 +20,21 @@ class InputValidators {
     return null;
   }
 
+
+  static String? email(String value) {
+    final v = value.trim();
+    if (v.isEmpty) return 'Email is required.';
+    final pattern = RegExp(r'^[\w.+-]+@[\w-]+\.[\w.-]+$');
+    if (!pattern.hasMatch(v)) return 'Enter a valid email address.';
+    return null;
+  }
+  
+  static String? password(String value) {
+    if (value.isEmpty) return 'Password is required.';
+    if (value.length < 6) return 'Password must be at least 6 characters.';
+    return null;
+  }
+
   static String? workDescription(String value) {
     if (value.trim().length > AppConstants.workDescriptionMaxLength) {
       return 'Description must be at most '

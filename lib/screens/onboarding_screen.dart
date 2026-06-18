@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
-import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,24 +22,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   int _currentPage = 0;
   bool _isLoadingLocation = false;
-  bool _isSigningInWithGoogle = false;
   double _latitude = 0.0;
   double _longitude = 0.0;
   bool _hasCoordinates = false;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final existing = context.read<ChallengeProvider>().userName.trim();
+      if (existing.isNotEmpty && _nameController.text.trim().isEmpty) {
+        setState(() => _nameController.text = existing);
+      }
+    });
+  }
+
   ScrollPhysics get _pageScrollPhysics {
-    if (_currentPage == 2 && _nameController.text.isEmpty) {
-      return const NeverScrollableScrollPhysics();
-    }
-    if (_currentPage == 3 && _locationController.text.isEmpty) {
+    // Page 2 is the location page; block swiping past it until a location is set.
+    if (_currentPage == 2 && _locationController.text.isEmpty) {
       return const NeverScrollableScrollPhysics();
     }
     return const BouncingScrollPhysics();
-  }
-
-  Future<bool> _isNameDuplicate(String username) async {
-    final challengeProvider = context.read<ChallengeProvider>();
-    return await challengeProvider.checkUsernameExists(username.trim());
   }
 
   Future<void> _getCoordinatesFromText() async {
@@ -93,7 +96,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   _buildWelcomePage(),
                   _buildRulesPage(),
-                  _buildNamePage(),
                   _buildLocationPage(),
                   _buildReadyPage(),
                 ],
@@ -229,146 +231,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ],
       ),
     );
-  }
-
-  Widget _buildNamePage() {
-    return Padding(
-      padding: const EdgeInsets.all(32.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color:
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.person,
-              size: 64,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 32),
-          Text(
-            'What\'s your name?',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Let\'s personalize your experience',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: 32),
-          TextField(
-            controller: _nameController,
-            maxLength: AppConstants.usernameMaxLength,
-            decoration: InputDecoration(
-              labelText: 'Your Name',
-              hintText: 'Enter your name',
-              prefixIcon: const Icon(Icons.badge),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            textCapitalization: TextCapitalization.words,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 18),
-          ),
-          if (AuthService.googleServerClientId.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            const Text('OR'),
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: _isSigningInWithGoogle ? null : _signInWithGoogle,
-              icon: _isSigningInWithGoogle
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.login),
-              label: Text(_isSigningInWithGoogle
-                  ? 'Signing in...'
-                  : 'Continue with Google'),
-              style: OutlinedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Future<void> _signInWithGoogle() async {
-    setState(() => _isSigningInWithGoogle = true);
-    try {
-      final cred = await context.read<AuthService>().signInWithGoogle();
-      // Prefill the name. Prefer the Google display name; fall back to the
-      // email local-part when the account has no display name.
-      var prefill = cred.user?.displayName?.trim() ?? '';
-      if (prefill.isEmpty) {
-        final email = cred.user?.email ?? '';
-        final at = email.indexOf('@');
-        if (at > 0) prefill = email.substring(0, at);
-      }
-
-      prefill = prefill
-          .replaceAll(RegExp(r'[^A-Za-z0-9_ ]'), ' ')
-          .replaceAll(RegExp(r'\s+'), ' ')
-          .trim();
-      if (mounted && prefill.isNotEmpty && _nameController.text.trim().isEmpty) {
-        _nameController.text = prefill.length > AppConstants.usernameMaxLength
-            ? prefill.substring(0, AppConstants.usernameMaxLength)
-            : prefill;
-      }
-      // Validate the prefilled name the same way the manual "Next" button does
-      // before advancing. A duplicate stays on the name page so the user can
-      // pick another.
-      final name = _nameController.text.trim();
-      if (mounted && name.isNotEmpty) {
-        final isDuplicate = await _isNameDuplicate(name);
-        if (!mounted) return;
-        if (isDuplicate) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                  'This username is already taken. Please choose another.'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
-          return;
-        }
-        // Advance past the name page once signed in. Deferred to the next frame
-        // so the rebuilt PageView picks up scrollable physics first (the name
-        // page uses NeverScrollableScrollPhysics while the field is empty, which
-        // also blocks programmatic nextPage()).
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          _pageController.nextPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isSigningInWithGoogle = false);
-    }
-    setState(() {});
   }
 
   Widget _buildLocationPage() {
@@ -543,7 +405,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           else
             const SizedBox(width: 80),
           Row(
-            children: List.generate(5, (index) {
+            children: List.generate(4, (index) {
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 width: 8,
@@ -557,35 +419,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               );
             }),
           ),
-          if (_currentPage < 4)
+          if (_currentPage < 3)
             TextButton(
               onPressed: () async {
                 if (_currentPage == 2) {
-                  final name = _nameController.text.trim();
-
-                  if (name.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Please enter your name'),
-                        backgroundColor: context.appColors.warning,
-                      ),
-                    );
-                    return;
-                  }
-
-                  final isDuplicate = await _isNameDuplicate(name);
-                  if (isDuplicate && mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text(
-                            'This username is already taken. Please choose another.'),
-                        backgroundColor: Theme.of(context).colorScheme.error,
-                      ),
-                    );
-                    return;
-                  }
-                }
-                if (_currentPage == 3) {
                   final locationText = _locationController.text.trim();
 
                   if (locationText.isEmpty && mounted) {
