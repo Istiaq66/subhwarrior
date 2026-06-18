@@ -18,33 +18,37 @@ class QuickStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _StatCard(
-            child: Column(
-              children: [
-                Icon(
-                  Icons.calendar_today,
-                  size: 32,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '$daysRemaining',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const Text('Days Left'),
-              ],
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: _StatCard(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    size: 32,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '$daysRemaining',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const Text('Days Left'),
+                ],
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _StatCard(
-            child: Column(
-              children: [
-                CircularPercentIndicator(
+          const SizedBox(width: 8),
+          Expanded(
+            child: _StatCard(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularPercentIndicator(
                   radius: 30.0,
                   lineWidth: 5.0,
                   percent: overallProgress.clamp(0, 1),
@@ -61,7 +65,8 @@ class QuickStatsRow extends StatelessWidget {
             ),
           ),
         ),
-      ],
+        ],
+      ),
     );
   }
 }
