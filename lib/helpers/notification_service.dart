@@ -104,6 +104,33 @@ class NotificationService {
     debugPrint('✅ Notification ID $id cancelled');
   }
 
+  /// Pure scheduling math for the Fajr reminder: [minutesBefore] is clamped
+  /// to >= 0, and a reminder already in the past rolls over to the next day.
+  static DateTime computeFajrReminderTime({
+    required DateTime fajrTime,
+    required int minutesBefore,
+    required DateTime now,
+  }) {
+    final safeMinutesBefore = minutesBefore < 0 ? 0 : minutesBefore;
+    var reminderDateTime =
+        fajrTime.subtract(Duration(minutes: safeMinutesBefore));
+    if (reminderDateTime.isBefore(now)) {
+      reminderDateTime = reminderDateTime.add(const Duration(days: 1));
+    }
+    return reminderDateTime;
+  }
+
+  /// Pure scheduling math for the daily logging reminder: today at the
+  /// configured reminder time, rolling over to tomorrow once it has passed.
+  static DateTime computeLoggingReminderTime(DateTime now) {
+    var reminderTime = DateTime(now.year, now.month, now.day,
+        AppConstants.logReminderHour, AppConstants.logReminderMinute);
+    if (reminderTime.isBefore(now)) {
+      reminderTime = reminderTime.add(const Duration(days: 1));
+    }
+    return reminderTime;
+  }
+
   // Schedule Fajr reminder based on prayer time
   static Future<void> scheduleFajrReminder({
     required DateTime? fajrTime,
@@ -124,17 +151,12 @@ class NotificationService {
       debugPrint('📅 Current time: $now');
       debugPrint('🕌 Fajr time provided: $fajrTime');
 
-      // Subtract reminder minutes
-      var reminderDateTime =
-          fajrTime.subtract(Duration(minutes: safeMinutesBefore));
-      debugPrint('⏰ Initial reminder time: $reminderDateTime');
-
-      // If the reminder time has already passed today, schedule for tomorrow
-      if (reminderDateTime.isBefore(now)) {
-        reminderDateTime = reminderDateTime.add(const Duration(days: 1));
-        debugPrint(
-            '⏭️ Reminder time passed, moved to tomorrow: $reminderDateTime');
-      }
+      final reminderDateTime = computeFajrReminderTime(
+        fajrTime: fajrTime,
+        minutesBefore: safeMinutesBefore,
+        now: now,
+      );
+      debugPrint('⏰ Reminder time: $reminderDateTime');
 
       // Convert to TZDateTime for local timezone
       final scheduledTime = tz.TZDateTime.from(reminderDateTime, tz.local);
@@ -163,16 +185,8 @@ class NotificationService {
 
       debugPrint('📅 Current time: $now');
 
-      // Create reminder time at 7:30 AM
-      var reminderTime = DateTime(now.year, now.month, now.day,
-          AppConstants.logReminderHour, AppConstants.logReminderMinute);
-      debugPrint('⏰ Initial reminder time (7:30 AM): $reminderTime');
-
-      // If 7:30 AM has passed today, schedule for tomorrow
-      if (reminderTime.isBefore(now)) {
-        reminderTime = reminderTime.add(const Duration(days: 1));
-        debugPrint('⏭️ 7:30 AM passed, moved to tomorrow: $reminderTime');
-      }
+      final reminderTime = computeLoggingReminderTime(now);
+      debugPrint('⏰ Reminder time: $reminderTime');
 
       // Convert to TZDateTime for local timezone
       final scheduledTime = tz.TZDateTime.from(reminderTime, tz.local);
