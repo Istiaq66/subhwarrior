@@ -35,7 +35,6 @@ void main() async {
   // Load preferences
   final prefs = await SharedPreferences.getInstance();
 
-
   await ChallengeLocalDataSource.migrateLegacyIfNeeded(prefs, uid);
 
   runApp(SubhWarriorApp(prefs: prefs, authService: authService));
@@ -93,8 +92,6 @@ class SubhWarriorApp extends StatelessWidget {
     );
   }
 }
-
-
 
 class _RootRouter extends StatelessWidget {
   final User? user;

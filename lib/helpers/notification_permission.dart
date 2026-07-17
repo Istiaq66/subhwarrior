@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const int NOTIFICATION_PERMISSION_LAUNCH_LIMIT = 31;
-const int NOTIFICATION_PERMISSION_LAUNCH_INTERVAL = 10;
-const String KEY_LAUNCH_COUNT_FOR_NOTIFICATION_PERMISSION =
+const int notificationPermissionLaunchLimit = 31;
+const int notificationPermissionLaunchInterval = 10;
+const String keyLaunchCountForNotificationPermission =
     'launch_count_notification_permission';
 
 Future<void> ensureNotificationPermission(BuildContext context) async {
   var pref = await SharedPreferences.getInstance();
-  int launchCount =
-      pref.getInt(KEY_LAUNCH_COUNT_FOR_NOTIFICATION_PERMISSION) ?? 0;
+  int launchCount = pref.getInt(keyLaunchCountForNotificationPermission) ?? 0;
 
-  if (launchCount <= NOTIFICATION_PERMISSION_LAUNCH_LIMIT &&
-      launchCount % NOTIFICATION_PERMISSION_LAUNCH_INTERVAL == 1) {
+  if (launchCount <= notificationPermissionLaunchLimit &&
+      launchCount % notificationPermissionLaunchInterval == 1) {
     if (!context.mounted) return;
     await getNotificationPermission(context);
   }
@@ -69,6 +68,6 @@ Future<bool> getNotificationPermission(BuildContext context) async {
 // Call this to increment launch count
 Future<void> incrementLaunchCount() async {
   var pref = await SharedPreferences.getInstance();
-  int count = pref.getInt(KEY_LAUNCH_COUNT_FOR_NOTIFICATION_PERMISSION) ?? 0;
-  await pref.setInt(KEY_LAUNCH_COUNT_FOR_NOTIFICATION_PERMISSION, count + 1);
+  int count = pref.getInt(keyLaunchCountForNotificationPermission) ?? 0;
+  await pref.setInt(keyLaunchCountForNotificationPermission, count + 1);
 }

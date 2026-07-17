@@ -356,7 +356,10 @@ class _LogDayScreenState extends State<LogDayScreen> {
                 border: const OutlineInputBorder(),
                 fillColor: isQualifyingWork
                     ? context.appColors.success.withValues(alpha: 0.1)
-                    : Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+                    : Theme.of(context)
+                        .colorScheme
+                        .error
+                        .withValues(alpha: 0.1),
                 filled: true,
               ),
               items: const [
@@ -405,7 +408,10 @@ class _LogDayScreenState extends State<LogDayScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .error
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
@@ -547,7 +553,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
           ),
           const SizedBox(height: 12),
           _buildRequirement(context, 'Awake at/before Fajr', _wokeUpForFajr),
-          _buildRequirement(context, 'Stayed awake and alert', _stayedAwakeAfter),
+          _buildRequirement(
+              context, 'Stayed awake and alert', _stayedAwakeAfter),
           _buildRequirement(context, 'Prayed Fajr on time', _prayedFajrOnTime),
           _buildRequirement(
               context,
@@ -586,7 +593,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
             label,
             style: TextStyle(
               decoration: met ? null : TextDecoration.lineThrough,
-              color: met ? null : Theme.of(context).colorScheme.onSurfaceVariant,
+              color:
+                  met ? null : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],

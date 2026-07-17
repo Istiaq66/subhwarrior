@@ -33,8 +33,9 @@ class ThemeProvider extends ChangeNotifier {
       );
     } else if (prefs.containsKey(_legacyKey)) {
       // Migrate the old boolean dark-mode flag to the new 3-way mode.
-      _themeMode =
-          (prefs.getBool(_legacyKey) ?? false) ? ThemeMode.dark : ThemeMode.light;
+      _themeMode = (prefs.getBool(_legacyKey) ?? false)
+          ? ThemeMode.dark
+          : ThemeMode.light;
       await prefs.setString(_prefsKey, _themeMode.name);
       await prefs.remove(_legacyKey);
     }

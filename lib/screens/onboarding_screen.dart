@@ -51,6 +51,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     try {
       final locations = await locationFromAddress(text);
+      if (!mounted) return;
       if (locations.isNotEmpty) {
         final loc = locations.first;
         setState(() {
@@ -68,6 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error finding location: ${e.toString()}'),
@@ -538,6 +540,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       // Check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text(
@@ -558,6 +561,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         permission = await Geolocator.requestPermission();
 
         if (permission == LocationPermission.denied) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Location permissions are denied'),
@@ -572,6 +576,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       }
 
       if (permission == LocationPermission.deniedForever) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text(
@@ -593,7 +598,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
       // If we have permission, get the position
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings:
+            const LocationSettings(accuracy: LocationAccuracy.high),
       );
 
       _latitude = position.latitude;
@@ -629,6 +635,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error getting location: ${e.toString()}'),
@@ -647,13 +654,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       final challengeProvider = context.read<ChallengeProvider>();
       final prayerProvider = context.read<PrayerTimeProvider>();
 
-
       if (_hasCoordinates) {
         try {
           await prayerProvider.fetchPrayerTimes(_latitude, _longitude);
         } catch (_) {}
       }
-
 
       await challengeProvider.updateUserSettings(
         name: _nameController.text,

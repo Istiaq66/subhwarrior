@@ -58,8 +58,10 @@ void main() {
     });
 
     test('day 7 is still week 1, day 8 is week 2', () {
-      expect(AppDateUtils.weekNumber(start, start.add(const Duration(days: 6))), 1);
-      expect(AppDateUtils.weekNumber(start, start.add(const Duration(days: 7))), 2);
+      expect(AppDateUtils.weekNumber(start, start.add(const Duration(days: 6))),
+          1);
+      expect(AppDateUtils.weekNumber(start, start.add(const Duration(days: 7))),
+          2);
     });
   });
 }

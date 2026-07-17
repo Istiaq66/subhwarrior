@@ -10,8 +10,7 @@ import 'challenge_data.dart';
 /// knows the prefs key names and serialization format.
 class ChallengeLocalDataSource {
   final SharedPreferences prefs;
-  
-  
+
   final String uid;
 
   ChallengeLocalDataSource(this.prefs, {this.uid = ''});
@@ -56,7 +55,7 @@ class ChallengeLocalDataSource {
   ];
 
   String _key(String base) => uid.isEmpty ? base : '$uid:$base';
-  
+
   static Future<void> migrateLegacyIfNeeded(
       SharedPreferences prefs, String uid) async {
     if (uid.isEmpty) return;

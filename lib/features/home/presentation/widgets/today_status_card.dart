@@ -53,9 +53,11 @@ class TodayStatusCard extends StatelessWidget {
     if (todayLog != null) {
       final qualifying = todayLog!.isQualifying;
       label = qualifying ? 'Qualifying ✓' : 'Logged';
-      color = qualifying ? context.appColors.success : context.appColors.warning;
-      onColor =
-          qualifying ? context.appColors.onSuccess : context.appColors.onWarning;
+      color =
+          qualifying ? context.appColors.success : context.appColors.warning;
+      onColor = qualifying
+          ? context.appColors.onSuccess
+          : context.appColors.onWarning;
     } else {
       label = canLog ? 'Pending' : 'Time\'s Up';
       color = canLog ? scheme.primary : scheme.error;
@@ -113,7 +115,7 @@ class TodayStatusCard extends StatelessWidget {
     return [
       Text(
         'Logging window closed (after '
-            '${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)})',
+        '${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)})',
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.error,
             ),

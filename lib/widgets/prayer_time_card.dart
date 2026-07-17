@@ -77,7 +77,8 @@ class PrayerTimeCard extends StatelessWidget {
                                 .textTheme
                                 .titleLarge
                                 ?.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),
@@ -90,7 +91,10 @@ class PrayerTimeCard extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimary
+                                .withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
@@ -104,7 +108,8 @@ class PrayerTimeCard extends StatelessWidget {
                               Text(
                                 'NOW',
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -127,7 +132,10 @@ class PrayerTimeCard extends StatelessWidget {
                       Container(
                         height: 40,
                         width: 1,
-                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onPrimary
+                            .withValues(alpha: 0.3),
                       ),
                       _buildTimeColumn(
                         context,
@@ -137,7 +145,10 @@ class PrayerTimeCard extends StatelessWidget {
                       Container(
                         height: 40,
                         width: 1,
-                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onPrimary
+                            .withValues(alpha: 0.3),
                       ),
                       _buildTimeColumn(
                         context,
@@ -152,7 +163,10 @@ class PrayerTimeCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onPrimary
+                            .withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -222,7 +236,8 @@ class PrayerTimeCard extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
+            color:
+                Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
@@ -251,8 +266,10 @@ class PrayerTimeCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color:
-                  Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7),
+              color: Theme.of(context)
+                  .colorScheme
+                  .onPrimary
+                  .withValues(alpha: 0.7),
               fontSize: 11,
             ),
           ),

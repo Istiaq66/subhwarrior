@@ -102,7 +102,7 @@ class AuthService {
       rethrow;
     }
   }
-  
+
   Future<UserCredential?> registerWithEmail({
     required String email,
     required String password,
@@ -122,7 +122,8 @@ class AuthService {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      debugPrint('Email register FirebaseAuthException: ${e.code} — ${e.message}');
+      debugPrint(
+          'Email register FirebaseAuthException: ${e.code} — ${e.message}');
       final current = _auth.currentUser;
       final isOwnEmail =
           current?.email?.toLowerCase() == normalizedEmail.toLowerCase();
@@ -146,7 +147,8 @@ class AuthService {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      debugPrint('Email sign-in FirebaseAuthException: ${e.code} — ${e.message}');
+      debugPrint(
+          'Email sign-in FirebaseAuthException: ${e.code} — ${e.message}');
       rethrow;
     }
   }

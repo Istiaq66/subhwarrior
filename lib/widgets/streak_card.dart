@@ -37,7 +37,10 @@ class StreakCard extends StatelessWidget {
                 height: 60,
                 width: 1,
                 color: currentStreak > 0
-                    ? Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3)
+                    ? Theme.of(context)
+                        .colorScheme
+                        .onPrimary
+                        .withValues(alpha: 0.3)
                     : Theme.of(context).dividerColor,
               ),
               _buildTotalDaysSection(context),
@@ -88,7 +91,10 @@ class StreakCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               color: hasStreak
-                  ? Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9)
+                  ? Theme.of(context)
+                      .colorScheme
+                      .onPrimary
+                      .withValues(alpha: 0.9)
                   : Theme.of(context).textTheme.bodyMedium?.color,
             ),
           ),
@@ -97,7 +103,10 @@ class StreakCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onPrimary
+                    .withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -132,7 +141,10 @@ class StreakCard extends StatelessWidget {
                   value: progress,
                   strokeWidth: 6,
                   backgroundColor: currentStreak > 0
-                      ? Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3)
+                      ? Theme.of(context)
+                          .colorScheme
+                          .onPrimary
+                          .withValues(alpha: 0.3)
                       : Theme.of(context).colorScheme.surfaceContainerHighest,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     currentStreak > 0
@@ -160,7 +172,10 @@ class StreakCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       color: currentStreak > 0
-                          ? Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8)
+                          ? Theme.of(context)
+                              .colorScheme
+                              .onPrimary
+                              .withValues(alpha: 0.8)
                           : Theme.of(context).textTheme.bodySmall?.color,
                     ),
                   ),
@@ -174,7 +189,10 @@ class StreakCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               color: currentStreak > 0
-                  ? Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9)
+                  ? Theme.of(context)
+                      .colorScheme
+                      .onPrimary
+                      .withValues(alpha: 0.9)
                   : Theme.of(context).textTheme.bodyMedium?.color,
             ),
           ),

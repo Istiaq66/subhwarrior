@@ -13,9 +13,8 @@ abstract final class AppTheme {
   static ThemeData dark() => _build(Brightness.dark, AppColorsX.dark);
 
   static ThemeData _build(Brightness brightness, AppColorsX appColors) {
-    final colorScheme = brightness == Brightness.light
-        ? _lightScheme
-        : _darkScheme;
+    final colorScheme =
+        brightness == Brightness.light ? _lightScheme : _darkScheme;
 
     final base = ThemeData(
       useMaterial3: true,

@@ -30,7 +30,6 @@ class ChallengeProvider extends ChangeNotifier {
     _syncFromRemote();
   }
 
-
   Future<void> _syncFromRemote() async {
     if (_data.userName.trim().isNotEmpty) return;
     try {

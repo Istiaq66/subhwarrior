@@ -6,7 +6,6 @@ import 'package:subh_warrior/core/utils/input_validators.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 
-
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
 
@@ -42,8 +41,10 @@ class _AuthScreenState extends State<AuthScreen> {
       );
 
   /// Subtle fill behind each auth text field.
-  Color get _fillColor =>
-      Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5);
+  Color get _fillColor => Theme.of(context)
+      .colorScheme
+      .surfaceContainerHighest
+      .withValues(alpha: 0.5);
 
   void _showError(String message) {
     if (!mounted) return;
@@ -134,7 +135,6 @@ class _AuthScreenState extends State<AuthScreen> {
     try {
       final cred = await _auth.signInWithGoogle();
       if (!mounted) return;
-
 
       final challenge = context.read<ChallengeProvider>();
       if (challenge.userName.trim().isEmpty) {

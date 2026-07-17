@@ -591,7 +591,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Theme.of(context).colorScheme.error),
+                    side:
+                        BorderSide(color: Theme.of(context).colorScheme.error),
                   ),
                 ),
               ],
@@ -684,9 +685,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               : null,
           onTap: _isAccountBusy
               ? null
-              : (isAnon
-                  ? (configured ? _linkGoogle : null)
-                  : _signOutAccount),
+              : (isAnon ? (configured ? _linkGoogle : null) : _signOutAccount),
         );
       },
     );
@@ -740,12 +739,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }),
     );
     if (!mounted) return;
-    final launched =
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('No email app found. Reach us at $_feedbackEmail'),
+          content:
+              const Text('No email app found. Reach us at $_feedbackEmail'),
           backgroundColor: context.appColors.warning,
         ),
       );
@@ -794,7 +793,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     try {
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings:
+            const LocationSettings(accuracy: LocationAccuracy.high),
       );
 
       // Reverse geocoding to get city name
@@ -802,6 +802,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         position.latitude,
         position.longitude,
       );
+
+      if (!mounted) return;
 
       if (placemarks.isNotEmpty) {
         final place = placemarks.first;
@@ -824,6 +826,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         await _refreshPrayerTimes();
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error getting location: $e'),
@@ -831,9 +834,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       );
     } finally {
-      setState(() {
-        _isLoadingLocation = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingLocation = false;
+        });
+      }
     }
   }
 
@@ -929,9 +934,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           TextButton(
             onPressed: () async {
+              final navigator = Navigator.of(context);
               await provider.endChallenge();
-              Navigator.pop(context);
-              Navigator.pop(context);
+              navigator.pop();
+              navigator.pop();
             },
             child: Text(
               'End Challenge',

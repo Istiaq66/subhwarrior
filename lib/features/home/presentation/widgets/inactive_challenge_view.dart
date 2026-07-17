@@ -29,7 +29,7 @@ class InactiveChallengeView extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Start your ${AppConstants.challengeDays}-day challenge to build a '
               'powerful morning routine with Fajr prayer and productive work.',
               textAlign: TextAlign.center,

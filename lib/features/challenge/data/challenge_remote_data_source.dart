@@ -98,7 +98,7 @@ class ChallengeRemoteDataSource {
       debugPrint('Error saving to Firestore: $e');
     }
   }
-  
+
   Future<ChallengeData?> fetchChallenge() async {
     try {
       final snap = await _firestore.collection(_collection).doc(uid).get();
