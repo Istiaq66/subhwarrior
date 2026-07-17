@@ -9,8 +9,9 @@ const String keyLaunchCountForNotificationPermission =
     'launch_count_notification_permission';
 
 Future<void> ensureNotificationPermission(BuildContext context) async {
-  var pref = await SharedPreferences.getInstance();
-  int launchCount = pref.getInt(keyLaunchCountForNotificationPermission) ?? 0;
+  final pref = await SharedPreferences.getInstance();
+  final int launchCount =
+      pref.getInt(keyLaunchCountForNotificationPermission) ?? 0;
 
   if (launchCount <= notificationPermissionLaunchLimit &&
       launchCount % notificationPermissionLaunchInterval == 1) {
@@ -29,7 +30,7 @@ Future<bool> getNotificationPermission(BuildContext context) async {
   if (Platform.isAndroid || Platform.isIOS) {
     if (!context.mounted) return false;
 
-    bool? isAllowed = await showDialog<bool>(
+    final bool? isAllowed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
@@ -57,7 +58,7 @@ Future<bool> getNotificationPermission(BuildContext context) async {
     );
 
     if (isAllowed ?? false) {
-      PermissionStatus status = await Permission.notification.request();
+      final PermissionStatus status = await Permission.notification.request();
       return status == PermissionStatus.granted;
     }
   }
@@ -67,7 +68,7 @@ Future<bool> getNotificationPermission(BuildContext context) async {
 
 // Call this to increment launch count
 Future<void> incrementLaunchCount() async {
-  var pref = await SharedPreferences.getInstance();
-  int count = pref.getInt(keyLaunchCountForNotificationPermission) ?? 0;
+  final pref = await SharedPreferences.getInstance();
+  final int count = pref.getInt(keyLaunchCountForNotificationPermission) ?? 0;
   await pref.setInt(keyLaunchCountForNotificationPermission, count + 1);
 }

@@ -84,7 +84,7 @@ void main() {
 
   group('PrayerSettings', () {
     test('school derives from juristic method', () {
-      expect(const PrayerSettings(useHanafiMethod: false).school, 0);
+      expect(const PrayerSettings().school, 0);
       expect(const PrayerSettings(useHanafiMethod: true).school, 1);
     });
   });

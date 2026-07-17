@@ -15,7 +15,7 @@ void main() {
 
     test('false across midnight', () {
       expect(
-        AppDateUtils.isSameDay(DateTime(2026, 6, 1), DateTime(2026, 6, 2)),
+        AppDateUtils.isSameDay(DateTime(2026, 6), DateTime(2026, 6, 2)),
         isFalse,
       );
     });
@@ -25,7 +25,7 @@ void main() {
     test('strips the time component', () {
       expect(
         AppDateUtils.dateOnly(DateTime(2026, 6, 1, 7, 45, 12)),
-        DateTime(2026, 6, 1),
+        DateTime(2026, 6),
       );
     });
   });
@@ -47,7 +47,7 @@ void main() {
   });
 
   group('AppDateUtils.weekNumber', () {
-    final start = DateTime(2026, 6, 1);
+    final start = DateTime(2026, 6);
 
     test('returns 1 with no start date', () {
       expect(AppDateUtils.weekNumber(null, DateTime(2026, 6, 20)), 1);

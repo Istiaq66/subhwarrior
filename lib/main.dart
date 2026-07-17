@@ -1,19 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:subh_warrior/helpers/notification_service.dart';
+import 'package:subh_warrior/core/theme/app_theme.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_local_data_source.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
-import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
-import 'package:subh_warrior/providers/theme_provider.dart';
-import 'package:subh_warrior/core/theme/app_theme.dart';
 import 'package:subh_warrior/features/home/presentation/home_screen.dart';
-import 'package:provider/provider.dart';
+import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
+import 'package:subh_warrior/helpers/notification_service.dart';
+import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:subh_warrior/screens/auth_screen.dart';
 import 'package:subh_warrior/screens/onboarding_screen.dart';
 import 'package:subh_warrior/screens/settings_screen.dart';
+
 import 'firebase_options.dart';
 
 void main() async {

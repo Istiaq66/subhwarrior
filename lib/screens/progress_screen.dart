@@ -1,14 +1,14 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
-import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/challenge/domain/day_log.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
+import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/challenge/presentation/widgets/day_detail_sheet.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:intl/intl.dart';
 
 class ProgressScreen extends StatefulWidget {
   const ProgressScreen({super.key});
@@ -229,7 +229,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   maxY: weeklyTarget.toDouble(),
                   barTouchData: BarTouchData(enabled: true),
                   titlesData: FlTitlesData(
-                    show: true,
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
@@ -247,12 +246,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
                         },
                       ),
                     ),
-                    rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
+                    rightTitles: const AxisTitles(),
+                    topTitles: const AxisTitles(),
                   ),
                   borderData: FlBorderData(show: false),
                   barGroups:

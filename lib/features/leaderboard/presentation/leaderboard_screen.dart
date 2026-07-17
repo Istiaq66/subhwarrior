@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/leaderboard/data/leaderboard_repository.dart';
 import 'package:subh_warrior/features/leaderboard/domain/leaderboard_entry.dart';
 import 'package:subh_warrior/shared/widgets/empty_view.dart';

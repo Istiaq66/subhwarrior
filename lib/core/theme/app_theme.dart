@@ -59,7 +59,6 @@ abstract final class AppTheme {
   /// roles are layered on top so the palette is honoured exactly.
   static final ColorScheme _lightScheme = ColorScheme.fromSeed(
     seedColor: AppPalette.seed,
-    brightness: Brightness.light,
   ).copyWith(
     primary: AppPalette.primary,
     onPrimary: Colors.white,

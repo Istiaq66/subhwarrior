@@ -1,5 +1,5 @@
-import '../domain/day_log.dart';
 import '../../../core/constants/app_constants.dart';
+import '../domain/day_log.dart';
 
 /// Persisted snapshot of all challenge state. Plain data holder passed between
 /// the controller and the data sources — no business logic, no I/O.

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
-import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/challenge/domain/log_result.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
+import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 
 class LogDayScreen extends StatefulWidget {
@@ -168,7 +168,6 @@ class _LogDayScreenState extends State<LogDayScreen> {
       currentTime.month,
       currentTime.day,
       8,
-      0,
     ).difference(currentTime);
 
     if (timeUntil8AM.isNegative) return const SizedBox();
@@ -440,7 +439,6 @@ class _LogDayScreenState extends State<LogDayScreen> {
             ),
             Slider(
               value: _minutesWorked.toDouble(),
-              min: 0,
               max: 180,
               divisions: 36,
               label: '$_minutesWorked min',

@@ -50,7 +50,6 @@ class QuickStatsRow extends StatelessWidget {
                 children: [
                   CircularPercentIndicator(
                     radius: 30.0,
-                    lineWidth: 5.0,
                     percent: overallProgress.clamp(0, 1),
                     center: Text('${(overallProgress * 100).toInt()}%'),
                     progressColor: Theme.of(context).colorScheme.primary,
