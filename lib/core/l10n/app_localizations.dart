@@ -1791,6 +1791,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enable'**
   String get notifPermEnable;
+
+  /// Tooltip for the settings icon button on the home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get a11yOpenSettings;
+
+  /// Tooltip for the password visibility toggle when the password is hidden
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get a11yShowPassword;
+
+  /// Tooltip for the password visibility toggle when the password is visible
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get a11yHidePassword;
+
+  /// Screen reader label for the sleeping emoji shown when the streak is zero
+  ///
+  /// In en, this message translates to:
+  /// **'No active streak'**
+  String get a11yStreakDormant;
+
+  /// Screen reader label for the sparkles emoji shown for a 1-2 day streak
+  ///
+  /// In en, this message translates to:
+  /// **'Streak building'**
+  String get a11yStreakBuilding;
+
+  /// Screen reader label for the fire emoji shown for a 3-6 day streak
+  ///
+  /// In en, this message translates to:
+  /// **'Streak on fire'**
+  String get a11yStreakOnFire;
+
+  /// Screen reader label for the lightning emoji shown for a 7-13 day streak
+  ///
+  /// In en, this message translates to:
+  /// **'Strong streak'**
+  String get a11yStreakStrong;
+
+  /// Screen reader label for the rocket emoji shown for a 14-20 day streak
+  ///
+  /// In en, this message translates to:
+  /// **'Streak soaring'**
+  String get a11yStreakSoaring;
+
+  /// Screen reader label for the crown emoji shown for a 21+ day streak
+  ///
+  /// In en, this message translates to:
+  /// **'Legendary streak'**
+  String get a11yStreakLegendary;
+
+  /// Screen reader label for the trophy icon shown when 8 or more qualifying days are reached
+  ///
+  /// In en, this message translates to:
+  /// **'Goal milestone achieved'**
+  String get a11yGoalTrophy;
+
+  /// Screen reader label for the gold medal emoji on the leaderboard
+  ///
+  /// In en, this message translates to:
+  /// **'First place'**
+  String get a11yFirstPlace;
+
+  /// Screen reader label for the silver medal emoji on the leaderboard
+  ///
+  /// In en, this message translates to:
+  /// **'Second place'**
+  String get a11ySecondPlace;
+
+  /// Screen reader label for the bronze medal emoji on the leaderboard
+  ///
+  /// In en, this message translates to:
+  /// **'Third place'**
+  String get a11yThirdPlace;
+
+  /// Screen reader label for the minutes-worked slider on the log day screen
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes of focused work'**
+  String get a11yMinutesWorkedSlider;
+
+  /// Screen reader label for the icon marking a qualifying day
+  ///
+  /// In en, this message translates to:
+  /// **'Qualifying day'**
+  String get a11yQualifyingDay;
+
+  /// Screen reader label for the icon marking a non-qualifying day
+  ///
+  /// In en, this message translates to:
+  /// **'Non-qualifying day'**
+  String get a11yNonQualifyingDay;
+
+  /// Screen reader label for the check icon next to a fulfilled requirement
+  ///
+  /// In en, this message translates to:
+  /// **'Requirement met'**
+  String get a11yRequirementMet;
+
+  /// Screen reader label for the cross icon next to an unfulfilled requirement
+  ///
+  /// In en, this message translates to:
+  /// **'Requirement not met'**
+  String get a11yRequirementNotMet;
 }
 
 class _AppLocalizationsDelegate

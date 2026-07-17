@@ -73,6 +73,8 @@ class StreakCard extends StatelessWidget {
               Text(
                 streakEmoji,
                 style: const TextStyle(fontSize: 24),
+                semanticsLabel:
+                    _getStreakSemanticsLabel(context, currentStreak),
               ),
             ],
           ),
@@ -203,6 +205,7 @@ class StreakCard extends StatelessWidget {
             const SizedBox(height: 4),
             Icon(
               Icons.emoji_events,
+              semanticLabel: AppLocalizations.of(context)!.a11yGoalTrophy,
               color: currentStreak > 0
                   ? Theme.of(context).colorScheme.onPrimary
                   : context.appColors.gold,
@@ -212,6 +215,16 @@ class StreakCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getStreakSemanticsLabel(BuildContext context, int streak) {
+    final l10n = AppLocalizations.of(context)!;
+    if (streak == 0) return l10n.a11yStreakDormant;
+    if (streak < 3) return l10n.a11yStreakBuilding;
+    if (streak < 7) return l10n.a11yStreakOnFire;
+    if (streak < 14) return l10n.a11yStreakStrong;
+    if (streak < 21) return l10n.a11yStreakSoaring;
+    return l10n.a11yStreakLegendary;
   }
 
   String _getStreakEmoji(int streak) {

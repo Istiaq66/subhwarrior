@@ -625,5 +625,77 @@
   "notifPermTitle": "Enable Notifications",
   "notifPermContent": "Get reminded about Fajr prayer and daily logging to stay on track with your Subh Warrior challenge.",
   "notifPermNotNow": "Not Now",
-  "notifPermEnable": "Enable"
+  "notifPermEnable": "Enable",
+  "a11yOpenSettings": "Open settings",
+  "@a11yOpenSettings": {
+    "description": "Tooltip for the settings icon button on the home screen"
+  },
+  "a11yShowPassword": "Show password",
+  "@a11yShowPassword": {
+    "description": "Tooltip for the password visibility toggle when the password is hidden"
+  },
+  "a11yHidePassword": "Hide password",
+  "@a11yHidePassword": {
+    "description": "Tooltip for the password visibility toggle when the password is visible"
+  },
+  "a11yStreakDormant": "No active streak",
+  "@a11yStreakDormant": {
+    "description": "Screen reader label for the sleeping emoji shown when the streak is zero"
+  },
+  "a11yStreakBuilding": "Streak building",
+  "@a11yStreakBuilding": {
+    "description": "Screen reader label for the sparkles emoji shown for a 1-2 day streak"
+  },
+  "a11yStreakOnFire": "Streak on fire",
+  "@a11yStreakOnFire": {
+    "description": "Screen reader label for the fire emoji shown for a 3-6 day streak"
+  },
+  "a11yStreakStrong": "Strong streak",
+  "@a11yStreakStrong": {
+    "description": "Screen reader label for the lightning emoji shown for a 7-13 day streak"
+  },
+  "a11yStreakSoaring": "Streak soaring",
+  "@a11yStreakSoaring": {
+    "description": "Screen reader label for the rocket emoji shown for a 14-20 day streak"
+  },
+  "a11yStreakLegendary": "Legendary streak",
+  "@a11yStreakLegendary": {
+    "description": "Screen reader label for the crown emoji shown for a 21+ day streak"
+  },
+  "a11yGoalTrophy": "Goal milestone achieved",
+  "@a11yGoalTrophy": {
+    "description": "Screen reader label for the trophy icon shown when 8 or more qualifying days are reached"
+  },
+  "a11yFirstPlace": "First place",
+  "@a11yFirstPlace": {
+    "description": "Screen reader label for the gold medal emoji on the leaderboard"
+  },
+  "a11ySecondPlace": "Second place",
+  "@a11ySecondPlace": {
+    "description": "Screen reader label for the silver medal emoji on the leaderboard"
+  },
+  "a11yThirdPlace": "Third place",
+  "@a11yThirdPlace": {
+    "description": "Screen reader label for the bronze medal emoji on the leaderboard"
+  },
+  "a11yMinutesWorkedSlider": "Minutes of focused work",
+  "@a11yMinutesWorkedSlider": {
+    "description": "Screen reader label for the minutes-worked slider on the log day screen"
+  },
+  "a11yQualifyingDay": "Qualifying day",
+  "@a11yQualifyingDay": {
+    "description": "Screen reader label for the icon marking a qualifying day"
+  },
+  "a11yNonQualifyingDay": "Non-qualifying day",
+  "@a11yNonQualifyingDay": {
+    "description": "Screen reader label for the icon marking a non-qualifying day"
+  },
+  "a11yRequirementMet": "Requirement met",
+  "@a11yRequirementMet": {
+    "description": "Screen reader label for the check icon next to a fulfilled requirement"
+  },
+  "a11yRequirementNotMet": "Requirement not met",
+  "@a11yRequirementNotMet": {
+    "description": "Screen reader label for the cross icon next to an unfulfilled requirement"
+  }
 }

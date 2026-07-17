@@ -964,4 +964,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifPermEnable => 'Enable';
+
+  @override
+  String get a11yOpenSettings => 'Open settings';
+
+  @override
+  String get a11yShowPassword => 'Show password';
+
+  @override
+  String get a11yHidePassword => 'Hide password';
+
+  @override
+  String get a11yStreakDormant => 'No active streak';
+
+  @override
+  String get a11yStreakBuilding => 'Streak building';
+
+  @override
+  String get a11yStreakOnFire => 'Streak on fire';
+
+  @override
+  String get a11yStreakStrong => 'Strong streak';
+
+  @override
+  String get a11yStreakSoaring => 'Streak soaring';
+
+  @override
+  String get a11yStreakLegendary => 'Legendary streak';
+
+  @override
+  String get a11yGoalTrophy => 'Goal milestone achieved';
+
+  @override
+  String get a11yFirstPlace => 'First place';
+
+  @override
+  String get a11ySecondPlace => 'Second place';
+
+  @override
+  String get a11yThirdPlace => 'Third place';
+
+  @override
+  String get a11yMinutesWorkedSlider => 'Minutes of focused work';
+
+  @override
+  String get a11yQualifyingDay => 'Qualifying day';
+
+  @override
+  String get a11yNonQualifyingDay => 'Non-qualifying day';
+
+  @override
+  String get a11yRequirementMet => 'Requirement met';
+
+  @override
+  String get a11yRequirementNotMet => 'Requirement not met';
 }

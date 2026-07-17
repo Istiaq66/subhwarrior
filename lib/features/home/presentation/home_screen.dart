@@ -214,6 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
       actions: [
         IconButton(
           icon: Icon(Icons.settings, color: onBanner),
+          tooltip: AppLocalizations.of(context)!.a11yOpenSettings,
           onPressed: () => Navigator.pushNamed(context, '/settings'),
         ),
       ],

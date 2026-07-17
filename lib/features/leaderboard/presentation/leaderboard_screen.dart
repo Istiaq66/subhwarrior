@@ -171,6 +171,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                 ? Text(
                     medal,
                     style: const TextStyle(fontSize: 24),
+                    semanticsLabel: _getMedalSemanticsLabel(l10n, rank),
                   )
                 : Text(
                     '$rank',
@@ -298,6 +299,19 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
         return '🥈';
       case 3:
         return '🥉';
+      default:
+        return null;
+    }
+  }
+
+  String? _getMedalSemanticsLabel(AppLocalizations l10n, int rank) {
+    switch (rank) {
+      case 1:
+        return l10n.a11yFirstPlace;
+      case 2:
+        return l10n.a11ySecondPlace;
+      case 3:
+        return l10n.a11yThirdPlace;
       default:
         return null;
     }

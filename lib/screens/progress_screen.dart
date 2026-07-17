@@ -176,6 +176,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   margin: const EdgeInsets.only(top: 6),
                   child: Icon(
                     Icons.check_circle,
+                    semanticLabel:
+                        AppLocalizations.of(context)!.a11yQualifyingDay,
                     color: context.appColors.success,
                     size: 16,
                   ),
@@ -185,6 +187,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   margin: const EdgeInsets.only(top: 6),
                   child: Icon(
                     Icons.circle,
+                    semanticLabel:
+                        AppLocalizations.of(context)!.a11yNonQualifyingDay,
                     color: context.appColors.warning,
                     size: 16,
                   ),
@@ -322,6 +326,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
                       : context.appColors.warning,
                   child: Icon(
                     log.isQualifying ? Icons.check : Icons.close,
+                    semanticLabel: log.isQualifying
+                        ? l10n.a11yQualifyingDay
+                        : l10n.a11yNonQualifyingDay,
                     color: log.isQualifying
                         ? context.appColors.onSuccess
                         : context.appColors.onWarning,

@@ -313,12 +313,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       subtitle: Text(useHanafi
                           ? l10n.settingsJuristicHanafi
                           : l10n.settingsJuristicStandard),
-                      trailing: Switch(
-                        value: useHanafi,
-                        onChanged: (value) {
-                          provider.updateJuristicMethod(value);
-                          _refreshPrayerTimes();
-                        },
+                      trailing: Semantics(
+                        label: l10n.settingsJuristicMethodTitle,
+                        child: Switch(
+                          value: useHanafi,
+                          onChanged: (value) {
+                            provider.updateJuristicMethod(value);
+                            _refreshPrayerTimes();
+                          },
+                        ),
                       ),
                     ),
                     if (useHanafi)

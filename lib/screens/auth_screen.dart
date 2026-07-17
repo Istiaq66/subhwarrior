@@ -283,6 +283,9 @@ class _AuthScreenState extends State<AuthScreen> {
                         icon: Icon(_obscurePassword
                             ? Icons.visibility
                             : Icons.visibility_off),
+                        tooltip: _obscurePassword
+                            ? l10n.a11yShowPassword
+                            : l10n.a11yHidePassword,
                         onPressed: () => setState(
                             () => _obscurePassword = !_obscurePassword),
                       ),

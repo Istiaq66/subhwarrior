@@ -419,16 +419,19 @@ class _LogDayScreenState extends State<LogDayScreen> {
               l10n.logDayMinutesFocused(_minutesWorked),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            Slider(
-              value: _minutesWorked.toDouble(),
-              max: 180,
-              divisions: 36,
-              label: l10n.commonMinutesShort(_minutesWorked),
-              onChanged: (value) {
-                setState(() {
-                  _minutesWorked = value.round();
-                });
-              },
+            Semantics(
+              label: l10n.a11yMinutesWorkedSlider,
+              child: Slider(
+                value: _minutesWorked.toDouble(),
+                max: 180,
+                divisions: 36,
+                label: l10n.commonMinutesShort(_minutesWorked),
+                onChanged: (value) {
+                  setState(() {
+                    _minutesWorked = value.round();
+                  });
+                },
+              ),
             ),
             if (_minutesWorked < AppConstants.minDeepWorkMinutes)
               Text(
@@ -590,6 +593,9 @@ class _LogDayScreenState extends State<LogDayScreen> {
         children: [
           Icon(
             met ? Icons.check : Icons.close,
+            semanticLabel: met
+                ? AppLocalizations.of(context)!.a11yRequirementMet
+                : AppLocalizations.of(context)!.a11yRequirementNotMet,
             color: met
                 ? context.appColors.success
                 : Theme.of(context).colorScheme.error,
