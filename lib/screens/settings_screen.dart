@@ -5,6 +5,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
@@ -82,13 +83,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(AppLocalizations.of(context)!.settingsTitle),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: _saveSettings,
-            tooltip: 'Save Settings',
+            tooltip: AppLocalizations.of(context)!.settingsSaveTooltip,
           ),
         ],
       ),
@@ -109,6 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildProfileSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.all(16),
       child: Padding(
@@ -124,7 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Profile',
+                  l10n.settingsProfileTitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -135,8 +137,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
-                labelText: 'Your Name',
-                hintText: 'Enter your name',
+                labelText: l10n.settingsNameLabel,
+                hintText: l10n.settingsNameHint,
                 prefixIcon: const Icon(Icons.badge),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -152,12 +154,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 return Column(
                   children: [
+                    _buildStatRow(l10n.settingsStatTotalDays,
+                        '${provider.totalQualifyingDays}'),
+                    _buildStatRow(l10n.settingsStatCurrentStreak,
+                        '${provider.currentStreak}'),
                     _buildStatRow(
-                        'Total Days', '${provider.totalQualifyingDays}'),
-                    _buildStatRow(
-                        'Current Streak', '${provider.currentStreak}'),
-                    _buildStatRow(
-                        'Challenge Week', '${provider.currentWeek}/4'),
+                        l10n.settingsStatChallengeWeek,
+                        l10n.settingsChallengeWeekRatio(
+                            provider.currentWeek, 4)),
                   ],
                 );
               },
@@ -169,6 +173,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildLocationSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
@@ -184,7 +189,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Location',
+                  l10n.settingsLocationTitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -195,8 +200,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             TextField(
               controller: _locationController,
               decoration: InputDecoration(
-                labelText: 'City/Location',
-                hintText: 'e.g., New York, USA',
+                labelText: l10n.onboardingLocationFieldLabel,
+                hintText: l10n.onboardingLocationFieldHint,
                 prefixIcon: const Icon(Icons.map),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -216,8 +221,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       )
                     : const Icon(Icons.my_location),
                 label: Text(_isLoadingLocation
-                    ? 'Getting Location...'
-                    : 'Use Current Location'),
+                    ? l10n.onboardingGettingLocation
+                    : l10n.onboardingUseCurrentLocation),
               ),
             ),
             Consumer<ChallengeProvider>(
@@ -226,7 +231,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
-                      'Coordinates: ${provider.userLatitude.toStringAsFixed(4)}, ${provider.userLongitude.toStringAsFixed(4)}',
+                      l10n.settingsCoordinates(
+                          provider.userLatitude.toStringAsFixed(4),
+                          provider.userLongitude.toStringAsFixed(4)),
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   );
@@ -241,6 +248,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildPrayerSettingsSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
@@ -256,7 +264,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Prayer Settings',
+                  l10n.settingsPrayerSettingsTitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -269,7 +277,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 return DropdownButtonFormField<int>(
                   value: provider.calculationMethod,
                   decoration: InputDecoration(
-                    labelText: 'Calculation Method',
+                    labelText: l10n.settingsCalculationMethodLabel,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -301,10 +309,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Juristic Method'),
+                      title: Text(l10n.settingsJuristicMethodTitle),
                       subtitle: Text(useHanafi
-                          ? 'Hanafi (Later Asr time)'
-                          : 'Standard (Shafi, Maliki, Hanbali)'),
+                          ? l10n.settingsJuristicHanafi
+                          : l10n.settingsJuristicStandard),
                       trailing: Switch(
                         value: useHanafi,
                         onChanged: (value) {
@@ -334,7 +342,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Hanafi method calculates Asr time when shadow is twice the object length',
+                                l10n.settingsHanafiInfo,
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ),
@@ -352,6 +360,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildNotificationSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
@@ -367,7 +376,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Notifications',
+                  l10n.settingsNotificationsTitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -376,8 +385,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(height: 8),
             SwitchListTile(
-              title: const Text('Enable Notifications'),
-              subtitle: const Text('Get reminders and updates'),
+              title: Text(l10n.settingsEnableNotifications),
+              subtitle: Text(l10n.settingsEnableNotificationsSubtitle),
               value: _notificationsEnabled,
               onChanged: (value) {
                 setState(() {
@@ -388,8 +397,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             if (_notificationsEnabled) ...[
               const Divider(),
               SwitchListTile(
-                title: const Text('Fajr Prayer Reminder'),
-                subtitle: Text('Notify $_fajrReminderMinutes min before Fajr'),
+                title: Text(l10n.settingsFajrReminderTitle),
+                subtitle: Text(
+                    l10n.settingsFajrReminderSubtitle(_fajrReminderMinutes)),
                 value: _fajrReminder,
                 onChanged: (value) {
                   setState(() {
@@ -402,14 +412,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     children: [
-                      const Text('Remind me'),
+                      Text(l10n.settingsRemindMe),
                       const SizedBox(width: 8),
                       DropdownButton<int>(
                         value: _fajrReminderMinutes,
                         items: [5, 10, 15, 20, 30].map((minutes) {
                           return DropdownMenuItem(
                             value: minutes,
-                            child: Text('$minutes min'),
+                            child: Text(l10n.commonMinutesShort(minutes)),
                           );
                         }).toList(),
                         onChanged: (value) {
@@ -419,17 +429,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                       ),
                       const SizedBox(width: 8),
-                      const Text('before Fajr'),
+                      Text(l10n.settingsBeforeFajr),
                     ],
                   ),
                 ),
               ],
               const Divider(),
               SwitchListTile(
-                title: const Text('Daily Logging Reminder'),
-                subtitle: Text('Remind at '
-                    '${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logReminderHour, AppConstants.logReminderMinute)}'
-                    ' to log day'),
+                title: Text(l10n.settingsLoggingReminderTitle),
+                subtitle: Text(l10n.settingsLoggingReminderSubtitle(context
+                    .watch<PrayerTimeProvider>()
+                    .formatClock(AppConstants.logReminderHour,
+                        AppConstants.logReminderMinute))),
                 value: _loggingReminder,
                 onChanged: (value) {
                   setState(() {
@@ -445,6 +456,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildAppearanceSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
@@ -460,7 +472,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Appearance',
+                  l10n.settingsAppearanceTitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -473,24 +485,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Theme'),
+                    Text(l10n.settingsThemeLabel),
                     const SizedBox(height: 8),
                     SegmentedButton<ThemeMode>(
-                      segments: const [
+                      segments: [
                         ButtonSegment(
                           value: ThemeMode.system,
-                          label: Text('System'),
-                          icon: Icon(Icons.brightness_auto),
+                          label: Text(l10n.settingsThemeSystem),
+                          icon: const Icon(Icons.brightness_auto),
                         ),
                         ButtonSegment(
                           value: ThemeMode.light,
-                          label: Text('Light'),
-                          icon: Icon(Icons.light_mode),
+                          label: Text(l10n.settingsThemeLight),
+                          icon: const Icon(Icons.light_mode),
                         ),
                         ButtonSegment(
                           value: ThemeMode.dark,
-                          label: Text('Dark'),
-                          icon: Icon(Icons.dark_mode),
+                          label: Text(l10n.settingsThemeDark),
+                          icon: const Icon(Icons.dark_mode),
                         ),
                       ],
                       selected: {themeProvider.themeMode},
@@ -508,19 +520,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Time Format'),
+                    Text(l10n.settingsTimeFormatLabel),
                     const SizedBox(height: 8),
                     SegmentedButton<bool>(
-                      segments: const [
+                      segments: [
                         ButtonSegment(
                           value: false,
-                          label: Text('12-hour'),
-                          icon: Icon(Icons.schedule),
+                          label: Text(l10n.settingsTimeFormat12),
+                          icon: const Icon(Icons.schedule),
                         ),
                         ButtonSegment(
                           value: true,
-                          label: Text('24-hour'),
-                          icon: Icon(Icons.access_time),
+                          label: Text(l10n.settingsTimeFormat24),
+                          icon: const Icon(Icons.access_time),
                         ),
                       ],
                       selected: {prayerProvider.use24HourFormat},
@@ -545,6 +557,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           return const SizedBox();
         }
 
+        final l10n = AppLocalizations.of(context)!;
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Padding(
@@ -560,7 +573,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Challenge',
+                      l10n.settingsChallengeTitle,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -571,11 +584,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.calendar_today),
-                  title: const Text('Challenge Started'),
+                  title: Text(l10n.settingsChallengeStarted),
                   subtitle: Text(
                     provider.challengeStartDate != null
                         ? '${provider.challengeStartDate!.day}/${provider.challengeStartDate!.month}/${provider.challengeStartDate!.year}'
-                        : 'Not started',
+                        : l10n.settingsChallengeNotStarted,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -586,7 +599,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icon(Icons.stop,
                       color: Theme.of(context).colorScheme.error),
                   label: Text(
-                    'End Challenge',
+                    l10n.settingsEndChallenge,
                     style:
                         TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
@@ -604,6 +617,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildAboutSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.all(16),
       child: Padding(
@@ -619,7 +633,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'About',
+                  l10n.settingsAboutTitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -630,26 +644,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.apps),
-              title: const Text('App Version'),
+              title: Text(l10n.settingsAppVersion),
               subtitle: Text(_appVersion.isEmpty ? '…' : _appVersion),
             ),
             _buildAccountTile(),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.book),
-              title: const Text('Guidelines'),
+              title: Text(l10n.settingsGuidelines),
               onTap: _showGuidelinesDialog,
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.feedback),
-              title: const Text('Send Feedback'),
+              title: Text(l10n.settingsSendFeedback),
               onTap: _sendFeedback,
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.share),
-              title: const Text('Share App'),
+              title: Text(l10n.settingsShareApp),
               onTap: _shareApp,
             ),
           ],
@@ -665,17 +679,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return StreamBuilder(
       stream: auth.authStateChanges(),
       builder: (context, _) {
+        final l10n = AppLocalizations.of(context)!;
         final isAnon = auth.isAnonymous;
         final configured = AuthService.googleServerClientId.isNotEmpty;
         return ListTile(
           contentPadding: EdgeInsets.zero,
           leading: Icon(isAnon ? Icons.person_outline : Icons.verified_user),
-          title: Text(isAnon ? 'Guest account' : 'Signed in'),
+          title:
+              Text(isAnon ? l10n.settingsGuestAccount : l10n.settingsSignedIn),
           subtitle: Text(isAnon
               ? (configured
-                  ? 'Tap to back up your progress with Google'
-                  : 'Progress is saved on this device')
-              : (auth.currentUser?.email ?? 'Synced')),
+                  ? l10n.settingsLinkGooglePrompt
+                  : l10n.settingsProgressSavedLocally)
+              : (auth.currentUser?.email ?? l10n.settingsSynced)),
           trailing: _isAccountBusy
               ? const SizedBox(
                   width: 20,
@@ -692,12 +708,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _linkGoogle() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isAccountBusy = true);
     try {
       await context.read<AuthService>().signInWithGoogle();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Signed in with Google.')),
+          SnackBar(content: Text(l10n.settingsSignedInWithGoogle)),
         );
       }
     } catch (e) {
@@ -729,13 +746,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// Opens the device email composer pre-filled to the support address, with the
   /// app version in the body so reports carry useful context.
   Future<void> _sendFeedback() async {
+    final l10n = AppLocalizations.of(context)!;
     final info = await PackageInfo.fromPlatform();
     final uri = Uri(
       scheme: 'mailto',
       path: _feedbackEmail,
       query: _encodeQuery({
-        'subject': 'Subh Warrior Feedback',
-        'body': '\n\n\n---\nApp version: ${info.version} (${info.buildNumber})',
+        'subject': l10n.settingsFeedbackSubject,
+        'body':
+            '\n\n\n---\n${l10n.settingsFeedbackAppVersion(info.version, info.buildNumber)}',
       }),
     );
     if (!mounted) return;
@@ -743,8 +762,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!launched && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              const Text('No email app found. Reach us at $_feedbackEmail'),
+          content: Text(l10n.settingsNoEmailApp(_feedbackEmail)),
           backgroundColor: context.appColors.warning,
         ),
       );
@@ -759,10 +777,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// Opens the system share sheet with an invite message. No store link yet
   /// (unpublished) — add the Play/App Store URL here once live.
   Future<void> _shareApp() async {
-    const message =
-        'Build powerful mornings with Subh Warrior — wake for Fajr, stay '
-        'productive, and finish the 28-day challenge. 🌅';
-    await Share.share(message, subject: 'Subh Warrior');
+    final l10n = AppLocalizations.of(context)!;
+    await Share.share(l10n.settingsShareMessage, subject: l10n.splashTitle);
   }
 
   Widget _buildStatRow(String label, String value) {
@@ -829,7 +845,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error getting location: $e'),
+          content: Text(AppLocalizations.of(context)!
+              .onboardingErrorGettingLocation('$e')),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -856,10 +873,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _saveSettings() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_nameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please enter your name'),
+          content: Text(l10n.settingsEnterNamePrompt),
           backgroundColor: context.appColors.warning,
         ),
       );
@@ -899,7 +917,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Settings saved successfully'),
+            content: Text(l10n.settingsSavedSuccess),
             backgroundColor: context.appColors.success,
           ),
         );
@@ -919,18 +937,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showEndChallengeDialog(ChallengeProvider provider) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('End Challenge?'),
-        content: const Text(
-          'Are you sure you want to end the challenge? '
-          'Your progress will be saved but the challenge will be marked as incomplete.',
-        ),
+        title: Text(l10n.settingsEndChallengeDialogTitle),
+        content: Text(l10n.settingsEndChallengeDialogContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.settingsCancel),
           ),
           TextButton(
             onPressed: () async {
@@ -940,7 +956,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               navigator.pop();
             },
             child: Text(
-              'End Challenge',
+              l10n.settingsEndChallenge,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
@@ -950,37 +966,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showGuidelinesDialog() {
+    final l10n = AppLocalizations.of(context)!;
+    final cutoffTime = context
+        .read<PrayerTimeProvider>()
+        .formatClock(AppConstants.logCutoffHour);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Challenge Guidelines'),
+        title: Text(l10n.settingsGuidelinesDialogTitle),
         content: SingleChildScrollView(
-          child: Text(
-            '🌅 SUBH WARRIOR CHALLENGE\n\n'
-            '✓ Wake up at or before Fajr time\n'
-            '✓ Stay awake and alert\n'
-            '✓ Pray Fajr within the prayer window\n'
-            '✓ Complete 60+ minutes of productive work\n'
-            '✓ Log before ${context.read<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)} daily\n'
-            '✓ Complete 16+ days over 4 weeks\n'
-            '✓ Minimum 4 qualifying days per week\n\n'
-            'QUALIFYING WORK:\n'
-            '• Deep work tasks\n'
-            '• Strategic planning\n'
-            '• Learning/skill development\n'
-            '• Creative projects\n'
-            '• Important communication\n\n'
-            'NON-QUALIFYING:\n'
-            '• Passive content consumption\n'
-            '• Routine administrative tasks\n'
-            '• Social media\n\n'
-            'Note: Weekends do not count as qualifying days.',
-          ),
+          child: Text(l10n.settingsGuidelinesContent(cutoffTime)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Got it!'),
+            child: Text(l10n.settingsGotIt),
           ),
         ],
       ),

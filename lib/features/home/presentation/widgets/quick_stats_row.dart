@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 
 /// Two-card row: days remaining and overall goal progress.
 class QuickStatsRow extends StatelessWidget {
@@ -18,6 +19,7 @@ class QuickStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -37,7 +39,7 @@ class QuickStatsRow extends StatelessWidget {
                     '$daysRemaining',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  const Text('Days Left'),
+                  Text(l10n.quickStatsDaysLeft),
                 ],
               ),
             ),
@@ -51,15 +53,20 @@ class QuickStatsRow extends StatelessWidget {
                   CircularPercentIndicator(
                     radius: 30.0,
                     percent: overallProgress.clamp(0, 1),
-                    center: Text('${(overallProgress * 100).toInt()}%'),
+                    center: Text(
+                      l10n.quickStatsPercent((overallProgress * 100).toInt()),
+                    ),
                     progressColor: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '$totalQualifyingDays/${AppConstants.qualifyingDaysGoal}',
+                    l10n.quickStatsGoalRatio(
+                      totalQualifyingDays,
+                      AppConstants.qualifyingDaysGoal,
+                    ),
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  const Text('Goal Progress'),
+                  Text(l10n.quickStatsGoalProgress),
                 ],
               ),
             ),

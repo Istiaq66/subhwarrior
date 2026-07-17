@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 
 /// Shown on the dashboard when no challenge is active — a call to action to
 /// start the challenge.
@@ -11,6 +12,7 @@ class InactiveChallengeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -24,21 +26,20 @@ class InactiveChallengeView extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Ready to become a Subh Warrior?',
+              l10n.inactiveChallengeTitle,
               style: Theme.of(context).textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Start your ${AppConstants.challengeDays}-day challenge to build a '
-              'powerful morning routine with Fajr prayer and productive work.',
+            Text(
+              l10n.inactiveChallengeBody(AppConstants.challengeDays),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
             FilledButton.icon(
               onPressed: onStart,
               icon: const Icon(Icons.play_arrow),
-              label: const Text('Start Challenge'),
+              label: Text(l10n.inactiveChallengeStartButton),
               style: FilledButton.styleFrom(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 16),

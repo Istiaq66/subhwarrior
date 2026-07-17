@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 
 const int notificationPermissionLaunchLimit = 31;
 const int notificationPermissionLaunchInterval = 10;
@@ -37,21 +38,21 @@ Future<bool> getNotificationPermission(BuildContext context) async {
           borderRadius: BorderRadius.circular(16),
         ),
         title: Text(
-          'Enable Notifications',
+          AppLocalizations.of(context)!.notifPermTitle,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         content: Text(
-          'Get reminded about Fajr prayer and daily logging to stay on track with your Subh Warrior challenge.',
+          AppLocalizations.of(context)!.notifPermContent,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Not Now'),
+            child: Text(AppLocalizations.of(context)!.notifPermNotNow),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Enable'),
+            child: Text(AppLocalizations.of(context)!.notifPermEnable),
           ),
         ],
       ),

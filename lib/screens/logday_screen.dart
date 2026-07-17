@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/domain/log_result.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
@@ -58,7 +59,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Log Today'),
+        title: Text(AppLocalizations.of(context)!.todayStatusLogTodayButton),
         elevation: 0,
       ),
       body: !canSubmit
@@ -95,6 +96,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
   }
 
   Widget _buildWeekendMessage() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -108,19 +110,18 @@ class _LogDayScreenState extends State<LogDayScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Weekend Day',
+              l10n.logDayWeekendTitle,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Weekend days do not count toward the Subh Warrior Challenge.\n\n'
-              'You need 4 qualifying weekdays per week.',
+            Text(
+              l10n.logDayWeekendBody,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Go Back'),
+              child: Text(l10n.logDayGoBack),
             ),
           ],
         ),
@@ -129,6 +130,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
   }
 
   Widget _buildTimeExpired() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -142,19 +144,20 @@ class _LogDayScreenState extends State<LogDayScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Time\'s Up!',
+              l10n.logDayTimeUpTitle,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              'Daily logs must be submitted before '
-              '${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)}.',
+              l10n.logDayTimeUpBody(context
+                  .watch<PrayerTimeProvider>()
+                  .formatClock(AppConstants.logCutoffHour)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Go Back'),
+              child: Text(l10n.logDayGoBack),
             ),
           ],
         ),
@@ -190,7 +193,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Time remaining to log: ${hours}h ${minutes}m',
+              AppLocalizations.of(context)!.logDayTimeRemaining(hours, minutes),
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onErrorContainer,
                 fontWeight: FontWeight.bold,
@@ -203,6 +206,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
   }
 
   Widget _buildPrayerTimeInfo(PrayerTimeProvider provider) {
+    final l10n = AppLocalizations.of(context)!;
     final fajrTime = provider.todayFajrTime;
     final isWithinWindow = provider.isWithinFajrTime();
 
@@ -219,25 +223,28 @@ class _LogDayScreenState extends State<LogDayScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Today\'s Fajr',
+                  l10n.logDayTodaysFajr,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 if (isWithinWindow)
                   Chip(
-                    label: const Text('Prayer Time Now'),
+                    label: Text(l10n.logDayPrayerTimeNow),
                     backgroundColor: context.appColors.success,
                   ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              fajrTime != null ? provider.formatTime(fajrTime) : 'Loading...',
+              fajrTime != null
+                  ? provider.formatTime(fajrTime)
+                  : l10n.logDayLoading,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             if (provider.todayPrayerTimes != null) ...[
               const SizedBox(height: 4),
               Text(
-                'Sunrise: ${provider.formatTimeString(provider.todayPrayerTimes!.sunrise)}',
+                l10n.logDaySunrise(provider
+                    .formatTimeString(provider.todayPrayerTimes!.sunrise)),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -248,6 +255,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
   }
 
   Widget _buildWakeUpSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -255,13 +263,13 @@ class _LogDayScreenState extends State<LogDayScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Wake-Up Requirements',
+              l10n.logDayWakeUpTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
             CheckboxListTile(
-              title: const Text('Woke up at/before Fajr time'),
-              subtitle: const Text('Not just temporary wake-up'),
+              title: Text(l10n.logDayWokeUpTitle),
+              subtitle: Text(l10n.logDayWokeUpSubtitle),
               value: _wokeUpForFajr,
               onChanged: (value) {
                 setState(() {
@@ -270,8 +278,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
               },
             ),
             CheckboxListTile(
-              title: const Text('Stayed awake and alert'),
-              subtitle: const Text('Remained conscious after prayer'),
+              title: Text(l10n.logDayStayedAwake),
+              subtitle: Text(l10n.logDayStayedAwakeSubtitle),
               value: _stayedAwakeAfter,
               onChanged: (value) {
                 setState(() {
@@ -286,6 +294,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
   }
 
   Widget _buildFajrPrayerSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -293,13 +302,13 @@ class _LogDayScreenState extends State<LogDayScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Fajr Prayer',
+              l10n.todayStatusFajrPrayer,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
             SwitchListTile(
-              title: const Text('Prayed Fajr on time'),
-              subtitle: const Text('Within the prayer window'),
+              title: Text(l10n.logDayPrayedFajrOnTime),
+              subtitle: Text(l10n.logDayWithinWindow),
               value: _prayedFajrOnTime,
               onChanged: (value) {
                 setState(() {
@@ -311,8 +320,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
             if (_prayedFajrOnTime) ...[
               const Divider(),
               SwitchListTile(
-                title: const Text('Prayed at Masjid'),
-                subtitle: const Text('Highly recommended (not required)'),
+                title: Text(l10n.logDayPrayedAtMasjid),
+                subtitle: Text(l10n.logDayMasjidSubtitle),
                 value: _prayedAtMasjid,
                 onChanged: (value) {
                   setState(() {
@@ -329,6 +338,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
   }
 
   Widget _buildWorkSection() {
+    final l10n = AppLocalizations.of(context)!;
     final isQualifyingWork = _isQualifyingWork;
 
     return Card(
@@ -338,14 +348,14 @@ class _LogDayScreenState extends State<LogDayScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Productive Work',
+              l10n.logDayProductiveWork,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
 
             // Work Type Selection
             Text(
-              'Type of Work',
+              l10n.logDayTypeOfWork,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 8),
@@ -361,40 +371,12 @@ class _LogDayScreenState extends State<LogDayScreen> {
                         .withValues(alpha: 0.1),
                 filled: true,
               ),
-              items: const [
-                DropdownMenuItem(
-                  value: WorkType.deepWork,
-                  child: Text('Deep Work'),
-                ),
-                DropdownMenuItem(
-                  value: WorkType.strategicPlanning,
-                  child: Text('Strategic Planning'),
-                ),
-                DropdownMenuItem(
-                  value: WorkType.learning,
-                  child: Text('Learning/Skill Development'),
-                ),
-                DropdownMenuItem(
-                  value: WorkType.creativeProjects,
-                  child: Text('Creative Projects'),
-                ),
-                DropdownMenuItem(
-                  value: WorkType.importantCommunication,
-                  child: Text('Important Communication'),
-                ),
-                DropdownMenuItem(
-                  value: WorkType.passiveConsumption,
-                  child: Text('❌ Passive Content Consumption'),
-                ),
-                DropdownMenuItem(
-                  value: WorkType.routineAdmin,
-                  child: Text('❌ Routine Administrative Tasks'),
-                ),
-                DropdownMenuItem(
-                  value: WorkType.socialMedia,
-                  child: Text('❌ Social Media'),
-                ),
-              ],
+              items: WorkType.values
+                  .map((type) => DropdownMenuItem(
+                        value: type,
+                        child: Text(_workTypeLabel(l10n, type)),
+                      ))
+                  .toList(),
               onChanged: (value) {
                 setState(() {
                   _selectedWorkType = value!;
@@ -420,7 +402,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'This type of work does not qualify',
+                        l10n.logDayWorkNotQualify,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.error,
                           fontSize: 12,
@@ -434,14 +416,14 @@ class _LogDayScreenState extends State<LogDayScreen> {
 
             const SizedBox(height: 16),
             Text(
-              'Minutes of focused work: $_minutesWorked',
+              l10n.logDayMinutesFocused(_minutesWorked),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             Slider(
               value: _minutesWorked.toDouble(),
               max: 180,
               divisions: 36,
-              label: '$_minutesWorked min',
+              label: l10n.commonMinutesShort(_minutesWorked),
               onChanged: (value) {
                 setState(() {
                   _minutesWorked = value.round();
@@ -450,7 +432,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
             ),
             if (_minutesWorked < AppConstants.minDeepWorkMinutes)
               Text(
-                'Minimum ${AppConstants.minDeepWorkMinutes} minutes required for qualification',
+                l10n.logDayMinimumMinutes(AppConstants.minDeepWorkMinutes),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.error,
                   fontSize: 12,
@@ -459,18 +441,18 @@ class _LogDayScreenState extends State<LogDayScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _workDescriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Describe your work',
-                hintText: 'What specific tasks did you complete?',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.logDayDescribeWorkLabel,
+                hintText: l10n.logDayDescribeWorkHint,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 3,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please describe your work';
+                  return l10n.logDayDescribeWorkError;
                 }
                 if (value.length < 10) {
-                  return 'Please provide more detail';
+                  return l10n.logDayMoreDetailError;
                 }
                 return null;
               },
@@ -481,7 +463,31 @@ class _LogDayScreenState extends State<LogDayScreen> {
     );
   }
 
+  /// Maps a [WorkType] to its localized display label (kept at the widget
+  /// layer so the domain enum stays l10n-free).
+  String _workTypeLabel(AppLocalizations l10n, WorkType type) {
+    switch (type) {
+      case WorkType.deepWork:
+        return l10n.logDayWorkTypeDeepWork;
+      case WorkType.strategicPlanning:
+        return l10n.logDayWorkTypeStrategicPlanning;
+      case WorkType.learning:
+        return l10n.logDayWorkTypeLearning;
+      case WorkType.creativeProjects:
+        return l10n.logDayWorkTypeCreativeProjects;
+      case WorkType.importantCommunication:
+        return l10n.logDayWorkTypeImportantCommunication;
+      case WorkType.passiveConsumption:
+        return l10n.logDayWorkTypePassiveConsumption;
+      case WorkType.routineAdmin:
+        return l10n.logDayWorkTypeRoutineAdmin;
+      case WorkType.socialMedia:
+        return l10n.logDayWorkTypeSocialMedia;
+    }
+  }
+
   Widget _buildReflectionSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -489,16 +495,15 @@ class _LogDayScreenState extends State<LogDayScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Reflection (Optional)',
+              l10n.logDayReflectionTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _reflectionController,
-              decoration: const InputDecoration(
-                hintText:
-                    'How did the early morning work feel?\nWhat did you accomplish?\nAny insights or breakthroughs?',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: l10n.logDayReflectionHint,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 4,
             ),
@@ -509,6 +514,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
   }
 
   Widget _buildQualificationStatus() {
+    final l10n = AppLocalizations.of(context)!;
     final isQualifyingWork = _isQualifyingWork;
     final isQualifying = _isQualifyingDay;
 
@@ -541,7 +547,9 @@ class _LogDayScreenState extends State<LogDayScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
-                  isQualifying ? 'Qualifying Day!' : 'Not Qualifying Yet',
+                  isQualifying
+                      ? l10n.logDayQualifyingDay
+                      : l10n.logDayNotQualifyingYet,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -550,22 +558,23 @@ class _LogDayScreenState extends State<LogDayScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          _buildRequirement(context, 'Awake at/before Fajr', _wokeUpForFajr),
+          _buildRequirement(context, l10n.logDayReqAwake, _wokeUpForFajr),
+          _buildRequirement(context, l10n.logDayStayedAwake, _stayedAwakeAfter),
           _buildRequirement(
-              context, 'Stayed awake and alert', _stayedAwakeAfter),
-          _buildRequirement(context, 'Prayed Fajr on time', _prayedFajrOnTime),
+              context, l10n.logDayPrayedFajrOnTime, _prayedFajrOnTime),
           _buildRequirement(
               context,
-              '${AppConstants.minDeepWorkMinutes}+ minutes of work',
+              l10n.logDayReqMinutesWork(AppConstants.minDeepWorkMinutes),
               _minutesWorked >= AppConstants.minDeepWorkMinutes),
-          _buildRequirement(context, 'Qualifying work type', isQualifyingWork),
+          _buildRequirement(
+              context, l10n.logDayReqQualifyingWorkType, isQualifyingWork),
           if (_prayedAtMasjid) ...[
             const SizedBox(height: 8),
             Row(
               children: [
                 Icon(Icons.star, color: context.appColors.gold, size: 16),
                 const SizedBox(width: 8),
-                const Text('Bonus: Prayed at Masjid! 🌟'),
+                Text(l10n.logDayBonusMasjid),
               ],
             ),
           ],
@@ -611,7 +620,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
         child: _isSubmitting
             ? CircularProgressIndicator(
                 color: Theme.of(context).colorScheme.onPrimary)
-            : const Text('Submit Log'),
+            : Text(AppLocalizations.of(context)!.logDaySubmitButton),
       ),
     );
   }
@@ -623,7 +632,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
     if (!_wokeUpForFajr || !_stayedAwakeAfter) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('You must be awake and alert for Fajr'),
+          content: Text(AppLocalizations.of(context)!.logDayMustBeAwake),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -669,6 +678,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
   /// the day qualified and whether the user prayed at the masjid. Pops both the
   /// dialog and the log screen on "Continue".
   void _showSuccessDialog({required bool isQualifying}) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -684,15 +694,17 @@ class _LogDayScreenState extends State<LogDayScreen> {
         ),
         title: Text(
           isQualifying
-              ? (_prayedAtMasjid ? 'Exceptional!' : 'Excellent!')
-              : 'Day Logged',
+              ? (_prayedAtMasjid
+                  ? l10n.logDayExceptional
+                  : l10n.logDayExcellent)
+              : l10n.logDayDayLogged,
         ),
         content: Text(
           isQualifying
               ? (_prayedAtMasjid
-                  ? 'Outstanding! You prayed at the masjid AND completed your morning work. True Subh Warrior spirit! 🌟'
-                  : 'You\'ve earned a qualifying day! Keep up the great work!')
-              : 'Day logged successfully. Review the requirements and try again tomorrow!',
+                  ? l10n.logDayMasjidSuccessContent
+                  : l10n.logDayQualifyingSuccessContent)
+              : l10n.logDayLoggedContent,
         ),
         actions: [
           TextButton(
@@ -700,7 +712,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('Continue'),
+            child: Text(l10n.logDayContinue),
           ),
         ],
       ),
@@ -708,16 +720,18 @@ class _LogDayScreenState extends State<LogDayScreen> {
   }
 
   String _logFailureMessage(LogResult result, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     switch (result) {
       case LogResult.afterCutoff:
-        return 'Logging window closed — log before '
-            '${context.read<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)}.';
+        return l10n.logDayAfterCutoff(context
+            .read<PrayerTimeProvider>()
+            .formatClock(AppConstants.logCutoffHour));
       case LogResult.weekend:
-        return 'Weekends don\'t count toward the challenge.';
+        return l10n.logDayWeekendError;
       case LogResult.alreadyLogged:
-        return 'You\'ve already logged today.';
+        return l10n.logDayAlreadyLogged;
       case LogResult.invalidInput:
-        return 'Your notes are too long — please shorten them.';
+        return l10n.logDayNotesTooLong;
       case LogResult.success:
         return '';
     }

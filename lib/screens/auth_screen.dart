@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/utils/input_validators.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
@@ -57,28 +58,28 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   /// Maps Firebase/Google auth errors to friendly text.
-  String _authErrorMessage(Object e) {
+  String _authErrorMessage(AppLocalizations l10n, Object e) {
     if (e is FirebaseAuthException) {
       switch (e.code) {
         case 'email-already-in-use':
-          return 'That email is already registered. Try logging in instead.';
+          return l10n.authErrorEmailInUse;
         case 'invalid-email':
-          return 'That email address is not valid.';
+          return l10n.authErrorInvalidEmail;
         case 'wrong-password':
         case 'invalid-credential':
-          return 'Incorrect email or password.';
+          return l10n.authErrorWrongPassword;
         case 'user-not-found':
-          return 'No account found for that email.';
+          return l10n.authErrorUserNotFound;
         case 'user-disabled':
-          return 'This account has been disabled.';
+          return l10n.authErrorUserDisabled;
         case 'weak-password':
-          return 'Password is too weak (minimum 6 characters).';
+          return l10n.authErrorWeakPassword;
         case 'network-request-failed':
-          return 'Network error. Check your connection and try again.';
+          return l10n.authErrorNetworkRequestFailed;
         case 'too-many-requests':
-          return 'Too many attempts. Please try again later.';
+          return l10n.authErrorTooManyRequests;
         default:
-          return e.message ?? 'Authentication failed. Please try again.';
+          return e.message ?? l10n.authErrorGeneric;
       }
     }
     return e.toString().replaceAll('Exception: ', '');
@@ -86,6 +87,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _busy = true);
     try {
       if (_isRegister) {
@@ -94,7 +96,7 @@ class _AuthScreenState extends State<AuthScreen> {
         await _login();
       }
     } catch (e) {
-      _showError(_authErrorMessage(e));
+      _showError(_authErrorMessage(l10n, e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -105,11 +107,12 @@ class _AuthScreenState extends State<AuthScreen> {
     final password = _passwordController.text;
     final username = _usernameController.text.trim();
 
+    final l10n = AppLocalizations.of(context)!;
     final challenge = context.read<ChallengeProvider>();
 
     // Best-effort pre-check so we fail fast before creating the account.
     if (await challenge.checkUsernameExists(username)) {
-      _showError('That username is already taken. Please choose another.');
+      _showError(l10n.authUsernameTaken);
       return;
     }
 
@@ -131,6 +134,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _signInWithGoogle() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _busy = true);
     try {
       final cred = await _auth.signInWithGoogle();
@@ -148,7 +152,7 @@ class _AuthScreenState extends State<AuthScreen> {
         );
       }
     } catch (e) {
-      _showError(_authErrorMessage(e));
+      _showError(_authErrorMessage(l10n, e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -189,26 +193,28 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _forgotPassword() async {
+    final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
     final emailError = InputValidators.email(email);
     if (emailError != null) {
-      _showError('Enter your email above first, then tap "Forgot password".');
+      _showError(l10n.authForgotPasswordEnterEmail);
       return;
     }
     try {
       await _auth.sendPasswordReset(email);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password reset email sent to $email.')),
+        SnackBar(content: Text(l10n.authPasswordResetSent(email))),
       );
     } catch (e) {
-      _showError(_authErrorMessage(e));
+      _showError(_authErrorMessage(l10n, e));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final googleEnabled = AuthService.googleServerClientId.isNotEmpty;
 
     return Scaffold(
@@ -226,7 +232,9 @@ class _AuthScreenState extends State<AuthScreen> {
                       size: 72, color: theme.colorScheme.primary),
                   const SizedBox(height: 16),
                   Text(
-                    _isRegister ? 'Create your account' : 'Welcome back',
+                    _isRegister
+                        ? l10n.authCreateAccountTitle
+                        : l10n.authWelcomeBackTitle,
                     style: theme.textTheme.headlineSmall
                         ?.copyWith(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
@@ -238,7 +246,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       maxLength: AppConstants.usernameMaxLength,
                       textCapitalization: TextCapitalization.words,
                       decoration: InputDecoration(
-                        labelText: 'Username',
+                        labelText: l10n.authUsernameLabel,
                         prefixIcon: const Icon(Icons.badge),
                         filled: true,
                         fillColor: _fillColor,
@@ -253,7 +261,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     keyboardType: TextInputType.emailAddress,
                     autofillHints: const [AutofillHints.email],
                     decoration: InputDecoration(
-                      labelText: 'Email',
+                      labelText: l10n.authEmailLabel,
                       prefixIcon: const Icon(Icons.email),
                       filled: true,
                       fillColor: _fillColor,
@@ -266,7 +274,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: l10n.authPasswordLabel,
                       prefixIcon: const Icon(Icons.lock),
                       filled: true,
                       fillColor: _fillColor,
@@ -286,7 +294,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: _busy ? null : _forgotPassword,
-                        child: const Text('Forgot password?'),
+                        child: Text(l10n.authForgotPassword),
                       ),
                     ),
                   const SizedBox(height: 12),
@@ -301,7 +309,9 @@ class _AuthScreenState extends State<AuthScreen> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Text(_isRegister ? 'Create account' : 'Log in'),
+                        : Text(_isRegister
+                            ? l10n.authCreateAccountButton
+                            : l10n.authLogInButton),
                   ),
                   const SizedBox(height: 8),
                   TextButton(
@@ -309,24 +319,24 @@ class _AuthScreenState extends State<AuthScreen> {
                         ? null
                         : () => setState(() => _isRegister = !_isRegister),
                     child: Text(_isRegister
-                        ? 'Already have an account? Log in'
-                        : "Don't have an account? Register"),
+                        ? l10n.authToggleToLogin
+                        : l10n.authToggleToRegister),
                   ),
                   if (googleEnabled) ...[
                     const SizedBox(height: 8),
-                    const Row(children: [
-                      Expanded(child: Divider()),
+                    Row(children: [
+                      const Expanded(child: Divider()),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Text('OR'),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(l10n.commonOr),
                       ),
-                      Expanded(child: Divider()),
+                      const Expanded(child: Divider()),
                     ]),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: _busy ? null : _signInWithGoogle,
                       icon: const Icon(Icons.login),
-                      label: const Text('Continue with Google'),
+                      label: Text(l10n.authContinueWithGoogle),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),

@@ -3,6 +3,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
@@ -62,8 +63,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
-                'Could not find that location. Please check spelling.'),
+            content:
+                Text(AppLocalizations.of(context)!.onboardingLocationNotFound),
             backgroundColor: context.appColors.warning,
           ),
         );
@@ -72,7 +73,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error finding location: ${e.toString()}'),
+          content: Text(AppLocalizations.of(context)!
+              .onboardingErrorFindingLocation(e.toString())),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -110,6 +112,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildWelcomePage() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -122,7 +125,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 32),
           Text(
-            'Welcome to\nSubh Warrior',
+            l10n.onboardingWelcomeTitle,
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -130,7 +133,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Transform your mornings with the power of Fajr prayer and focused productivity',
+            l10n.onboardingWelcomeSubtitle,
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
@@ -143,13 +146,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             child: Column(
               children: [
-                _buildFeatureRow(Icons.mosque, 'Fajr Prayer Tracking'),
+                _buildFeatureRow(
+                    Icons.mosque, l10n.onboardingFeatureFajrTracking),
                 const SizedBox(height: 8),
-                _buildFeatureRow(Icons.timer, '60+ Min Productive Work'),
+                _buildFeatureRow(
+                    Icons.timer, l10n.onboardingFeatureProductiveWork),
                 const SizedBox(height: 8),
-                _buildFeatureRow(Icons.calendar_month, '28-Day Challenge'),
+                _buildFeatureRow(Icons.calendar_month,
+                    l10n.onboardingFeatureChallengeDuration),
                 const SizedBox(height: 8),
-                _buildFeatureRow(Icons.emoji_events, 'Achieve 16+ Days'),
+                _buildFeatureRow(
+                    Icons.emoji_events, l10n.onboardingFeatureAchieveDays),
               ],
             ),
           ),
@@ -159,6 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildRulesPage() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -179,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 32),
           Text(
-            'Challenge Rules',
+            l10n.onboardingRulesTitle,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -187,26 +195,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const SizedBox(height: 24),
           _buildRuleCard(
             '1',
-            'Wake Up',
-            'Rise at or before Fajr time and stay awake',
+            l10n.onboardingRuleWakeUpTitle,
+            l10n.onboardingRuleWakeUpDesc,
             Icons.alarm,
           ),
           _buildRuleCard(
             '2',
-            'Pray',
-            'Perform Fajr prayer within the time window',
+            l10n.onboardingRulePrayTitle,
+            l10n.onboardingRulePrayDesc,
             Icons.mosque,
           ),
           _buildRuleCard(
             '3',
-            'Work',
-            'Complete 60+ minutes of productive work',
+            l10n.onboardingRuleWorkTitle,
+            l10n.onboardingRuleWorkDesc,
             Icons.work,
           ),
           _buildRuleCard(
             '4',
-            'Log',
-            'Submit your day before ${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)} (weekdays only)',
+            l10n.onboardingRuleLogTitle,
+            l10n.onboardingRuleLogDesc(context
+                .watch<PrayerTimeProvider>()
+                .formatClock(AppConstants.logCutoffHour)),
             Icons.check_circle,
           ),
           const SizedBox(height: 24),
@@ -222,7 +232,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Complete 16+ qualifying days over 4 weeks',
+                    l10n.onboardingRulesGoal,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
@@ -235,6 +245,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildLocationPage() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -255,14 +266,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 32),
           Text(
-            'Set Your Location',
+            l10n.onboardingLocationTitle,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
           const SizedBox(height: 8),
           Text(
-            'We need this to calculate accurate prayer times',
+            l10n.onboardingLocationSubtitle,
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
@@ -274,8 +285,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               if (_hasCoordinates) setState(() => _hasCoordinates = false);
             },
             decoration: InputDecoration(
-              labelText: 'City/Location',
-              hintText: 'e.g., New York, USA',
+              labelText: l10n.onboardingLocationFieldLabel,
+              hintText: l10n.onboardingLocationFieldHint,
               prefixIcon: const Icon(Icons.map),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -285,7 +296,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             style: const TextStyle(fontSize: 18),
           ),
           const SizedBox(height: 16),
-          const Text('OR'),
+          Text(l10n.commonOr),
           const SizedBox(height: 16),
           OutlinedButton.icon(
             onPressed: _isLoadingLocation ? null : _getCurrentLocation,
@@ -297,8 +308,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   )
                 : const Icon(Icons.my_location),
             label: Text(_isLoadingLocation
-                ? 'Getting Location...'
-                : 'Use Current Location'),
+                ? l10n.onboardingGettingLocation
+                : l10n.onboardingUseCurrentLocation),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
@@ -309,6 +320,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildReadyPage() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -333,14 +345,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 32),
           Text(
-            'You\'re All Set!',
+            l10n.onboardingReadyTitle,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
           const SizedBox(height: 16),
           Text(
-            'Ready to become a Subh Warrior?',
+            l10n.inactiveChallengeTitle,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 32),
@@ -353,9 +365,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Column(
               children: [
                 Text(
-                  _nameController.text.isNotEmpty
-                      ? 'Welcome, ${_nameController.text}!'
-                      : 'Welcome, Warrior!',
+                  l10n.onboardingWelcomeUser(_nameController.text.isNotEmpty
+                      ? _nameController.text
+                      : l10n.homeGreetingFallbackName),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -377,7 +389,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           FilledButton.icon(
             onPressed: _completeOnboarding,
             icon: const Icon(Icons.check),
-            label: const Text('Start Your Journey'),
+            label: Text(l10n.onboardingStartJourneyButton),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
             ),
@@ -388,6 +400,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildBottomSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Row(
@@ -401,7 +414,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   curve: Curves.easeInOut,
                 );
               },
-              child: const Text('Back'),
+              child: Text(l10n.onboardingBackButton),
             )
           else
             const SizedBox(width: 80),
@@ -429,7 +442,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   if (locationText.isEmpty && mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text('Please set your location'),
+                        content: Text(l10n.onboardingSetLocationPrompt),
                         backgroundColor: context.appColors.warning,
                       ),
                     );
@@ -444,8 +457,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     if (!_hasCoordinates && mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text(
-                              'Unable to find coordinates for that location.'),
+                          content: Text(l10n.onboardingCoordinatesNotFound),
                           backgroundColor: Theme.of(context).colorScheme.error,
                         ),
                       );
@@ -458,7 +470,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   curve: Curves.easeInOut,
                 );
               },
-              child: const Text('Next'),
+              child: Text(l10n.onboardingNextButton),
             )
           else
             const SizedBox(width: 80),
@@ -543,8 +555,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
-                'Location services are disabled. Please enable them in settings.'),
+            content: Text(AppLocalizations.of(context)!
+                .onboardingLocationServicesDisabled),
             backgroundColor: context.appColors.warning,
           ),
         );
@@ -564,7 +576,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Location permissions are denied'),
+              content: Text(AppLocalizations.of(context)!
+                  .onboardingLocationPermissionDenied),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
@@ -579,11 +592,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
-                'Location permissions are permanently denied. Please enable them in app settings.'),
+            content: Text(AppLocalizations.of(context)!
+                .onboardingLocationPermissionDeniedForever),
             backgroundColor: Theme.of(context).colorScheme.error,
             action: SnackBarAction(
-              label: 'Settings',
+              label: AppLocalizations.of(context)!.onboardingSettingsAction,
               onPressed: () {
                 Geolocator.openAppSettings();
               },
@@ -612,11 +625,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           position.latitude,
           position.longitude,
         );
+        if (!mounted) return;
 
         if (placemarks.isNotEmpty) {
           final place = placemarks.first;
           final location =
-              '${place.locality ?? place.administrativeArea ?? 'Unknown'}, ${place.country ?? ''}';
+              '${place.locality ?? place.administrativeArea ?? AppLocalizations.of(context)!.onboardingUnknownLocality}, ${place.country ?? ''}';
 
           setState(() {
             _locationController.text = location;
@@ -624,28 +638,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         } else {
           setState(() {
             _locationController.text =
-                'Location set (${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)})';
+                AppLocalizations.of(context)!.onboardingLocationSetCoords(
+              position.latitude.toStringAsFixed(2),
+              position.longitude.toStringAsFixed(2),
+            );
           });
         }
       } catch (e) {
         // If geocoding fails, just show coordinates
+        if (!mounted) return;
         setState(() {
           _locationController.text =
-              'Location set (${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)})';
+              AppLocalizations.of(context)!.onboardingLocationSetCoords(
+            position.latitude.toStringAsFixed(2),
+            position.longitude.toStringAsFixed(2),
+          );
         });
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error getting location: ${e.toString()}'),
+          content: Text(AppLocalizations.of(context)!
+              .onboardingErrorGettingLocation(e.toString())),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     } finally {
-      setState(() {
-        _isLoadingLocation = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingLocation = false;
+        });
+      }
     }
   }
 

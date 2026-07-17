@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/leaderboard/data/leaderboard_repository.dart';
@@ -34,16 +35,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Leaderboard'),
+        title: Text(l10n.homeNavLeaderboard),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Global'),
-            Tab(text: 'Friends'),
-            Tab(text: 'Local'),
+          tabs: [
+            Tab(text: l10n.leaderboardTabGlobal),
+            Tab(text: l10n.leaderboardTabFriends),
+            Tab(text: l10n.leaderboardTabLocal),
           ],
         ),
       ),
@@ -69,23 +71,25 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
   }
 
   Widget _buildFriendsLeaderboard() {
-    return const EmptyView(
+    final l10n = AppLocalizations.of(context)!;
+    return EmptyView(
       icon: Icons.people_outline,
-      title: 'Friend leaderboard coming soon!',
-      subtitle: 'Connect with friends to compete together',
+      title: l10n.leaderboardFriendsComingSoon,
+      subtitle: l10n.leaderboardFriendsSubtitle,
     );
   }
 
   Widget _buildLocalLeaderboard() {
+    final l10n = AppLocalizations.of(context)!;
     final userLocation = context.read<ChallengeProvider>().userLocation;
 
     if (userLocation.isEmpty) {
       return EmptyView(
         icon: Icons.location_off,
-        title: 'Set your location to see local warriors',
+        title: l10n.leaderboardSetLocationTitle,
         action: ElevatedButton(
           onPressed: () => Navigator.pushNamed(context, '/settings'),
-          child: const Text('Set Location'),
+          child: Text(l10n.leaderboardSetLocationButton),
         ),
       );
     }
@@ -110,7 +114,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
 
         if (snapshot.hasError) {
           return ErrorView(
-            message: 'Error loading leaderboard',
+            message: AppLocalizations.of(context)!.leaderboardLoadError,
             detail: snapshot.error.toString(),
           );
         }
@@ -141,6 +145,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
     required LeaderboardEntry entry,
     bool isCurrentUser = false,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final medal = _getMedal(rank);
     final rankColor = _getRankColor(rank);
 
@@ -199,7 +204,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'YOU',
+                  l10n.leaderboardYouBadge,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onPrimary,
                     fontSize: 10,
@@ -232,7 +237,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                     size: 16, color: context.appColors.success),
                 const SizedBox(width: 4),
                 Text(
-                  '${entry.qualifyingDays} days',
+                  l10n.leaderboardDaysCount(entry.qualifyingDays),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -253,7 +258,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '${entry.currentStreak} streak',
+                  l10n.leaderboardStreakCount(entry.currentStreak),
                   style: TextStyle(
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -268,12 +273,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
   }
 
   Widget _buildEmptyLeaderboard({bool isLocal = false}) {
+    final l10n = AppLocalizations.of(context)!;
     return EmptyView(
       icon: Icons.emoji_events_outlined,
-      title: isLocal ? 'No warriors in your area yet!' : 'No data available',
+      title: isLocal
+          ? l10n.leaderboardEmptyLocalTitle
+          : l10n.leaderboardEmptyGlobalTitle,
       subtitle: isLocal
-          ? 'Be the first to start the challenge'
-          : 'Start your challenge to appear here',
+          ? l10n.leaderboardEmptyLocalSubtitle
+          : l10n.leaderboardEmptyGlobalSubtitle,
     );
   }
 

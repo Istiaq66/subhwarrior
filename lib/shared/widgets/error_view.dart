@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 
 /// Standard error state with an icon, message, optional detail and retry.
+/// When [message] is null, a localized default message is shown.
 class ErrorView extends StatelessWidget {
   const ErrorView({
     super.key,
-    this.message = 'Something went wrong',
+    this.message,
     this.detail,
     this.onRetry,
   });
 
-  final String message;
+  final String? message;
   final String? detail;
   final VoidCallback? onRetry;
 
@@ -27,7 +29,7 @@ class ErrorView extends StatelessWidget {
             Icon(Icons.error_outline, size: 60, color: scheme.error),
             AppSpacing.vGapMd,
             Text(
-              message,
+              message ?? AppLocalizations.of(context)!.errorViewDefaultMessage,
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
@@ -44,7 +46,9 @@ class ErrorView extends StatelessWidget {
               FilledButton.tonalIcon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
+                label: Text(
+                  AppLocalizations.of(context)!.errorViewRetryButton,
+                ),
               ),
             ],
           ],

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/domain/day_log.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
@@ -26,14 +27,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Progress'),
+        title: Text(AppLocalizations.of(context)!.homeNavProgress),
         centerTitle: true,
       ),
       body: Consumer<ChallengeProvider>(
         builder: (context, provider, _) {
           if (!provider.isChallengeActive) {
-            return const Center(
-              child: Text('Start a challenge to track your progress'),
+            return Center(
+              child: Text(AppLocalizations.of(context)!.progressNoChallenge),
             );
           }
 
@@ -53,6 +54,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 
   Widget _buildProgressSummary(ChallengeProvider provider) {
+    final l10n = AppLocalizations.of(context)!;
     final percentage = (provider.overallProgress * 100).toInt();
     final daysCompleted = provider.totalQualifyingDays;
     final daysRemaining = AppConstants.qualifyingDaysGoal - daysCompleted;
@@ -74,7 +76,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
       child: Column(
         children: [
           Text(
-            '$percentage%',
+            l10n.quickStatsPercent(percentage),
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
@@ -82,7 +84,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Challenge Progress',
+            l10n.progressChallengeProgress,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
@@ -91,11 +93,13 @@ class _ProgressScreenState extends State<ProgressScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatColumn('Completed', '$daysCompleted',
+              _buildStatColumn(l10n.progressStatCompleted, '$daysCompleted',
                   Theme.of(context).colorScheme.onPrimary),
-              _buildStatColumn('Remaining', '$daysRemaining',
+              _buildStatColumn(l10n.progressStatRemaining, '$daysRemaining',
                   Theme.of(context).colorScheme.onPrimary),
-              _buildStatColumn('Streak', '${provider.currentStreak}',
+              _buildStatColumn(
+                  l10n.progressStatStreak,
+                  '${provider.currentStreak}',
                   Theme.of(context).colorScheme.onPrimary),
             ],
           ),
@@ -217,7 +221,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Weekly Performance',
+              AppLocalizations.of(context)!.progressWeeklyPerformance,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 20),
@@ -233,7 +237,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          return Text('W${value.toInt()}');
+                          return Text(AppLocalizations.of(context)!
+                              .progressWeekAxisLabel(value.toInt()));
                         },
                       ),
                     ),
@@ -281,13 +286,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 
   Widget _buildDaysList(ChallengeProvider provider) {
+    final l10n = AppLocalizations.of(context)!;
     final sortedLogs = List<DayLog>.from(provider.dayLogs)
       ..sort((a, b) => b.date.compareTo(a.date));
 
     if (sortedLogs.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(32.0),
-        child: Text('No days logged yet'),
+      return Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Text(l10n.progressNoDaysLogged),
       );
     }
 
@@ -299,7 +305,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              'Recent Logs',
+              l10n.progressRecentLogs,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -323,8 +329,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 ),
                 title: Text(DateFormat('EEEE, MMM d').format(log.date)),
                 subtitle: Text(
-                  '${log.prayedFajrOnTime ? "✓ Fajr" : "✗ Fajr"} • '
-                  '${log.minutesWorked} min work',
+                  l10n.progressLogSubtitle(
+                    log.prayedFajrOnTime
+                        ? l10n.progressLogFajrPrayed
+                        : l10n.progressLogFajrMissed,
+                    log.minutesWorked,
+                  ),
                 ),
                 trailing: log.isQualifying
                     ? Icon(Icons.star, color: context.appColors.gold)

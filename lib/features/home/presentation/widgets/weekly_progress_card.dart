@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 
 /// Per-week qualifying-day progress bars for the challenge.
@@ -20,6 +21,7 @@ class WeeklyProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -27,7 +29,7 @@ class WeeklyProgressCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Weekly Progress',
+              l10n.weeklyProgressTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
@@ -45,14 +47,14 @@ class WeeklyProgressCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Week $week',
+                          l10n.weeklyProgressWeekLabel(week),
                           style: TextStyle(
                             fontWeight: isCurrentWeek
                                 ? FontWeight.bold
                                 : FontWeight.normal,
                           ),
                         ),
-                        Text('$progress/$_weeklyTarget'),
+                        Text(l10n.weeklyProgressRatio(progress, _weeklyTarget)),
                       ],
                     ),
                     const SizedBox(height: 4),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/l10n/app_localizations.dart';
 import '../core/theme/app_colors.dart';
 
 class StreakCard extends StatelessWidget {
@@ -87,7 +88,9 @@ class StreakCard extends StatelessWidget {
             ),
           ),
           Text(
-            currentStreak == 1 ? 'Day Streak' : 'Days Streak',
+            currentStreak == 1
+                ? AppLocalizations.of(context)!.streakCardDayStreak
+                : AppLocalizations.of(context)!.streakCardDaysStreak,
             style: TextStyle(
               fontSize: 14,
               color: hasStreak
@@ -110,7 +113,7 @@ class StreakCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                _getStreakMessage(currentStreak),
+                _getStreakMessage(context, currentStreak),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 10,
@@ -168,7 +171,7 @@ class StreakCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '/16',
+                    AppLocalizations.of(context)!.streakCardGoalDenominator,
                     style: TextStyle(
                       fontSize: 12,
                       color: currentStreak > 0
@@ -185,7 +188,7 @@ class StreakCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Qualifying Days',
+            AppLocalizations.of(context)!.streakCardQualifyingDays,
             style: TextStyle(
               fontSize: 14,
               color: currentStreak > 0
@@ -220,10 +223,11 @@ class StreakCard extends StatelessWidget {
     return '👑';
   }
 
-  String _getStreakMessage(int streak) {
-    if (streak >= 21) return 'LEGENDARY!';
-    if (streak >= 14) return 'UNSTOPPABLE!';
-    if (streak >= 7) return 'ON FIRE!';
-    return 'KEEP GOING!';
+  String _getStreakMessage(BuildContext context, int streak) {
+    final l10n = AppLocalizations.of(context)!;
+    if (streak >= 21) return l10n.streakCardMsgLegendary;
+    if (streak >= 14) return l10n.streakCardMsgUnstoppable;
+    if (streak >= 7) return l10n.streakCardMsgOnFire;
+    return l10n.streakCardMsgKeepGoing;
   }
 }

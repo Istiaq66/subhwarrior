@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_theme.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_local_data_source.dart';
@@ -72,8 +73,12 @@ class SubhWarriorApp extends StatelessWidget {
                 key: ValueKey(uid),
                 create: (_) => ChallengeProvider.fromPrefs(prefs, uid: uid),
                 child: MaterialApp(
-                  title: 'Subh Warrior Challenge',
+                  onGenerateTitle: (context) =>
+                      AppLocalizations.of(context)!.appTitle,
                   debugShowCheckedModeBanner: false,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  supportedLocales: AppLocalizations.supportedLocales,
                   theme: AppTheme.light(),
                   darkTheme: AppTheme.dark(),
                   themeMode: themeProvider.themeMode,

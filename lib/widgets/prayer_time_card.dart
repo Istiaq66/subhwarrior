@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/shared/widgets/error_view.dart';
@@ -10,6 +11,7 @@ class PrayerTimeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<PrayerTimeProvider>(
       builder: (context, prayerProvider, _) {
         if (prayerProvider.isLoading) {
@@ -23,7 +25,7 @@ class PrayerTimeCard extends StatelessWidget {
             child: SizedBox(
               height: 160,
               child: ErrorView(
-                message: 'Unable to load prayer times',
+                message: l10n.prayerCardErrorMessage,
                 onRetry: () =>
                     prayerProvider.fetchPrayerTimesForCurrentLocation(),
               ),
@@ -72,7 +74,7 @@ class PrayerTimeCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            'Fajr Prayer',
+                            l10n.prayerCardTitle,
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge
@@ -106,7 +108,7 @@ class PrayerTimeCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                'NOW',
+                                l10n.prayerCardNowBadge,
                                 style: TextStyle(
                                   color:
                                       Theme.of(context).colorScheme.onPrimary,
@@ -125,7 +127,7 @@ class PrayerTimeCard extends StatelessWidget {
                     children: [
                       _buildTimeColumn(
                         context,
-                        'Today',
+                        l10n.prayerCardToday,
                         prayerProvider.formatTime(fajrTime),
                         isHighlighted: isWithinWindow,
                       ),
@@ -139,7 +141,7 @@ class PrayerTimeCard extends StatelessWidget {
                       ),
                       _buildTimeColumn(
                         context,
-                        'Tomorrow',
+                        l10n.prayerCardTomorrow,
                         prayerProvider.formatTime(tomorrowFajr),
                       ),
                       Container(
@@ -152,7 +154,7 @@ class PrayerTimeCard extends StatelessWidget {
                       ),
                       _buildTimeColumn(
                         context,
-                        'Next Fajr In',
+                        l10n.prayerCardNextFajrIn,
                         timeUntilFajr,
                         isCountdown: true,
                       ),
@@ -174,7 +176,7 @@ class PrayerTimeCard extends StatelessWidget {
                           Expanded(
                             child: _buildSmallTimeInfo(
                               context,
-                              'Sunrise',
+                              l10n.prayerCardSunrise,
                               prayerProvider.formatTimeString(
                                   prayerProvider.todayPrayerTimes!.sunrise),
                             ),
@@ -182,7 +184,7 @@ class PrayerTimeCard extends StatelessWidget {
                           Expanded(
                             child: _buildSmallTimeInfo(
                               context,
-                              'Dhuhr',
+                              l10n.prayerCardDhuhr,
                               prayerProvider.formatTimeString(
                                   prayerProvider.todayPrayerTimes!.dhuhr),
                             ),
@@ -190,7 +192,7 @@ class PrayerTimeCard extends StatelessWidget {
                           Expanded(
                             child: _buildSmallTimeInfo(
                               context,
-                              'Asr',
+                              l10n.prayerCardAsr,
                               prayerProvider.formatTimeString(
                                   prayerProvider.todayPrayerTimes!.asr),
                             ),
@@ -198,7 +200,7 @@ class PrayerTimeCard extends StatelessWidget {
                           Expanded(
                             child: _buildSmallTimeInfo(
                               context,
-                              'Maghrib',
+                              l10n.prayerCardMaghrib,
                               prayerProvider.formatTimeString(
                                   prayerProvider.todayPrayerTimes!.maghrib),
                             ),
@@ -206,7 +208,7 @@ class PrayerTimeCard extends StatelessWidget {
                           Expanded(
                             child: _buildSmallTimeInfo(
                               context,
-                              'Isha',
+                              l10n.prayerCardIsha,
                               prayerProvider.formatTimeString(
                                   prayerProvider.todayPrayerTimes!.isha),
                             ),

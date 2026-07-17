@@ -1,0 +1,629 @@
+{
+  "@@locale": "en",
+  "appTitle": "Subh Warrior Challenge",
+  "@appTitle": {
+    "description": "The application title shown in the task switcher"
+  },
+  "splashTitle": "Subh Warrior",
+  "@splashTitle": {
+    "description": "Branding text shown on the splash screen"
+  },
+  "homeAppBarTitle": "Subh Warrior",
+  "homeChallengeStartedSnack": "Challenge started — log your first day!",
+  "@homeChallengeStartedSnack": {
+    "description": "Snackbar shown after the user starts the challenge"
+  },
+  "homeNavHome": "Home",
+  "homeNavProgress": "Progress",
+  "homeNavLeaderboard": "Leaderboard",
+  "homeGreetingMorning": "Good Morning",
+  "homeGreetingAfternoon": "Good Afternoon",
+  "homeGreetingEvening": "Good Evening",
+  "homeGreetingFallbackName": "Warrior",
+  "@homeGreetingFallbackName": {
+    "description": "Name shown in the greeting header when the user has not set a name"
+  },
+  "inactiveChallengeTitle": "Ready to become a Subh Warrior?",
+  "inactiveChallengeBody": "Start your {days}-day challenge to build a powerful morning routine with Fajr prayer and productive work.",
+  "@inactiveChallengeBody": {
+    "description": "Call-to-action body text shown when no challenge is active",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "inactiveChallengeStartButton": "Start Challenge",
+  "todayStatusTitle": "Today's Status",
+  "todayStatusChipQualifying": "Qualifying ✓",
+  "@todayStatusChipQualifying": {
+    "description": "Status chip when today's log meets the qualifying criteria"
+  },
+  "todayStatusChipLogged": "Logged",
+  "todayStatusChipPending": "Pending",
+  "todayStatusChipTimeUp": "Time's Up",
+  "@todayStatusChipTimeUp": {
+    "description": "Status chip when the logging window for today has closed"
+  },
+  "todayStatusFajrPrayer": "Fajr Prayer",
+  "todayStatusFajrOnTime": "On Time",
+  "todayStatusFajrMissed": "Missed",
+  "todayStatusWorkTime": "Work Time",
+  "todayStatusMinutesWorked": "{minutes} minutes",
+  "@todayStatusMinutesWorked": {
+    "description": "Number of minutes worked today",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "todayStatusWorkLabel": "Work",
+  "todayStatusLogTodayButton": "Log Today",
+  "todayStatusWindowClosed": "Logging window closed (after {cutoffTime})",
+  "@todayStatusWindowClosed": {
+    "description": "Shown when logging is no longer allowed; cutoffTime is a formatted clock time such as 8:00 AM",
+    "placeholders": {
+      "cutoffTime": {
+        "type": "String"
+      }
+    }
+  },
+  "weeklyProgressTitle": "Weekly Progress",
+  "weeklyProgressWeekLabel": "Week {week}",
+  "@weeklyProgressWeekLabel": {
+    "description": "Label for a week row in the weekly progress card",
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "weeklyProgressRatio": "{progress}/{target}",
+  "@weeklyProgressRatio": {
+    "description": "Qualifying days achieved out of the weekly target, e.g. 3/4",
+    "placeholders": {
+      "progress": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "quickStatsDaysLeft": "Days Left",
+  "quickStatsGoalProgress": "Goal Progress",
+  "quickStatsPercent": "{percent}%",
+  "@quickStatsPercent": {
+    "description": "Overall progress percentage shown inside the circular indicator",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "quickStatsGoalRatio": "{count}/{goal}",
+  "@quickStatsGoalRatio": {
+    "description": "Qualifying days achieved out of the overall goal, e.g. 5/16",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "quote1": "\"O Allah, bless my Ummah in its early mornings.\" - Prophet Muhammad ﷺ (Abu Dawud, Tirmidhi)",
+  "quote2": "\"The two Rak'ah before Fajr are better than this world and all that it contains.\" - Prophet Muhammad ﷺ (Muslim)",
+  "quote3": "\"Whoever prays the dawn prayer in congregation, it is as if he prayed the whole night.\" - Prophet Muhammad ﷺ (Muslim)",
+  "quote4": "\"And [recite] the Qur'an at dawn. Indeed, the recitation of dawn is ever witnessed.\" - Qur'an 17:78",
+  "quote5": "\"Indeed, the night prayer is most effective for the heart and most upright in speech.\" - Qur'an 73:6",
+  "quote6": "\"Take advantage of five before five: your youth before your old age, your health before your sickness, your wealth before your poverty, your free time before your busyness, and your life before your death.\" - Prophet Muhammad ﷺ (Al-Hakim)",
+  "quote7": "\"The most beloved deeds to Allah are those done consistently, even if small.\" - Prophet Muhammad ﷺ (Bukhari & Muslim)",
+  "quote8": "\"And when the prayer has ended, disperse in the land and seek the bounty of Allah.\" - Qur'an 62:10",
+  "quote9": "\"There are two blessings which many people lose: good health and free time.\" - Prophet Muhammad ﷺ (Bukhari)",
+  "quote10": "\"Whoever rises in the morning safe in his home, healthy in body, with food for the day, it is as if the whole world were given to him.\" - Prophet Muhammad ﷺ (Tirmidhi)",
+  "prayerCardErrorMessage": "Unable to load prayer times",
+  "prayerCardTitle": "Fajr Prayer",
+  "prayerCardNowBadge": "NOW",
+  "@prayerCardNowBadge": {
+    "description": "Badge shown while the Fajr prayer window is currently open"
+  },
+  "prayerCardToday": "Today",
+  "prayerCardTomorrow": "Tomorrow",
+  "prayerCardNextFajrIn": "Next Fajr In",
+  "@prayerCardNextFajrIn": {
+    "description": "Label above the countdown to the next Fajr prayer"
+  },
+  "prayerCardSunrise": "Sunrise",
+  "prayerCardDhuhr": "Dhuhr",
+  "prayerCardAsr": "Asr",
+  "prayerCardMaghrib": "Maghrib",
+  "prayerCardIsha": "Isha",
+  "streakCardDayStreak": "Day Streak",
+  "@streakCardDayStreak": {
+    "description": "Streak label when the current streak is exactly 1 day"
+  },
+  "streakCardDaysStreak": "Days Streak",
+  "@streakCardDaysStreak": {
+    "description": "Streak label when the current streak is not exactly 1 day"
+  },
+  "streakCardQualifyingDays": "Qualifying Days",
+  "streakCardGoalDenominator": "/16",
+  "@streakCardGoalDenominator": {
+    "description": "Denominator shown under the qualifying days count inside the progress ring"
+  },
+  "streakCardMsgLegendary": "LEGENDARY!",
+  "streakCardMsgUnstoppable": "UNSTOPPABLE!",
+  "streakCardMsgOnFire": "ON FIRE!",
+  "streakCardMsgKeepGoing": "KEEP GOING!",
+  "errorViewDefaultMessage": "Something went wrong",
+  "errorViewRetryButton": "Retry",
+  "commonOr": "OR",
+  "@commonOr": {
+    "description": "Divider label between alternative options, e.g. between manual entry and an automatic action"
+  },
+  "onboardingWelcomeTitle": "Welcome to\nSubh Warrior",
+  "onboardingWelcomeSubtitle": "Transform your mornings with the power of Fajr prayer and focused productivity",
+  "onboardingFeatureFajrTracking": "Fajr Prayer Tracking",
+  "onboardingFeatureProductiveWork": "60+ Min Productive Work",
+  "onboardingFeatureChallengeDuration": "28-Day Challenge",
+  "onboardingFeatureAchieveDays": "Achieve 16+ Days",
+  "onboardingRulesTitle": "Challenge Rules",
+  "onboardingRuleWakeUpTitle": "Wake Up",
+  "onboardingRuleWakeUpDesc": "Rise at or before Fajr time and stay awake",
+  "onboardingRulePrayTitle": "Pray",
+  "onboardingRulePrayDesc": "Perform Fajr prayer within the time window",
+  "onboardingRuleWorkTitle": "Work",
+  "onboardingRuleWorkDesc": "Complete 60+ minutes of productive work",
+  "onboardingRuleLogTitle": "Log",
+  "onboardingRuleLogDesc": "Submit your day before {cutoffTime} (weekdays only)",
+  "@onboardingRuleLogDesc": {
+    "description": "Rule describing the daily logging deadline; cutoffTime is a formatted clock time such as 8:00 AM",
+    "placeholders": {
+      "cutoffTime": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingRulesGoal": "Complete 16+ qualifying days over 4 weeks",
+  "onboardingLocationTitle": "Set Your Location",
+  "onboardingLocationSubtitle": "We need this to calculate accurate prayer times",
+  "onboardingLocationFieldLabel": "City/Location",
+  "onboardingLocationFieldHint": "e.g., New York, USA",
+  "@onboardingLocationFieldHint": {
+    "description": "Example hint text inside the location input field"
+  },
+  "onboardingGettingLocation": "Getting Location...",
+  "onboardingUseCurrentLocation": "Use Current Location",
+  "onboardingReadyTitle": "You're All Set!",
+  "onboardingWelcomeUser": "Welcome, {name}!",
+  "@onboardingWelcomeUser": {
+    "description": "Greeting on the final onboarding page; name is the user's entered name or a fallback",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingStartJourneyButton": "Start Your Journey",
+  "onboardingBackButton": "Back",
+  "onboardingNextButton": "Next",
+  "onboardingSetLocationPrompt": "Please set your location",
+  "onboardingLocationNotFound": "Could not find that location. Please check spelling.",
+  "onboardingErrorFindingLocation": "Error finding location: {error}",
+  "@onboardingErrorFindingLocation": {
+    "description": "Snackbar shown when geocoding a typed location throws; error is the exception text",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingCoordinatesNotFound": "Unable to find coordinates for that location.",
+  "onboardingLocationServicesDisabled": "Location services are disabled. Please enable them in settings.",
+  "onboardingLocationPermissionDenied": "Location permissions are denied",
+  "onboardingLocationPermissionDeniedForever": "Location permissions are permanently denied. Please enable them in app settings.",
+  "onboardingSettingsAction": "Settings",
+  "@onboardingSettingsAction": {
+    "description": "Snackbar action button that opens the app settings"
+  },
+  "onboardingUnknownLocality": "Unknown",
+  "@onboardingUnknownLocality": {
+    "description": "Fallback city name when reverse geocoding returns no locality"
+  },
+  "onboardingLocationSetCoords": "Location set ({latitude}, {longitude})",
+  "@onboardingLocationSetCoords": {
+    "description": "Location field text when only raw coordinates are available; latitude/longitude are formatted decimal strings",
+    "placeholders": {
+      "latitude": {
+        "type": "String"
+      },
+      "longitude": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingErrorGettingLocation": "Error getting location: {error}",
+  "@onboardingErrorGettingLocation": {
+    "description": "Snackbar shown when fetching the device location throws; error is the exception text",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "authCreateAccountTitle": "Create your account",
+  "authWelcomeBackTitle": "Welcome back",
+  "authUsernameLabel": "Username",
+  "authEmailLabel": "Email",
+  "authPasswordLabel": "Password",
+  "authForgotPassword": "Forgot password?",
+  "authCreateAccountButton": "Create account",
+  "authLogInButton": "Log in",
+  "authToggleToLogin": "Already have an account? Log in",
+  "authToggleToRegister": "Don't have an account? Register",
+  "authContinueWithGoogle": "Continue with Google",
+  "authErrorEmailInUse": "That email is already registered. Try logging in instead.",
+  "authErrorInvalidEmail": "That email address is not valid.",
+  "authErrorWrongPassword": "Incorrect email or password.",
+  "authErrorUserNotFound": "No account found for that email.",
+  "authErrorUserDisabled": "This account has been disabled.",
+  "authErrorWeakPassword": "Password is too weak (minimum 6 characters).",
+  "authErrorNetworkRequestFailed": "Network error. Check your connection and try again.",
+  "authErrorTooManyRequests": "Too many attempts. Please try again later.",
+  "authErrorGeneric": "Authentication failed. Please try again.",
+  "@authErrorGeneric": {
+    "description": "Fallback error when a Firebase auth error has no specific mapping"
+  },
+  "authUsernameTaken": "That username is already taken. Please choose another.",
+  "authForgotPasswordEnterEmail": "Enter your email above first, then tap \"Forgot password\".",
+  "authPasswordResetSent": "Password reset email sent to {email}.",
+  "@authPasswordResetSent": {
+    "description": "Snackbar confirming a password reset email was sent",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "commonMinutesShort": "{minutes} min",
+  "@commonMinutesShort": {
+    "description": "Short minutes label, e.g. in the reminder dropdown and work slider",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsTitle": "Settings",
+  "settingsSaveTooltip": "Save Settings",
+  "settingsProfileTitle": "Profile",
+  "settingsNameLabel": "Your Name",
+  "settingsNameHint": "Enter your name",
+  "settingsStatTotalDays": "Total Days",
+  "settingsStatCurrentStreak": "Current Streak",
+  "settingsStatChallengeWeek": "Challenge Week",
+  "settingsChallengeWeekRatio": "{week}/{totalWeeks}",
+  "@settingsChallengeWeekRatio": {
+    "description": "Current challenge week out of total weeks, e.g. 2/4",
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "totalWeeks": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsLocationTitle": "Location",
+  "settingsCoordinates": "Coordinates: {latitude}, {longitude}",
+  "@settingsCoordinates": {
+    "description": "Saved coordinates shown below the location field; latitude/longitude are formatted decimal strings",
+    "placeholders": {
+      "latitude": {
+        "type": "String"
+      },
+      "longitude": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsPrayerSettingsTitle": "Prayer Settings",
+  "settingsCalculationMethodLabel": "Calculation Method",
+  "settingsJuristicMethodTitle": "Juristic Method",
+  "settingsJuristicHanafi": "Hanafi (Later Asr time)",
+  "settingsJuristicStandard": "Standard (Shafi, Maliki, Hanbali)",
+  "settingsHanafiInfo": "Hanafi method calculates Asr time when shadow is twice the object length",
+  "settingsNotificationsTitle": "Notifications",
+  "settingsEnableNotifications": "Enable Notifications",
+  "settingsEnableNotificationsSubtitle": "Get reminders and updates",
+  "settingsFajrReminderTitle": "Fajr Prayer Reminder",
+  "settingsFajrReminderSubtitle": "Notify {minutes} min before Fajr",
+  "@settingsFajrReminderSubtitle": {
+    "description": "Subtitle for the Fajr reminder switch showing the configured lead time in minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsRemindMe": "Remind me",
+  "settingsBeforeFajr": "before Fajr",
+  "@settingsBeforeFajr": {
+    "description": "Trailing part of the sentence 'Remind me [X min] before Fajr' around the minutes dropdown"
+  },
+  "settingsLoggingReminderTitle": "Daily Logging Reminder",
+  "settingsLoggingReminderSubtitle": "Remind at {time} to log day",
+  "@settingsLoggingReminderSubtitle": {
+    "description": "Subtitle for the daily logging reminder switch; time is a formatted clock time such as 7:30 AM",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAppearanceTitle": "Appearance",
+  "settingsThemeLabel": "Theme",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsTimeFormatLabel": "Time Format",
+  "settingsTimeFormat12": "12-hour",
+  "settingsTimeFormat24": "24-hour",
+  "settingsChallengeTitle": "Challenge",
+  "settingsChallengeStarted": "Challenge Started",
+  "settingsChallengeNotStarted": "Not started",
+  "settingsEndChallenge": "End Challenge",
+  "settingsAboutTitle": "About",
+  "settingsAppVersion": "App Version",
+  "settingsGuestAccount": "Guest account",
+  "settingsSignedIn": "Signed in",
+  "settingsLinkGooglePrompt": "Tap to back up your progress with Google",
+  "settingsProgressSavedLocally": "Progress is saved on this device",
+  "settingsSynced": "Synced",
+  "@settingsSynced": {
+    "description": "Fallback subtitle for a signed-in account when no email is available"
+  },
+  "settingsGuidelines": "Guidelines",
+  "settingsSendFeedback": "Send Feedback",
+  "settingsShareApp": "Share App",
+  "settingsSignedInWithGoogle": "Signed in with Google.",
+  "settingsFeedbackSubject": "Subh Warrior Feedback",
+  "@settingsFeedbackSubject": {
+    "description": "Subject line pre-filled in the feedback email composer"
+  },
+  "settingsFeedbackAppVersion": "App version: {version} ({build})",
+  "@settingsFeedbackAppVersion": {
+    "description": "Footer of the pre-filled feedback email body identifying the installed app version",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsNoEmailApp": "No email app found. Reach us at {email}",
+  "@settingsNoEmailApp": {
+    "description": "Snackbar shown when no email app could be launched; email is the support address",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsShareMessage": "Build powerful mornings with Subh Warrior — wake for Fajr, stay productive, and finish the 28-day challenge. 🌅",
+  "@settingsShareMessage": {
+    "description": "Invite message shared via the system share sheet"
+  },
+  "settingsEnterNamePrompt": "Please enter your name",
+  "settingsSavedSuccess": "Settings saved successfully",
+  "settingsEndChallengeDialogTitle": "End Challenge?",
+  "settingsEndChallengeDialogContent": "Are you sure you want to end the challenge? Your progress will be saved but the challenge will be marked as incomplete.",
+  "settingsCancel": "Cancel",
+  "settingsGuidelinesDialogTitle": "Challenge Guidelines",
+  "settingsGuidelinesContent": "🌅 SUBH WARRIOR CHALLENGE\n\n✓ Wake up at or before Fajr time\n✓ Stay awake and alert\n✓ Pray Fajr within the prayer window\n✓ Complete 60+ minutes of productive work\n✓ Log before {cutoffTime} daily\n✓ Complete 16+ days over 4 weeks\n✓ Minimum 4 qualifying days per week\n\nQUALIFYING WORK:\n• Deep work tasks\n• Strategic planning\n• Learning/skill development\n• Creative projects\n• Important communication\n\nNON-QUALIFYING:\n• Passive content consumption\n• Routine administrative tasks\n• Social media\n\nNote: Weekends do not count as qualifying days.",
+  "@settingsGuidelinesContent": {
+    "description": "Full challenge guidelines dialog body; cutoffTime is a formatted clock time such as 8:00 AM",
+    "placeholders": {
+      "cutoffTime": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsGotIt": "Got it!",
+  "progressNoChallenge": "Start a challenge to track your progress",
+  "progressChallengeProgress": "Challenge Progress",
+  "progressStatCompleted": "Completed",
+  "progressStatRemaining": "Remaining",
+  "progressStatStreak": "Streak",
+  "progressWeeklyPerformance": "Weekly Performance",
+  "progressWeekAxisLabel": "W{week}",
+  "@progressWeekAxisLabel": {
+    "description": "Abbreviated week label on the weekly chart x-axis, e.g. W1",
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "progressNoDaysLogged": "No days logged yet",
+  "progressRecentLogs": "Recent Logs",
+  "progressLogFajrPrayed": "✓ Fajr",
+  "progressLogFajrMissed": "✗ Fajr",
+  "progressLogSubtitle": "{fajrStatus} • {minutes} min work",
+  "@progressLogSubtitle": {
+    "description": "Recent log list subtitle; fajrStatus is progressLogFajrPrayed or progressLogFajrMissed",
+    "placeholders": {
+      "fajrStatus": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "logDayWeekendTitle": "Weekend Day",
+  "logDayWeekendBody": "Weekend days do not count toward the Subh Warrior Challenge.\n\nYou need 4 qualifying weekdays per week.",
+  "logDayGoBack": "Go Back",
+  "logDayTimeUpTitle": "Time's Up!",
+  "logDayTimeUpBody": "Daily logs must be submitted before {cutoffTime}.",
+  "@logDayTimeUpBody": {
+    "description": "Shown when the logging window has closed; cutoffTime is a formatted clock time such as 8:00 AM",
+    "placeholders": {
+      "cutoffTime": {
+        "type": "String"
+      }
+    }
+  },
+  "logDayTimeRemaining": "Time remaining to log: {hours}h {minutes}m",
+  "@logDayTimeRemaining": {
+    "description": "Countdown banner until the logging deadline",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "logDayTodaysFajr": "Today's Fajr",
+  "logDayPrayerTimeNow": "Prayer Time Now",
+  "logDayLoading": "Loading...",
+  "logDaySunrise": "Sunrise: {time}",
+  "@logDaySunrise": {
+    "description": "Sunrise time line under today's Fajr time; time is a formatted clock time",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "logDayWakeUpTitle": "Wake-Up Requirements",
+  "logDayWokeUpTitle": "Woke up at/before Fajr time",
+  "logDayWokeUpSubtitle": "Not just temporary wake-up",
+  "logDayStayedAwake": "Stayed awake and alert",
+  "logDayStayedAwakeSubtitle": "Remained conscious after prayer",
+  "logDayPrayedFajrOnTime": "Prayed Fajr on time",
+  "logDayWithinWindow": "Within the prayer window",
+  "logDayPrayedAtMasjid": "Prayed at Masjid",
+  "logDayMasjidSubtitle": "Highly recommended (not required)",
+  "logDayProductiveWork": "Productive Work",
+  "logDayTypeOfWork": "Type of Work",
+  "logDayWorkTypeDeepWork": "Deep Work",
+  "logDayWorkTypeStrategicPlanning": "Strategic Planning",
+  "logDayWorkTypeLearning": "Learning/Skill Development",
+  "logDayWorkTypeCreativeProjects": "Creative Projects",
+  "logDayWorkTypeImportantCommunication": "Important Communication",
+  "logDayWorkTypePassiveConsumption": "❌ Passive Content Consumption",
+  "logDayWorkTypeRoutineAdmin": "❌ Routine Administrative Tasks",
+  "logDayWorkTypeSocialMedia": "❌ Social Media",
+  "logDayWorkNotQualify": "This type of work does not qualify",
+  "logDayMinutesFocused": "Minutes of focused work: {minutes}",
+  "@logDayMinutesFocused": {
+    "description": "Label above the work-minutes slider showing the selected value",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "logDayMinimumMinutes": "Minimum {minutes} minutes required for qualification",
+  "@logDayMinimumMinutes": {
+    "description": "Warning under the slider when below the qualifying minimum",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "logDayDescribeWorkLabel": "Describe your work",
+  "logDayDescribeWorkHint": "What specific tasks did you complete?",
+  "logDayDescribeWorkError": "Please describe your work",
+  "logDayMoreDetailError": "Please provide more detail",
+  "logDayReflectionTitle": "Reflection (Optional)",
+  "logDayReflectionHint": "How did the early morning work feel?\nWhat did you accomplish?\nAny insights or breakthroughs?",
+  "logDayQualifyingDay": "Qualifying Day!",
+  "logDayNotQualifyingYet": "Not Qualifying Yet",
+  "logDayReqAwake": "Awake at/before Fajr",
+  "logDayReqMinutesWork": "{minutes}+ minutes of work",
+  "@logDayReqMinutesWork": {
+    "description": "Qualification checklist row for the minimum minutes of work",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "logDayReqQualifyingWorkType": "Qualifying work type",
+  "logDayBonusMasjid": "Bonus: Prayed at Masjid! 🌟",
+  "logDaySubmitButton": "Submit Log",
+  "logDayMustBeAwake": "You must be awake and alert for Fajr",
+  "logDayExceptional": "Exceptional!",
+  "logDayExcellent": "Excellent!",
+  "logDayDayLogged": "Day Logged",
+  "logDayMasjidSuccessContent": "Outstanding! You prayed at the masjid AND completed your morning work. True Subh Warrior spirit! 🌟",
+  "logDayQualifyingSuccessContent": "You've earned a qualifying day! Keep up the great work!",
+  "logDayLoggedContent": "Day logged successfully. Review the requirements and try again tomorrow!",
+  "logDayContinue": "Continue",
+  "logDayAfterCutoff": "Logging window closed — log before {cutoffTime}.",
+  "@logDayAfterCutoff": {
+    "description": "Error when submitting after the cutoff; cutoffTime is a formatted clock time such as 8:00 AM",
+    "placeholders": {
+      "cutoffTime": {
+        "type": "String"
+      }
+    }
+  },
+  "logDayWeekendError": "Weekends don't count toward the challenge.",
+  "logDayAlreadyLogged": "You've already logged today.",
+  "logDayNotesTooLong": "Your notes are too long — please shorten them.",
+  "leaderboardTabGlobal": "Global",
+  "leaderboardTabFriends": "Friends",
+  "leaderboardTabLocal": "Local",
+  "leaderboardFriendsComingSoon": "Friend leaderboard coming soon!",
+  "leaderboardFriendsSubtitle": "Connect with friends to compete together",
+  "leaderboardSetLocationTitle": "Set your location to see local warriors",
+  "leaderboardSetLocationButton": "Set Location",
+  "leaderboardLoadError": "Error loading leaderboard",
+  "leaderboardYouBadge": "YOU",
+  "@leaderboardYouBadge": {
+    "description": "Badge on the leaderboard row belonging to the current user"
+  },
+  "leaderboardDaysCount": "{days} days",
+  "@leaderboardDaysCount": {
+    "description": "Qualifying days count on a leaderboard row",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "leaderboardStreakCount": "{streak} streak",
+  "@leaderboardStreakCount": {
+    "description": "Current streak count on a leaderboard row",
+    "placeholders": {
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "leaderboardEmptyLocalTitle": "No warriors in your area yet!",
+  "leaderboardEmptyGlobalTitle": "No data available",
+  "leaderboardEmptyLocalSubtitle": "Be the first to start the challenge",
+  "leaderboardEmptyGlobalSubtitle": "Start your challenge to appear here",
+  "dayDetailQualifying": "Qualifying Day",
+  "dayDetailNonQualifying": "Non-Qualifying Day",
+  "dayDetailWorkDuration": "Work Duration",
+  "dayDetailWorkDescription": "Work Description",
+  "dayDetailNoDetails": "No details logged for this day.",
+  "dayDetailReflection": "Reflection",
+  "notifPermTitle": "Enable Notifications",
+  "notifPermContent": "Get reminded about Fajr prayer and daily logging to stay on track with your Subh Warrior challenge.",
+  "notifPermNotNow": "Not Now",
+  "notifPermEnable": "Enable"
+}

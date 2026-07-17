@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/domain/day_log.dart';
 
@@ -14,6 +15,7 @@ class DayDetailSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -40,8 +42,8 @@ class DayDetailSheet extends StatelessWidget {
                     ),
                     Text(
                       log.isQualifying
-                          ? 'Qualifying Day'
-                          : 'Non-Qualifying Day',
+                          ? l10n.dayDetailQualifying
+                          : l10n.dayDetailNonQualifying,
                       style: TextStyle(
                         color: log.isQualifying
                             ? context.appColors.success
@@ -56,31 +58,33 @@ class DayDetailSheet extends StatelessWidget {
           const SizedBox(height: 20),
           _DetailRow(
             icon: Icons.mosque,
-            label: 'Fajr Prayer',
-            value: log.prayedFajrOnTime ? 'On Time' : 'Missed',
+            label: l10n.todayStatusFajrPrayer,
+            value: log.prayedFajrOnTime
+                ? l10n.todayStatusFajrOnTime
+                : l10n.todayStatusFajrMissed,
             success: log.prayedFajrOnTime,
           ),
           _DetailRow(
             icon: Icons.timer,
-            label: 'Work Duration',
-            value: '${log.minutesWorked} minutes',
+            label: l10n.dayDetailWorkDuration,
+            value: l10n.todayStatusMinutesWorked(log.minutesWorked),
             success: log.minutesWorked >= AppConstants.minDeepWorkMinutes,
           ),
           const SizedBox(height: 16),
           Text(
-            'Work Description',
+            l10n.dayDetailWorkDescription,
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 8),
           Text(
             log.workDescription.isNotEmpty
                 ? log.workDescription
-                : 'No details logged for this day.',
+                : l10n.dayDetailNoDetails,
           ),
           if (log.reflection != null && log.reflection!.isNotEmpty) ...[
             const SizedBox(height: 16),
             Text(
-              'Reflection',
+              l10n.dayDetailReflection,
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 8),

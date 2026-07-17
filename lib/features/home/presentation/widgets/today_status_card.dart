@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/domain/day_log.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
@@ -31,7 +32,7 @@ class TodayStatusCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Today\'s Status',
+                  AppLocalizations.of(context)!.todayStatusTitle,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 _statusChip(context),
@@ -46,20 +47,23 @@ class TodayStatusCard extends StatelessWidget {
   }
 
   Widget _statusChip(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
     final String label;
     final Color color;
     final Color onColor;
     if (todayLog != null) {
       final qualifying = todayLog!.isQualifying;
-      label = qualifying ? 'Qualifying ✓' : 'Logged';
+      label = qualifying
+          ? l10n.todayStatusChipQualifying
+          : l10n.todayStatusChipLogged;
       color =
           qualifying ? context.appColors.success : context.appColors.warning;
       onColor = qualifying
           ? context.appColors.onSuccess
           : context.appColors.onWarning;
     } else {
-      label = canLog ? 'Pending' : 'Time\'s Up';
+      label = canLog ? l10n.todayStatusChipPending : l10n.todayStatusChipTimeUp;
       color = canLog ? scheme.primary : scheme.error;
       onColor = canLog ? scheme.onPrimary : scheme.onError;
     }
@@ -72,23 +76,26 @@ class TodayStatusCard extends StatelessWidget {
   }
 
   List<Widget> _buildBody(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final log = todayLog;
     if (log != null) {
       return [
         _StatusRow(
           icon: Icons.mosque,
-          label: 'Fajr Prayer',
-          value: log.prayedFajrOnTime ? 'On Time' : 'Missed',
+          label: l10n.todayStatusFajrPrayer,
+          value: log.prayedFajrOnTime
+              ? l10n.todayStatusFajrOnTime
+              : l10n.todayStatusFajrMissed,
         ),
         _StatusRow(
           icon: Icons.work,
-          label: 'Work Time',
-          value: '${log.minutesWorked} minutes',
+          label: l10n.todayStatusWorkTime,
+          value: l10n.todayStatusMinutesWorked(log.minutesWorked),
         ),
         if (log.workDescription.isNotEmpty)
           _StatusRow(
             icon: Icons.description,
-            label: 'Work',
+            label: l10n.todayStatusWorkLabel,
             value: log.workDescription,
           ),
       ];
@@ -103,7 +110,7 @@ class TodayStatusCard extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const LogDayScreen()),
             ),
             icon: const Icon(Icons.add_circle),
-            label: const Text('Log Today'),
+            label: Text(l10n.todayStatusLogTodayButton),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
             ),
@@ -114,8 +121,11 @@ class TodayStatusCard extends StatelessWidget {
 
     return [
       Text(
-        'Logging window closed (after '
-        '${context.watch<PrayerTimeProvider>().formatClock(AppConstants.logCutoffHour)})',
+        l10n.todayStatusWindowClosed(
+          context
+              .watch<PrayerTimeProvider>()
+              .formatClock(AppConstants.logCutoffHour),
+        ),
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.error,
             ),

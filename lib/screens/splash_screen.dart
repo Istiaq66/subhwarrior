@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -30,9 +32,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Text('Subh Warrior', style: TextStyle(fontSize: 24)),
+        child: Text(
+          AppLocalizations.of(context)!.splashTitle,
+          style: const TextStyle(fontSize: 24),
+        ),
       ),
     );
   }

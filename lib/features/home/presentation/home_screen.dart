@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/leaderboard/presentation/leaderboard_screen.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
@@ -75,12 +76,15 @@ class _HomeScreenState extends State<HomeScreen> {
     await provider.startChallenge();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Challenge started — log your first day!')),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.homeChallengeStartedSnack),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
@@ -97,21 +101,21 @@ class _HomeScreenState extends State<HomeScreen> {
             _selectedIndex = index;
           });
         },
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home),
+            label: l10n.homeNavHome,
           ),
           NavigationDestination(
-            icon: Icon(Icons.timeline_outlined),
-            selectedIcon: Icon(Icons.timeline),
-            label: 'Progress',
+            icon: const Icon(Icons.timeline_outlined),
+            selectedIcon: const Icon(Icons.timeline),
+            label: l10n.homeNavProgress,
           ),
           NavigationDestination(
-            icon: Icon(Icons.leaderboard_outlined),
-            selectedIcon: Icon(Icons.leaderboard),
-            label: 'Leaderboard',
+            icon: const Icon(Icons.leaderboard_outlined),
+            selectedIcon: const Icon(Icons.leaderboard),
+            label: l10n.homeNavLeaderboard,
           ),
         ],
       ),
@@ -190,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         titlePadding: const EdgeInsets.only(bottom: 14),
         title: Text(
-          'Subh Warrior',
+          AppLocalizations.of(context)!.homeAppBarTitle,
           style: TextStyle(
             color: onBanner,
             fontWeight: FontWeight.bold,
