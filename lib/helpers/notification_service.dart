@@ -1,8 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/providers/locale_provider.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -49,21 +54,36 @@ class NotificationService {
     tz.setLocalLocation(tz.getLocation(timezoneName));
   }
 
+  /// Resolves localized strings without a BuildContext: honours the user's
+  /// in-app language choice, falling back to the device locale (or English
+  /// when that locale is unsupported).
+  static Future<AppLocalizations> _loadL10n() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getString(LocaleProvider.prefsKey);
+    var locale =
+        stored != null ? Locale(stored) : PlatformDispatcher.instance.locale;
+    if (!AppLocalizations.delegate.isSupported(locale)) {
+      locale = const Locale('en');
+    }
+    return lookupAppLocalizations(locale);
+  }
+
   static Future<void> showNotification({
     required int id,
     required String title,
     required String body,
     String? payload,
   }) async {
-    const androidDetails = AndroidNotificationDetails(
+    final l10n = await _loadL10n();
+    final androidDetails = AndroidNotificationDetails(
       'default_channel',
-      'General Notifications',
-      channelDescription: 'App notifications',
+      l10n.notifChannelGeneralName,
+      channelDescription: l10n.notifChannelGeneralDesc,
       importance: Importance.max,
       priority: Priority.high,
     );
 
-    const details = NotificationDetails(android: androidDetails);
+    final details = NotificationDetails(android: androidDetails);
 
     await _notifications.show(id, title, body, details, payload: payload);
   }
@@ -75,10 +95,11 @@ class NotificationService {
     required tz.TZDateTime scheduledDate,
     String? payload,
   }) async {
-    const androidDetails = AndroidNotificationDetails(
+    final l10n = await _loadL10n();
+    final androidDetails = AndroidNotificationDetails(
       'scheduled_channel',
-      'Scheduled Notifications',
-      channelDescription: 'Scheduled prayer/challenge reminders',
+      l10n.notifChannelScheduledName,
+      channelDescription: l10n.notifChannelScheduledDesc,
       importance: Importance.max,
       priority: Priority.high,
     );
@@ -88,7 +109,7 @@ class NotificationService {
       title,
       body,
       scheduledDate,
-      const NotificationDetails(android: androidDetails),
+      NotificationDetails(android: androidDetails),
       payload: payload,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
     );
@@ -166,10 +187,11 @@ class NotificationService {
       debugPrint(
           '   Time until notification: ${scheduledTime.difference(now)}');
 
+      final l10n = await _loadL10n();
       await scheduleNotification(
         id: 2,
-        title: '🕌 Fajr in $safeMinutesBefore minutes',
-        body: 'Time to wake up for Fajr prayer!',
+        title: l10n.notifFajrTitle(safeMinutesBefore),
+        body: l10n.notifFajrBody,
         scheduledDate: scheduledTime,
         payload: 'fajr_reminder',
       );
@@ -196,10 +218,11 @@ class NotificationService {
       debugPrint(
           '   Time until notification: ${scheduledTime.difference(now)}');
 
+      final l10n = await _loadL10n();
       await scheduleNotification(
         id: 3,
-        title: '⏰ Time to Log Your Day!',
-        body: 'You have 30 minutes left to log your morning routine',
+        title: l10n.notifLogTitle,
+        body: l10n.notifLogBody,
         scheduledDate: scheduledTime,
         payload: 'logging_reminder',
       );

@@ -1800,6 +1800,54 @@ abstract class AppLocalizations {
   /// **'Reflection'**
   String get dayDetailReflection;
 
+  /// Title of the scheduled Fajr reminder notification
+  ///
+  /// In en, this message translates to:
+  /// **'🕌 Fajr in {minutes} minutes'**
+  String notifFajrTitle(int minutes);
+
+  /// Body of the scheduled Fajr reminder notification
+  ///
+  /// In en, this message translates to:
+  /// **'Time to wake up for Fajr prayer!'**
+  String get notifFajrBody;
+
+  /// Title of the daily logging reminder notification
+  ///
+  /// In en, this message translates to:
+  /// **'⏰ Time to Log Your Day!'**
+  String get notifLogTitle;
+
+  /// Body of the daily logging reminder notification; fires 30 minutes before the logging cutoff
+  ///
+  /// In en, this message translates to:
+  /// **'You have 30 minutes left to log your morning routine'**
+  String get notifLogBody;
+
+  /// Android notification channel name for general app notifications
+  ///
+  /// In en, this message translates to:
+  /// **'General Notifications'**
+  String get notifChannelGeneralName;
+
+  /// Android notification channel description for general app notifications
+  ///
+  /// In en, this message translates to:
+  /// **'App notifications'**
+  String get notifChannelGeneralDesc;
+
+  /// Android notification channel name for scheduled reminders
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled Notifications'**
+  String get notifChannelScheduledName;
+
+  /// Android notification channel description for scheduled reminders
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled prayer/challenge reminders'**
+  String get notifChannelScheduledDesc;
+
   /// No description provided for @notifPermTitle.
   ///
   /// In en, this message translates to:

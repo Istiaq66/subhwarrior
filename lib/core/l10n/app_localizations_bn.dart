@@ -1059,6 +1059,37 @@ class AppLocalizationsBn extends AppLocalizations {
   String get dayDetailReflection => 'অনুভূতি';
 
   @override
+  String notifFajrTitle(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '🕌 ফজর $minutesString মিনিট পরে';
+  }
+
+  @override
+  String get notifFajrBody => 'ফজরের নামাযের জন্য জেগে ওঠার সময় হয়েছে!';
+
+  @override
+  String get notifLogTitle => '⏰ আপনার দিন লগ করার সময়!';
+
+  @override
+  String get notifLogBody => 'সকালের রুটিন লগ করতে আর ৩০ মিনিট বাকি';
+
+  @override
+  String get notifChannelGeneralName => 'সাধারণ নোটিফিকেশন';
+
+  @override
+  String get notifChannelGeneralDesc => 'অ্যাপ নোটিফিকেশন';
+
+  @override
+  String get notifChannelScheduledName => 'নির্ধারিত নোটিফিকেশন';
+
+  @override
+  String get notifChannelScheduledDesc =>
+      'নির্ধারিত নামায ও চ্যালেঞ্জ রিমাইন্ডার';
+
+  @override
   String get notifPermTitle => 'নোটিফিকেশন চালু করুন';
 
   @override

@@ -1054,6 +1054,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dayDetailReflection => 'Reflection';
 
   @override
+  String notifFajrTitle(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '🕌 Fajr in $minutesString minutes';
+  }
+
+  @override
+  String get notifFajrBody => 'Time to wake up for Fajr prayer!';
+
+  @override
+  String get notifLogTitle => '⏰ Time to Log Your Day!';
+
+  @override
+  String get notifLogBody =>
+      'You have 30 minutes left to log your morning routine';
+
+  @override
+  String get notifChannelGeneralName => 'General Notifications';
+
+  @override
+  String get notifChannelGeneralDesc => 'App notifications';
+
+  @override
+  String get notifChannelScheduledName => 'Scheduled Notifications';
+
+  @override
+  String get notifChannelScheduledDesc =>
+      'Scheduled prayer/challenge reminders';
+
+  @override
   String get notifPermTitle => 'Enable Notifications';
 
   @override

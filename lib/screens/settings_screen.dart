@@ -586,6 +586,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showLanguageDialog(LocaleProvider localeProvider) {
     final l10n = AppLocalizations.of(context)!;
     final current = localeProvider.locale?.languageCode ?? '';
+
+    Future<void> select(Locale? locale) async {
+      Navigator.pop(context);
+      await localeProvider.setLocale(locale);
+      // Re-issue pending notifications so their text follows the new language.
+      await _rescheduleNotifications();
+    }
+
     showDialog<void>(
       context: context,
       builder: (context) => SimpleDialog(
@@ -595,24 +603,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
             value: '',
             groupValue: current,
             title: Text(l10n.settingsLanguageSystem),
-            onChanged: (_) {
-              localeProvider.setLocale(null);
-              Navigator.pop(context);
-            },
+            onChanged: (_) => select(null),
           ),
           ..._languageNames.entries.map(
             (entry) => RadioListTile<String>(
               value: entry.key,
               groupValue: current,
               title: Text(entry.value),
-              onChanged: (_) {
-                localeProvider.setLocale(Locale(entry.key));
-                Navigator.pop(context);
-              },
+              onChanged: (_) => select(Locale(entry.key)),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _rescheduleNotifications() async {
+    final challengeProvider = context.read<ChallengeProvider>();
+    final prayerProvider = context.read<PrayerTimeProvider>();
+    await NotificationService.updateNotifications(
+      notificationsEnabled: challengeProvider.notificationsEnabled,
+      fajrReminder: challengeProvider.fajrReminder,
+      loggingReminder: challengeProvider.loggingReminder,
+      fajrReminderMinutes: challengeProvider.fajrReminderMinutes,
+      todayFajrTime: prayerProvider.todayFajrTime,
+      isChallengeActive: challengeProvider.isChallengeActive,
     );
   }
 

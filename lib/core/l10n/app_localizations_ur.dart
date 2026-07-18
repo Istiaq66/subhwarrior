@@ -1055,6 +1055,37 @@ class AppLocalizationsUr extends AppLocalizations {
   String get dayDetailReflection => 'غور و فکر';
 
   @override
+  String notifFajrTitle(int minutes) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '🕌 فجر $minutesString منٹ میں';
+  }
+
+  @override
+  String get notifFajrBody => 'فجر کی نماز کے لیے جاگنے کا وقت ہو گیا!';
+
+  @override
+  String get notifLogTitle => '⏰ اپنا دن لاگ کرنے کا وقت!';
+
+  @override
+  String get notifLogBody => 'صبح کا معمول لاگ کرنے کے لیے 30 منٹ باقی ہیں';
+
+  @override
+  String get notifChannelGeneralName => 'عام اطلاعات';
+
+  @override
+  String get notifChannelGeneralDesc => 'ایپ کی اطلاعات';
+
+  @override
+  String get notifChannelScheduledName => 'شیڈول شدہ اطلاعات';
+
+  @override
+  String get notifChannelScheduledDesc =>
+      'شیڈول شدہ نماز اور چیلنج یاد دہانیاں';
+
+  @override
   String get notifPermTitle => 'اطلاعات فعال کریں';
 
   @override

@@ -4,7 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Holds the user's language preference as a nullable [Locale]
 /// (null = follow system), and persists it.
 class LocaleProvider extends ChangeNotifier {
-  static const _prefsKey = 'appLocale';
+  /// SharedPreferences key holding the chosen language code. Public so
+  /// context-free code (e.g. NotificationService) can resolve the same choice.
+  static const prefsKey = 'appLocale';
 
   Locale? _locale;
 
@@ -21,15 +23,15 @@ class LocaleProvider extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     if (locale == null) {
-      await prefs.remove(_prefsKey);
+      await prefs.remove(prefsKey);
     } else {
-      await prefs.setString(_prefsKey, locale.languageCode);
+      await prefs.setString(prefsKey, locale.languageCode);
     }
   }
 
   Future<void> _loadLocale() async {
     final prefs = await SharedPreferences.getInstance();
-    final stored = prefs.getString(_prefsKey);
+    final stored = prefs.getString(prefsKey);
     if (stored != null) {
       _locale = Locale(stored);
       notifyListeners();
