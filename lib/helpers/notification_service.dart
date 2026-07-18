@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:subh_warrior/core/analytics/analytics_service.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/providers/locale_provider.dart';
@@ -17,6 +18,15 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
+
+  /// Logs the notification_opened analytics event. Public for tests; wired
+  /// as the local-notifications tap callback in [initBackground].
+  static void handleNotificationTap(String? payload) {
+    AnalyticsService.maybeInstance?.logEvent(
+      AnalyticsEvents.notificationOpened,
+      {'payload': payload ?? 'unknown'},
+    );
+  }
 
   Future<void> initBackground() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -33,7 +43,11 @@ class NotificationService {
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (response) =>
+          handleNotificationTap(response.payload),
+    );
 
     await _setNotification();
   }
