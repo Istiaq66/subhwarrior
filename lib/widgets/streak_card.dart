@@ -24,8 +24,8 @@ class StreakCard extends StatelessWidget {
           gradient: currentStreak > 0
               ? LinearGradient(
                   colors: context.appColors.streakGradient,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                  begin: AlignmentDirectional.topStart,
+                  end: AlignmentDirectional.bottomEnd,
                 )
               : null,
         ),
@@ -80,14 +80,22 @@ class StreakCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            context.localizeNumber(currentStreak),
-            style: TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: hasStreak
-                  ? Theme.of(context).colorScheme.onPrimary
-                  : Theme.of(context).textTheme.headlineLarge?.color,
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 350),
+            transitionBuilder: (child, animation) => ScaleTransition(
+              scale: animation,
+              child: FadeTransition(opacity: animation, child: child),
+            ),
+            child: Text(
+              context.localizeNumber(currentStreak),
+              key: ValueKey(currentStreak),
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: hasStreak
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : Theme.of(context).textTheme.headlineLarge?.color,
+              ),
             ),
           ),
           Text(

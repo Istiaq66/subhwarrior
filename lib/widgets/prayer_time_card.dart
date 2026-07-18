@@ -4,7 +4,7 @@ import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/shared/widgets/error_view.dart';
-import 'package:subh_warrior/shared/widgets/loading_view.dart';
+import 'package:subh_warrior/shared/widgets/skeleton.dart';
 
 class PrayerTimeCard extends StatelessWidget {
   const PrayerTimeCard({super.key});
@@ -15,9 +15,7 @@ class PrayerTimeCard extends StatelessWidget {
     return Consumer<PrayerTimeProvider>(
       builder: (context, prayerProvider, _) {
         if (prayerProvider.isLoading) {
-          return const Card(
-            child: SizedBox(height: 120, child: LoadingView()),
-          );
+          return const PrayerCardSkeleton();
         }
 
         if (prayerProvider.error.isNotEmpty) {
@@ -57,8 +55,8 @@ class PrayerTimeCard extends StatelessWidget {
                         Theme.of(context).colorScheme.primary,
                         Theme.of(context).colorScheme.secondary,
                       ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+                begin: AlignmentDirectional.topStart,
+                end: AlignmentDirectional.bottomEnd,
               ),
             ),
             child: Padding(

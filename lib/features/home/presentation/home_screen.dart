@@ -205,8 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [scheme.primary, scheme.tertiary],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              begin: AlignmentDirectional.topStart,
+              end: AlignmentDirectional.bottomEnd,
             ),
           ),
         ),

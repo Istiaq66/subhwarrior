@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -572,7 +572,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   subtitle: Text(code == null
                       ? l10n.settingsLanguageSystem
                       : _languageNames[code] ?? code),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: Icon(Directionality.of(context) == TextDirection.rtl
+                      ? Icons.chevron_left
+                      : Icons.chevron_right),
                   onTap: () => _showLanguageDialog(localeProvider),
                 );
               },
@@ -846,7 +848,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SnackBar(
           content: Text(l10n.settingsNoEmailApp(_feedbackEmail)),
           backgroundColor: context.appColors.warning,
-
         ),
       );
     }

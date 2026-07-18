@@ -294,7 +294,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   if (!_isRegister)
                     Align(
-                      alignment: Alignment.centerRight,
+                      alignment: AlignmentDirectional.centerEnd,
                       child: TextButton(
                         onPressed: _busy ? null : _forgotPassword,
                         child: Text(l10n.authForgotPassword),

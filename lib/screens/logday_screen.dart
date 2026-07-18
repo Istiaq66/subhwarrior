@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
@@ -669,8 +670,15 @@ class _LogDayScreenState extends State<LogDayScreen> {
     });
 
     if (result == LogResult.success) {
+      // Celebratory haptic scaled to the outcome (IMPROVEMENT_PLAN C7).
+      if (_isQualifyingDay) {
+        HapticFeedback.mediumImpact();
+      } else {
+        HapticFeedback.lightImpact();
+      }
       _showSuccessDialog(isQualifying: _isQualifyingDay);
     } else {
+      HapticFeedback.vibrate();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(_logFailureMessage(result, context)),
