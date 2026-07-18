@@ -11,6 +11,7 @@ import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
+import 'package:subh_warrior/providers/locale_provider.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -32,6 +33,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _fajrReminderMinutes = 15;
   String _appVersion = '';
   bool _isAccountBusy = false;
+
+  // App languages shown as endonyms — kept untranslated on purpose so users
+  // can always find their own language.
+  static const Map<String, String> _languageNames = {
+    'en': 'English',
+    'ar': 'العربية',
+    'bn': 'বাংলা',
+    'ur': 'اردو',
+  };
 
   // Prayer calculation methods
   final Map<int, String> _calculationMethods = {
@@ -544,6 +554,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       },
                     ),
                   ],
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            Consumer<LocaleProvider>(
+              builder: (context, localeProvider, _) {
+                return DropdownButtonFormField<String>(
+                  value: localeProvider.locale?.languageCode ?? '',
+                  decoration: InputDecoration(
+                    labelText: l10n.settingsLanguageLabel,
+                    prefixIcon: const Icon(Icons.language),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  items: [
+                    DropdownMenuItem(
+                      value: '',
+                      child: Text(l10n.settingsLanguageSystem),
+                    ),
+                    ..._languageNames.entries.map(
+                      (entry) => DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value == null) return;
+                    localeProvider
+                        .setLocale(value.isEmpty ? null : Locale(value));
+                  },
                 );
               },
             ),

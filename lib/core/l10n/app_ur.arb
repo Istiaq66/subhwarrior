@@ -155,6 +155,8 @@
   "settingsLoggingReminderTitle": "روزانہ لاگ کی یاد دہانی",
   "settingsLoggingReminderSubtitle": "دن لاگ کرنے کے لیے {time} پر یاد دلائیں",
   "settingsAppearanceTitle": "ظاہری شکل",
+  "settingsLanguageLabel": "زبان",
+  "settingsLanguageSystem": "سسٹم",
   "settingsThemeLabel": "تھیم",
   "settingsThemeSystem": "سسٹم",
   "settingsThemeLight": "لائٹ",

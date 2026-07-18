@@ -11,6 +11,7 @@ import 'package:subh_warrior/features/challenge/presentation/challenge_controlle
 import 'package:subh_warrior/features/home/presentation/home_screen.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
+import 'package:subh_warrior/providers/locale_provider.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:subh_warrior/screens/auth_screen.dart';
 import 'package:subh_warrior/screens/onboarding_screen.dart';
@@ -58,11 +59,12 @@ class SubhWarriorApp extends StatelessWidget {
       providers: [
         Provider<AuthService>.value(value: authService),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(
             create: (_) => PrayerTimeProvider.fromPrefs(prefs)),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) {
+      child: Consumer2<ThemeProvider, LocaleProvider>(
+        builder: (context, themeProvider, localeProvider, _) {
           return StreamBuilder<User?>(
             stream: authService.authStateChanges(),
             initialData: authService.currentUser,
@@ -79,6 +81,7 @@ class SubhWarriorApp extends StatelessWidget {
                   localizationsDelegates:
                       AppLocalizations.localizationsDelegates,
                   supportedLocales: AppLocalizations.supportedLocales,
+                  locale: localeProvider.locale,
                   theme: AppTheme.light(),
                   darkTheme: AppTheme.dark(),
                   themeMode: themeProvider.themeMode,

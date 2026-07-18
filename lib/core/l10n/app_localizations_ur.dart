@@ -537,6 +537,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get settingsAppearanceTitle => 'ظاہری شکل';
 
   @override
+  String get settingsLanguageLabel => 'زبان';
+
+  @override
+  String get settingsLanguageSystem => 'سسٹم';
+
+  @override
   String get settingsThemeLabel => 'تھیم';
 
   @override

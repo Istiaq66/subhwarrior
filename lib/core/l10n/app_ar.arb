@@ -155,6 +155,8 @@
   "settingsLoggingReminderTitle": "تذكير التسجيل اليومي",
   "settingsLoggingReminderSubtitle": "تذكير في {time} لتسجيل يومك",
   "settingsAppearanceTitle": "المظهر",
+  "settingsLanguageLabel": "اللغة",
+  "settingsLanguageSystem": "النظام",
   "settingsThemeLabel": "السمة",
   "settingsThemeSystem": "النظام",
   "settingsThemeLight": "فاتح",

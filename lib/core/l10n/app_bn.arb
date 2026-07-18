@@ -155,6 +155,8 @@
   "settingsLoggingReminderTitle": "দৈনিক লগ রিমাইন্ডার",
   "settingsLoggingReminderSubtitle": "দিন লগ করতে {time}-এ মনে করিয়ে দিন",
   "settingsAppearanceTitle": "চেহারা",
+  "settingsLanguageLabel": "ভাষা",
+  "settingsLanguageSystem": "সিস্টেম",
   "settingsThemeLabel": "থিম",
   "settingsThemeSystem": "সিস্টেম",
   "settingsThemeLight": "লাইট",

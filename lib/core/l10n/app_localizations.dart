@@ -1032,6 +1032,18 @@ abstract class AppLocalizations {
   /// **'Appearance'**
   String get settingsAppearanceTitle;
 
+  /// No description provided for @settingsLanguageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguageLabel;
+
+  /// No description provided for @settingsLanguageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settingsLanguageSystem;
+
   /// No description provided for @settingsThemeLabel.
   ///
   /// In en, this message translates to:

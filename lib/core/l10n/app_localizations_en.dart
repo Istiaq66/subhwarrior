@@ -538,6 +538,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAppearanceTitle => 'Appearance';
 
   @override
+  String get settingsLanguageLabel => 'Language';
+
+  @override
+  String get settingsLanguageSystem => 'System';
+
+  @override
   String get settingsThemeLabel => 'Theme';
 
   @override

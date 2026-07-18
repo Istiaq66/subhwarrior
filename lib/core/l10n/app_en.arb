@@ -365,6 +365,8 @@
     }
   },
   "settingsAppearanceTitle": "Appearance",
+  "settingsLanguageLabel": "Language",
+  "settingsLanguageSystem": "System",
   "settingsThemeLabel": "Theme",
   "settingsThemeSystem": "System",
   "settingsThemeLight": "Light",

@@ -541,6 +541,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get settingsAppearanceTitle => 'চেহারা';
 
   @override
+  String get settingsLanguageLabel => 'ভাষা';
+
+  @override
+  String get settingsLanguageSystem => 'সিস্টেম';
+
+  @override
   String get settingsThemeLabel => 'থিম';
 
   @override
