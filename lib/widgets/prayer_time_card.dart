@@ -36,7 +36,11 @@ class PrayerTimeCard extends StatelessWidget {
         final fajrTime = prayerProvider.todayFajrTime;
         final tomorrowFajr = prayerProvider.tomorrowFajrTime;
         final isWithinWindow = prayerProvider.isWithinFajrTime();
-        final timeUntilFajr = prayerProvider.getTimeUntilFajr();
+        final untilFajr = prayerProvider.untilNextFajr;
+        final timeUntilFajr = untilFajr == null
+            ? l10n.prayerCardCountdownUnknown
+            : l10n.prayerCardCountdownValue(
+                untilFajr.inHours, untilFajr.inMinutes % 60);
 
         return Card(
           elevation: 8,

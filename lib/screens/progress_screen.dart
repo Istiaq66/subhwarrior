@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/l10n/l10n_utils.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/domain/day_log.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
@@ -93,13 +94,17 @@ class _ProgressScreenState extends State<ProgressScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatColumn(l10n.progressStatCompleted, '$daysCompleted',
+              _buildStatColumn(
+                  l10n.progressStatCompleted,
+                  context.localizeNumber(daysCompleted),
                   Theme.of(context).colorScheme.onPrimary),
-              _buildStatColumn(l10n.progressStatRemaining, '$daysRemaining',
+              _buildStatColumn(
+                  l10n.progressStatRemaining,
+                  context.localizeNumber(daysRemaining),
                   Theme.of(context).colorScheme.onPrimary),
               _buildStatColumn(
                   l10n.progressStatStreak,
-                  '${provider.currentStreak}',
+                  context.localizeNumber(provider.currentStreak),
                   Theme.of(context).colorScheme.onPrimary),
             ],
           ),
@@ -150,6 +155,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: TableCalendar(
+          locale: Localizations.localeOf(context).toString(),
           firstDay: firstDay,
           lastDay: lastDay,
           focusedDay: effectiveFocusedDay,
@@ -251,7 +257,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                         showTitles: true,
                         interval: 1,
                         getTitlesWidget: (value, meta) {
-                          return Text(value.toInt().toString());
+                          return Text(context.localizeNumber(value.toInt()));
                         },
                       ),
                     ),

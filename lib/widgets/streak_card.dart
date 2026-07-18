@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/l10n/app_localizations.dart';
+import '../core/l10n/l10n_utils.dart';
 import '../core/theme/app_colors.dart';
 
 class StreakCard extends StatelessWidget {
@@ -80,7 +81,7 @@ class StreakCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '$currentStreak',
+            context.localizeNumber(currentStreak),
             style: TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.bold,
@@ -163,7 +164,7 @@ class StreakCard extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                    '$totalDays',
+                    context.localizeNumber(totalDays),
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

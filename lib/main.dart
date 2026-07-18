@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
@@ -82,6 +83,14 @@ class SubhWarriorApp extends StatelessWidget {
                       AppLocalizations.localizationsDelegates,
                   supportedLocales: AppLocalizations.supportedLocales,
                   locale: localeProvider.locale,
+                  builder: (context, child) {
+                    // Keep intl's global locale in sync so bare DateFormat /
+                    // NumberFormat calls (prayer times, dates) use the app
+                    // locale's native digits and month names.
+                    Intl.defaultLocale =
+                        Localizations.localeOf(context).toString();
+                    return child!;
+                  },
                   theme: AppTheme.light(),
                   darkTheme: AppTheme.dark(),
                   themeMode: themeProvider.themeMode,

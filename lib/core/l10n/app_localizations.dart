@@ -402,6 +402,18 @@ abstract class AppLocalizations {
   /// **'Next Fajr In'**
   String get prayerCardNextFajrIn;
 
+  /// Countdown to the next Fajr prayer, e.g. 5h 23m
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m'**
+  String prayerCardCountdownValue(int hours, int minutes);
+
+  /// Shown in place of the Fajr countdown when prayer times are unavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get prayerCardCountdownUnknown;
+
   /// No description provided for @prayerCardSunrise.
   ///
   /// In en, this message translates to:

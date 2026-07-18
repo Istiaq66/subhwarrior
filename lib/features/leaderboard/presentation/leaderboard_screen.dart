@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/l10n/l10n_utils.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/leaderboard/data/leaderboard_repository.dart';
@@ -174,7 +175,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
                     semanticsLabel: _getMedalSemanticsLabel(l10n, rank),
                   )
                 : Text(
-                    '$rank',
+                    context.localizeNumber(rank),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,

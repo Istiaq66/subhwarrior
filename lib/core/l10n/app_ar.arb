@@ -50,6 +50,8 @@
   "prayerCardToday": "اليوم",
   "prayerCardTomorrow": "غدًا",
   "prayerCardNextFajrIn": "الفجر القادم بعد",
+  "prayerCardCountdownValue": "{hours}س {minutes}د",
+  "prayerCardCountdownUnknown": "غير معروف",
   "prayerCardSunrise": "الشروق",
   "prayerCardDhuhr": "الظهر",
   "prayerCardAsr": "العصر",

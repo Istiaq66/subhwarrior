@@ -47,7 +47,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String inactiveChallengeBody(int days) {
-    return 'فجر کی نماز اور نتیجہ خیز کام کے ساتھ ایک مضبوط صبح کا معمول بنانے کے لیے اپنا $days دن کا چیلنج شروع کریں۔';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'فجر کی نماز اور نتیجہ خیز کام کے ساتھ ایک مضبوط صبح کا معمول بنانے کے لیے اپنا $daysString دن کا چیلنج شروع کریں۔';
   }
 
   @override
@@ -82,7 +86,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String todayStatusMinutesWorked(int minutes) {
-    return '$minutes منٹ';
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString منٹ';
   }
 
   @override
@@ -101,12 +109,23 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String weeklyProgressWeekLabel(int week) {
-    return 'ہفتہ $week';
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'ہفتہ $weekString';
   }
 
   @override
   String weeklyProgressRatio(int progress, int target) {
-    return '$progress/$target';
+    final intl.NumberFormat progressNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String progressString = progressNumberFormat.format(progress);
+    final intl.NumberFormat targetNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String targetString = targetNumberFormat.format(target);
+
+    return '$progressString/$targetString';
   }
 
   @override
@@ -117,12 +136,23 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String quickStatsPercent(int percent) {
-    return '$percent%';
+    final intl.NumberFormat percentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String percentString = percentNumberFormat.format(percent);
+
+    return '$percentString%';
   }
 
   @override
   String quickStatsGoalRatio(int count, int goal) {
-    return '$count/$goal';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+    final intl.NumberFormat goalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String goalString = goalNumberFormat.format(goal);
+
+    return '$countString/$goalString';
   }
 
   @override
@@ -182,6 +212,21 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get prayerCardNextFajrIn => 'اگلی فجر میں';
+
+  @override
+  String prayerCardCountdownValue(int hours, int minutes) {
+    final intl.NumberFormat hoursNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String hoursString = hoursNumberFormat.format(hours);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$hoursString گھنٹے $minutesString منٹ';
+  }
+
+  @override
+  String get prayerCardCountdownUnknown => 'نامعلوم';
 
   @override
   String get prayerCardSunrise => 'طلوعِ آفتاب';
@@ -442,7 +487,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String commonMinutesShort(int minutes) {
-    return '$minutes منٹ';
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString منٹ';
   }
 
   @override
@@ -471,7 +520,14 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String settingsChallengeWeekRatio(int week, int totalWeeks) {
-    return '$week/$totalWeeks';
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+    final intl.NumberFormat totalWeeksNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalWeeksString = totalWeeksNumberFormat.format(totalWeeks);
+
+    return '$weekString/$totalWeeksString';
   }
 
   @override
@@ -516,7 +572,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String settingsFajrReminderSubtitle(int minutes) {
-    return 'فجر سے $minutes منٹ پہلے اطلاع دیں';
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'فجر سے $minutesString منٹ پہلے اطلاع دیں';
   }
 
   @override
@@ -674,7 +734,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String progressWeekAxisLabel(int week) {
-    return 'ہفتہ $week';
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'ہفتہ $weekString';
   }
 
   @override
@@ -691,7 +755,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String progressLogSubtitle(String fajrStatus, int minutes) {
-    return '$fajrStatus • $minutes منٹ کام';
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$fajrStatus • $minutesString منٹ کام';
   }
 
   @override
@@ -714,7 +782,14 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String logDayTimeRemaining(int hours, int minutes) {
-    return 'لاگ کرنے کے لیے باقی وقت: $hours گھنٹے $minutes منٹ';
+    final intl.NumberFormat hoursNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String hoursString = hoursNumberFormat.format(hours);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'لاگ کرنے کے لیے باقی وقت: $hoursString گھنٹے $minutesString منٹ';
   }
 
   @override
@@ -793,12 +868,20 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String logDayMinutesFocused(int minutes) {
-    return 'مرکوز کام کے منٹ: $minutes';
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'مرکوز کام کے منٹ: $minutesString';
   }
 
   @override
   String logDayMinimumMinutes(int minutes) {
-    return 'کوالیفائی کرنے کے لیے کم از کم $minutes منٹ درکار ہیں';
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return 'کوالیفائی کرنے کے لیے کم از کم $minutesString منٹ درکار ہیں';
   }
 
   @override
@@ -831,7 +914,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String logDayReqMinutesWork(int minutes) {
-    return '$minutes+ منٹ کام';
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    return '$minutesString+ منٹ کام';
   }
 
   @override
@@ -918,12 +1005,20 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String leaderboardDaysCount(int days) {
-    return '$days دن';
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString دن';
   }
 
   @override
   String leaderboardStreakCount(int streak) {
-    return '$streak سلسلہ';
+    final intl.NumberFormat streakNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String streakString = streakNumberFormat.format(streak);
+
+    return '$streakString سلسلہ';
   }
 
   @override

@@ -29,7 +29,8 @@
     "description": "Call-to-action body text shown when no challenge is active",
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -54,7 +55,8 @@
     "description": "Number of minutes worked today",
     "placeholders": {
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -75,7 +77,8 @@
     "description": "Label for a week row in the weekly progress card",
     "placeholders": {
       "week": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -84,10 +87,12 @@
     "description": "Qualifying days achieved out of the weekly target, e.g. 3/4",
     "placeholders": {
       "progress": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "target": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -98,7 +103,8 @@
     "description": "Overall progress percentage shown inside the circular indicator",
     "placeholders": {
       "percent": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -107,10 +113,12 @@
     "description": "Qualifying days achieved out of the overall goal, e.g. 5/16",
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "goal": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -135,6 +143,24 @@
   "prayerCardNextFajrIn": "Next Fajr In",
   "@prayerCardNextFajrIn": {
     "description": "Label above the countdown to the next Fajr prayer"
+  },
+  "prayerCardCountdownValue": "{hours}h {minutes}m",
+  "@prayerCardCountdownValue": {
+    "description": "Countdown to the next Fajr prayer, e.g. 5h 23m",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "prayerCardCountdownUnknown": "Unknown",
+  "@prayerCardCountdownUnknown": {
+    "description": "Shown in place of the Fajr countdown when prayer times are unavailable"
   },
   "prayerCardSunrise": "Sunrise",
   "prayerCardDhuhr": "Dhuhr",
@@ -293,7 +319,8 @@
     "description": "Short minutes label, e.g. in the reminder dropdown and work slider",
     "placeholders": {
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -310,10 +337,12 @@
     "description": "Current challenge week out of total weeks, e.g. 2/4",
     "placeholders": {
       "week": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "totalWeeks": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -345,7 +374,8 @@
     "description": "Subtitle for the Fajr reminder switch showing the configured lead time in minutes",
     "placeholders": {
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -448,7 +478,8 @@
     "description": "Abbreviated week label on the weekly chart x-axis, e.g. W1",
     "placeholders": {
       "week": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -464,7 +495,8 @@
         "type": "String"
       },
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -486,10 +518,12 @@
     "description": "Countdown banner until the logging deadline",
     "placeholders": {
       "hours": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       },
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -530,7 +564,8 @@
     "description": "Label above the work-minutes slider showing the selected value",
     "placeholders": {
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -539,7 +574,8 @@
     "description": "Warning under the slider when below the qualifying minimum",
     "placeholders": {
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -557,7 +593,8 @@
     "description": "Qualification checklist row for the minimum minutes of work",
     "placeholders": {
       "minutes": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -601,7 +638,8 @@
     "description": "Qualifying days count on a leaderboard row",
     "placeholders": {
       "days": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -610,7 +648,8 @@
     "description": "Current streak count on a leaderboard row",
     "placeholders": {
       "streak": {
-        "type": "int"
+        "type": "int",
+        "format": "decimalPattern"
       }
     }
   },
@@ -624,6 +663,44 @@
   "dayDetailWorkDescription": "Work Description",
   "dayDetailNoDetails": "No details logged for this day.",
   "dayDetailReflection": "Reflection",
+  "notifFajrTitle": "🕌 Fajr in {minutes} minutes",
+  "@notifFajrTitle": {
+    "description": "Title of the scheduled Fajr reminder notification",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "notifFajrBody": "Time to wake up for Fajr prayer!",
+  "@notifFajrBody": {
+    "description": "Body of the scheduled Fajr reminder notification"
+  },
+  "notifLogTitle": "⏰ Time to Log Your Day!",
+  "@notifLogTitle": {
+    "description": "Title of the daily logging reminder notification"
+  },
+  "notifLogBody": "You have 30 minutes left to log your morning routine",
+  "@notifLogBody": {
+    "description": "Body of the daily logging reminder notification; fires 30 minutes before the logging cutoff"
+  },
+  "notifChannelGeneralName": "General Notifications",
+  "@notifChannelGeneralName": {
+    "description": "Android notification channel name for general app notifications"
+  },
+  "notifChannelGeneralDesc": "App notifications",
+  "@notifChannelGeneralDesc": {
+    "description": "Android notification channel description for general app notifications"
+  },
+  "notifChannelScheduledName": "Scheduled Notifications",
+  "@notifChannelScheduledName": {
+    "description": "Android notification channel name for scheduled reminders"
+  },
+  "notifChannelScheduledDesc": "Scheduled prayer/challenge reminders",
+  "@notifChannelScheduledDesc": {
+    "description": "Android notification channel description for scheduled reminders"
+  },
   "notifPermTitle": "Enable Notifications",
   "notifPermContent": "Get reminded about Fajr prayer and daily logging to stay on track with your Subh Warrior challenge.",
   "notifPermNotNow": "Not Now",

@@ -129,7 +129,9 @@ class PrayerTimeProvider extends ChangeNotifier {
     return formatClock(h, m);
   }
 
-  String getTimeUntilFajr() {
+  /// Time remaining until the next Fajr, or null when prayer times are
+  /// unavailable. Formatting/localization happens at the widget layer.
+  Duration? get untilNextFajr {
     DateTime? nextFajr;
     final now = DateTime.now();
 
@@ -139,12 +141,7 @@ class PrayerTimeProvider extends ChangeNotifier {
       nextFajr = tomorrowFajrTime;
     }
 
-    if (nextFajr == null) return 'Unknown';
-
-    final difference = nextFajr.difference(now);
-    final hours = difference.inHours;
-    final minutes = difference.inMinutes % 60;
-    return '${hours}h ${minutes}m';
+    return nextFajr?.difference(now);
   }
 
   /// Shared fetch wrapper: toggles loading/error and defers notifications to

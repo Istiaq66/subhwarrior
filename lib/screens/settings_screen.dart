@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/l10n/l10n_utils.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
@@ -165,9 +167,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 return Column(
                   children: [
                     _buildStatRow(l10n.settingsStatTotalDays,
-                        '${provider.totalQualifyingDays}'),
+                        context.localizeNumber(provider.totalQualifyingDays)),
                     _buildStatRow(l10n.settingsStatCurrentStreak,
-                        '${provider.currentStreak}'),
+                        context.localizeNumber(provider.currentStreak)),
                     _buildStatRow(
                         l10n.settingsStatChallengeWeek,
                         l10n.settingsChallengeWeekRatio(
@@ -242,8 +244,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       l10n.settingsCoordinates(
-                          provider.userLatitude.toStringAsFixed(4),
-                          provider.userLongitude.toStringAsFixed(4)),
+                          context.localizeNumber(provider.userLatitude,
+                              fractionDigits: 4),
+                          context.localizeNumber(provider.userLongitude,
+                              fractionDigits: 4)),
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   );
@@ -557,40 +561,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             Consumer<LocaleProvider>(
               builder: (context, localeProvider, _) {
-                return DropdownButtonFormField<String>(
-                  value: localeProvider.locale?.languageCode ?? '',
-                  decoration: InputDecoration(
-                    labelText: l10n.settingsLanguageLabel,
-                    prefixIcon: const Icon(Icons.language),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  items: [
-                    DropdownMenuItem(
-                      value: '',
-                      child: Text(l10n.settingsLanguageSystem),
-                    ),
-                    ..._languageNames.entries.map(
-                      (entry) => DropdownMenuItem(
-                        value: entry.key,
-                        child: Text(entry.value),
-                      ),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    if (value == null) return;
-                    localeProvider
-                        .setLocale(value.isEmpty ? null : Locale(value));
-                  },
+                final code = localeProvider.locale?.languageCode;
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.language),
+                  title: Text(l10n.settingsLanguageLabel),
+                  subtitle: Text(code == null
+                      ? l10n.settingsLanguageSystem
+                      : _languageNames[code] ?? code),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showLanguageDialog(localeProvider),
                 );
               },
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showLanguageDialog(LocaleProvider localeProvider) {
+    final l10n = AppLocalizations.of(context)!;
+    final current = localeProvider.locale?.languageCode ?? '';
+    showDialog<void>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(l10n.settingsLanguageLabel),
+        children: [
+          RadioListTile<String>(
+            value: '',
+            groupValue: current,
+            title: Text(l10n.settingsLanguageSystem),
+            onChanged: (_) {
+              localeProvider.setLocale(null);
+              Navigator.pop(context);
+            },
+          ),
+          ..._languageNames.entries.map(
+            (entry) => RadioListTile<String>(
+              value: entry.key,
+              groupValue: current,
+              title: Text(entry.value),
+              onChanged: (_) {
+                localeProvider.setLocale(Locale(entry.key));
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -632,7 +653,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(l10n.settingsChallengeStarted),
                   subtitle: Text(
                     provider.challengeStartDate != null
-                        ? '${provider.challengeStartDate!.day}/${provider.challengeStartDate!.month}/${provider.challengeStartDate!.year}'
+                        ? DateFormat.yMMMd()
+                            .format(provider.challengeStartDate!)
                         : l10n.settingsChallengeNotStarted,
                   ),
                 ),
