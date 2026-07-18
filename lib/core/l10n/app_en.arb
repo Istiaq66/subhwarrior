@@ -705,6 +705,19 @@
   "notifPermContent": "Get reminded about Fajr prayer and daily logging to stay on track with your Subh Warrior challenge.",
   "notifPermNotNow": "Not Now",
   "notifPermEnable": "Enable",
+  "shareCardTitle": "Subh Warrior",
+  "shareCardStreakLabel": "day streak",
+  "shareCardQualifyingLabel": "qualifying days",
+  "shareCardWeekLabel": "Week {week} of 4",
+  "@shareCardWeekLabel": {
+    "description": "Challenge week shown on the shareable streak card",
+    "placeholders": {
+      "week": { "type": "int", "format": "decimalPattern" }
+    }
+  },
+  "shareCardFooter": "Join me on the 28-day Fajr challenge!",
+  "shareCardButton": "Share",
+  "shareCardSheetTitle": "Share your progress",
   "a11yOpenSettings": "Open settings",
   "@a11yOpenSettings": {
     "description": "Tooltip for the settings icon button on the home screen"

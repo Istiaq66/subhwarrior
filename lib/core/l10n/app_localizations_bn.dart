@@ -1103,6 +1103,33 @@ class AppLocalizationsBn extends AppLocalizations {
   String get notifPermEnable => 'চালু করুন';
 
   @override
+  String get shareCardTitle => 'সুবহ ওয়ারিয়র';
+
+  @override
+  String get shareCardStreakLabel => 'দিনের স্ট্রিক';
+
+  @override
+  String get shareCardQualifyingLabel => 'যোগ্য দিন';
+
+  @override
+  String shareCardWeekLabel(int week) {
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return '৪ সপ্তাহের মধ্যে $weekStringতম সপ্তাহ';
+  }
+
+  @override
+  String get shareCardFooter => '২৮ দিনের ফজর চ্যালেঞ্জে আমার সাথে যোগ দিন!';
+
+  @override
+  String get shareCardButton => 'শেয়ার করুন';
+
+  @override
+  String get shareCardSheetTitle => 'আপনার অগ্রগতি শেয়ার করুন';
+
+  @override
   String get a11yOpenSettings => 'সেটিংস খুলুন';
 
   @override

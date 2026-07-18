@@ -1089,6 +1089,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notifPermEnable => 'تفعيل';
 
   @override
+  String get shareCardTitle => 'محارب الصبح';
+
+  @override
+  String get shareCardStreakLabel => 'يومًا متتاليًا';
+
+  @override
+  String get shareCardQualifyingLabel => 'أيام مؤهّلة';
+
+  @override
+  String shareCardWeekLabel(int week) {
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'الأسبوع $weekString من 4';
+  }
+
+  @override
+  String get shareCardFooter => 'انضم إليّ في تحدي الفجر لمدة 28 يومًا!';
+
+  @override
+  String get shareCardButton => 'مشاركة';
+
+  @override
+  String get shareCardSheetTitle => 'شارك تقدمك';
+
+  @override
   String get a11yOpenSettings => 'فتح الإعدادات';
 
   @override

@@ -1099,6 +1099,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifPermEnable => 'Enable';
 
   @override
+  String get shareCardTitle => 'Subh Warrior';
+
+  @override
+  String get shareCardStreakLabel => 'day streak';
+
+  @override
+  String get shareCardQualifyingLabel => 'qualifying days';
+
+  @override
+  String shareCardWeekLabel(int week) {
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'Week $weekString of 4';
+  }
+
+  @override
+  String get shareCardFooter => 'Join me on the 28-day Fajr challenge!';
+
+  @override
+  String get shareCardButton => 'Share';
+
+  @override
+  String get shareCardSheetTitle => 'Share your progress';
+
+  @override
   String get a11yOpenSettings => 'Open settings';
 
   @override

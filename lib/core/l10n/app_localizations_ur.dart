@@ -1099,6 +1099,33 @@ class AppLocalizationsUr extends AppLocalizations {
   String get notifPermEnable => 'فعال کریں';
 
   @override
+  String get shareCardTitle => 'صبح واریئر';
+
+  @override
+  String get shareCardStreakLabel => 'دن کی اسٹریک';
+
+  @override
+  String get shareCardQualifyingLabel => 'اہل دن';
+
+  @override
+  String shareCardWeekLabel(int week) {
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return '4 میں سے ہفتہ $weekString';
+  }
+
+  @override
+  String get shareCardFooter => '28 دن کے فجر چیلنج میں میرے ساتھ شامل ہوں!';
+
+  @override
+  String get shareCardButton => 'شیئر کریں';
+
+  @override
+  String get shareCardSheetTitle => 'اپنی پیشرفت شیئر کریں';
+
+  @override
   String get a11yOpenSettings => 'سیٹنگز کھولیں';
 
   @override

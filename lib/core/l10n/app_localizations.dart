@@ -1872,6 +1872,48 @@ abstract class AppLocalizations {
   /// **'Enable'**
   String get notifPermEnable;
 
+  /// No description provided for @shareCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subh Warrior'**
+  String get shareCardTitle;
+
+  /// No description provided for @shareCardStreakLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'day streak'**
+  String get shareCardStreakLabel;
+
+  /// No description provided for @shareCardQualifyingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'qualifying days'**
+  String get shareCardQualifyingLabel;
+
+  /// Challenge week shown on the shareable streak card
+  ///
+  /// In en, this message translates to:
+  /// **'Week {week} of 4'**
+  String shareCardWeekLabel(int week);
+
+  /// No description provided for @shareCardFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Join me on the 28-day Fajr challenge!'**
+  String get shareCardFooter;
+
+  /// No description provided for @shareCardButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareCardButton;
+
+  /// No description provided for @shareCardSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your progress'**
+  String get shareCardSheetTitle;
+
   /// Tooltip for the settings icon button on the home screen
   ///
   /// In en, this message translates to:
