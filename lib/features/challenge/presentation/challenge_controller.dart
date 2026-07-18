@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/analytics/analytics_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/date_time_utils.dart';
 import '../../../core/utils/input_validators.dart';
@@ -20,15 +21,21 @@ const int kLogCutoffHour = AppConstants.logCutoffHour;
 /// through the repository. Business rules live here; persistence does not.
 class ChallengeProvider extends ChangeNotifier {
   final ChallengeRepository _repository;
+  final AnalyticsService? _analytics;
   late ChallengeData _data;
 
   // Sleep tracking is in-memory only (parity with prior behavior).
   final Map<DateTime, SleepPreparation> _sleepPreparations = {};
 
-  ChallengeProvider(this._repository) {
+  ChallengeProvider(this._repository, {AnalyticsService? analytics})
+      : _analytics = analytics {
     _data = _repository.load();
     _syncFromRemote();
   }
+
+  /// 7/14/21 milestone hit, or null. Pure so it's unit-testable.
+  static int? streakMilestoneFor(int streak) =>
+      const [7, 14, 21].contains(streak) ? streak : null;
 
   Future<void> _syncFromRemote() async {
     if (_data.userName.trim().isNotEmpty) return;
@@ -56,8 +63,12 @@ class ChallengeProvider extends ChangeNotifier {
   factory ChallengeProvider.fromPrefs(
     SharedPreferences prefs, {
     required String uid,
+    AnalyticsService? analytics,
   }) =>
-      ChallengeProvider(ChallengeRepositoryImpl.fromPrefs(prefs, uid: uid));
+      ChallengeProvider(
+        ChallengeRepositoryImpl.fromPrefs(prefs, uid: uid),
+        analytics: analytics,
+      );
 
   // Getters
   DateTime? get challengeStartDate => _data.challengeStartDate;
@@ -111,6 +122,7 @@ class ChallengeProvider extends ChangeNotifier {
     _data.currentWeek = 1;
 
     await _repository.save(_data);
+    _analytics?.logEvent(AnalyticsEvents.challengeStarted);
     notifyListeners();
   }
 
@@ -183,6 +195,14 @@ class ChallengeProvider extends ChangeNotifier {
 
     await _repository.save(_data);
     notifyListeners();
+
+    _analytics
+        ?.logEvent(AnalyticsEvents.dayLogged, {'qualifying': '$isQualifying'});
+    final milestone = streakMilestoneFor(_data.currentStreak);
+    if (milestone != null) {
+      _analytics
+          ?.logEvent(AnalyticsEvents.streakMilestone, {'streak': milestone});
+    }
 
     return LogResult.success;
   }

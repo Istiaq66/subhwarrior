@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:subh_warrior/core/analytics/analytics_service.dart';
+import 'package:subh_warrior/core/analytics/firebase_analytics_service.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_theme.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
@@ -33,6 +35,10 @@ void main() async {
   final authService = AuthService();
   final uid = await authService.ensureSignedIn();
 
+  // Initialize analytics
+  final analytics = FirebaseAnalyticsService();
+  AnalyticsService.maybeInstance = analytics;
+
   // Initialize notifications
   NotificationService().initBackground();
 
@@ -41,17 +47,23 @@ void main() async {
 
   await ChallengeLocalDataSource.migrateLegacyIfNeeded(prefs, uid);
 
-  runApp(SubhWarriorApp(prefs: prefs, authService: authService));
+  runApp(SubhWarriorApp(
+    prefs: prefs,
+    authService: authService,
+    analytics: analytics,
+  ));
 }
 
 class SubhWarriorApp extends StatelessWidget {
   final SharedPreferences prefs;
   final AuthService authService;
+  final AnalyticsService analytics;
 
   const SubhWarriorApp({
     super.key,
     required this.prefs,
     required this.authService,
+    required this.analytics,
   });
 
   @override
@@ -59,6 +71,7 @@ class SubhWarriorApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthService>.value(value: authService),
+        Provider<AnalyticsService>.value(value: analytics),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(
@@ -74,7 +87,8 @@ class SubhWarriorApp extends StatelessWidget {
               final uid = user?.uid ?? '';
               return ChangeNotifierProvider<ChallengeProvider>(
                 key: ValueKey(uid),
-                create: (_) => ChallengeProvider.fromPrefs(prefs, uid: uid),
+                create: (_) => ChallengeProvider.fromPrefs(prefs,
+                    uid: uid, analytics: analytics),
                 child: MaterialApp(
                   onGenerateTitle: (context) =>
                       AppLocalizations.of(context)!.appTitle,
