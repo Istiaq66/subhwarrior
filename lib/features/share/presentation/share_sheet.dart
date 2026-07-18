@@ -49,12 +49,26 @@ Future<void> showShareSheet(
                 label: Text(l10n.shareCardButton),
                 onPressed: () async {
                   final analytics = sheetContext.read<AnalyticsService>();
-                  await ShareCardService().shareBoundary(
-                    boundaryKey,
-                    text: l10n.shareCardFooter,
-                  );
-                  await analytics.logEvent(
-                      AnalyticsEvents.shareCardSent, {'streak': currentStreak});
+                  final messenger = ScaffoldMessenger.of(sheetContext);
+                  final errorMessage = l10n.errorViewDefaultMessage;
+
+                  var succeeded = false;
+                  try {
+                    succeeded = await ShareCardService().shareBoundary(
+                      boundaryKey,
+                      text: l10n.shareCardFooter,
+                    );
+                  } catch (_) {
+                    succeeded = false;
+                  }
+
+                  if (succeeded) {
+                    await analytics.logEvent(AnalyticsEvents.shareCardSent,
+                        {'streak': currentStreak});
+                  } else {
+                    messenger
+                        .showSnackBar(SnackBar(content: Text(errorMessage)));
+                  }
                 },
               ),
             ),
