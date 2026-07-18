@@ -8,6 +8,7 @@ import 'package:subh_warrior/features/challenge/domain/log_result.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
+import 'package:subh_warrior/features/share/presentation/share_sheet.dart';
 
 class LogDayScreen extends StatefulWidget {
   const LogDayScreen({super.key});
@@ -721,6 +722,20 @@ class _LogDayScreenState extends State<LogDayScreen> {
               : l10n.logDayLoggedContent,
         ),
         actions: [
+          if (isQualifying)
+            TextButton.icon(
+              icon: const Icon(Icons.share, size: 18),
+              label: Text(l10n.shareCardButton),
+              onPressed: () {
+                final provider = this.context.read<ChallengeProvider>();
+                showShareSheet(
+                  this.context,
+                  currentStreak: provider.currentStreak,
+                  totalQualifyingDays: provider.totalQualifyingDays,
+                  currentWeek: provider.currentWeek,
+                );
+              },
+            ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();

@@ -1178,4 +1178,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get a11yRequirementNotMet => 'شرط پوری نہیں ہوئی';
+
+  @override
+  String get a11yShareStreak => 'اپنی اسٹریک شیئر کریں';
 }

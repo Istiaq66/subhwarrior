@@ -1168,4 +1168,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get a11yRequirementNotMet => 'لم يتم استيفاء المتطلب';
+
+  @override
+  String get a11yShareStreak => 'شارك سلسلتك';
 }

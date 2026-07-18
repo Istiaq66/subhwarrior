@@ -2021,6 +2021,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Requirement not met'**
   String get a11yRequirementNotMet;
+
+  /// Tooltip for the icon button that opens the share sheet from the streak card
+  ///
+  /// In en, this message translates to:
+  /// **'Share your streak'**
+  String get a11yShareStreak;
 }
 
 class _AppLocalizationsDelegate

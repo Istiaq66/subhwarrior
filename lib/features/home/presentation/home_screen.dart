@@ -5,6 +5,7 @@ import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/leaderboard/presentation/leaderboard_screen.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
+import 'package:subh_warrior/features/share/presentation/share_sheet.dart';
 import 'package:subh_warrior/helpers/notification_permission.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/screens/progress_screen.dart';
@@ -151,6 +152,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     StreakCard(
                       currentStreak: provider.currentStreak,
                       totalDays: provider.totalQualifyingDays,
+                      onShare: () => showShareSheet(
+                        context,
+                        currentStreak: provider.currentStreak,
+                        totalQualifyingDays: provider.totalQualifyingDays,
+                        currentWeek: provider.currentWeek,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     WeeklyProgressCard(

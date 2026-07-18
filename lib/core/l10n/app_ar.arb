@@ -319,5 +319,6 @@
   "a11yQualifyingDay": "يوم مؤهَّل",
   "a11yNonQualifyingDay": "يوم غير مؤهَّل",
   "a11yRequirementMet": "تم استيفاء المتطلب",
-  "a11yRequirementNotMet": "لم يتم استيفاء المتطلب"
+  "a11yRequirementNotMet": "لم يتم استيفاء المتطلب",
+  "a11yShareStreak": "شارك سلسلتك"
 }

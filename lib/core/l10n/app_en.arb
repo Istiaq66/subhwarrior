@@ -789,5 +789,9 @@
   "a11yRequirementNotMet": "Requirement not met",
   "@a11yRequirementNotMet": {
     "description": "Screen reader label for the cross icon next to an unfulfilled requirement"
+  },
+  "a11yShareStreak": "Share your streak",
+  "@a11yShareStreak": {
+    "description": "Tooltip for the icon button that opens the share sheet from the streak card"
   }
 }

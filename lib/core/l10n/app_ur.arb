@@ -319,5 +319,6 @@
   "a11yQualifyingDay": "کوالیفائنگ دن",
   "a11yNonQualifyingDay": "غیر کوالیفائنگ دن",
   "a11yRequirementMet": "شرط پوری ہوئی",
-  "a11yRequirementNotMet": "شرط پوری نہیں ہوئی"
+  "a11yRequirementNotMet": "شرط پوری نہیں ہوئی",
+  "a11yShareStreak": "اپنی اسٹریک شیئر کریں"
 }

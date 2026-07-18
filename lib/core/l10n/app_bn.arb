@@ -319,5 +319,6 @@
   "a11yQualifyingDay": "যোগ্য দিন",
   "a11yNonQualifyingDay": "অযোগ্য দিন",
   "a11yRequirementMet": "শর্ত পূরণ হয়েছে",
-  "a11yRequirementNotMet": "শর্ত পূরণ হয়নি"
+  "a11yRequirementNotMet": "শর্ত পূরণ হয়নি",
+  "a11yShareStreak": "আপনার স্ট্রিক শেয়ার করুন"
 }

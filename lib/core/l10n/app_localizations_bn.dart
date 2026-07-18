@@ -1182,4 +1182,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get a11yRequirementNotMet => 'শর্ত পূরণ হয়নি';
+
+  @override
+  String get a11yShareStreak => 'আপনার স্ট্রিক শেয়ার করুন';
 }

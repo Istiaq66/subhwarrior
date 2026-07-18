@@ -1178,4 +1178,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get a11yRequirementNotMet => 'Requirement not met';
+
+  @override
+  String get a11yShareStreak => 'Share your streak';
 }

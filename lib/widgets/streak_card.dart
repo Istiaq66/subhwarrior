@@ -7,11 +7,13 @@ import '../core/theme/app_colors.dart';
 class StreakCard extends StatelessWidget {
   final int currentStreak;
   final int totalDays;
+  final VoidCallback? onShare;
 
   const StreakCard({
     super.key,
     required this.currentStreak,
     required this.totalDays,
+    this.onShare,
   });
 
   @override
@@ -77,6 +79,15 @@ class StreakCard extends StatelessWidget {
                 semanticsLabel:
                     _getStreakSemanticsLabel(context, currentStreak),
               ),
+              if (onShare != null && currentStreak > 0) ...[
+                const SizedBox(width: 4),
+                IconButton(
+                  icon: const Icon(Icons.share, size: 20),
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  tooltip: AppLocalizations.of(context)!.a11yShareStreak,
+                  onPressed: onShare,
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 8),
