@@ -767,6 +767,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SnackBar(
           content: Text(l10n.settingsNoEmailApp(_feedbackEmail)),
           backgroundColor: context.appColors.warning,
+
         ),
       );
     }
