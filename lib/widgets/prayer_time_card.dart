@@ -179,7 +179,7 @@ class PrayerTimeCard extends StatelessWidget {
                             child: _buildSmallTimeInfo(
                               context,
                               l10n.prayerCardSunrise,
-                              prayerProvider.formatTimeString(
+                              prayerProvider.formatTimeStringCompact(
                                   prayerProvider.todayPrayerTimes!.sunrise),
                             ),
                           ),
@@ -187,7 +187,7 @@ class PrayerTimeCard extends StatelessWidget {
                             child: _buildSmallTimeInfo(
                               context,
                               l10n.prayerCardDhuhr,
-                              prayerProvider.formatTimeString(
+                              prayerProvider.formatTimeStringCompact(
                                   prayerProvider.todayPrayerTimes!.dhuhr),
                             ),
                           ),
@@ -195,7 +195,7 @@ class PrayerTimeCard extends StatelessWidget {
                             child: _buildSmallTimeInfo(
                               context,
                               l10n.prayerCardAsr,
-                              prayerProvider.formatTimeString(
+                              prayerProvider.formatTimeStringCompact(
                                   prayerProvider.todayPrayerTimes!.asr),
                             ),
                           ),
@@ -203,7 +203,7 @@ class PrayerTimeCard extends StatelessWidget {
                             child: _buildSmallTimeInfo(
                               context,
                               l10n.prayerCardMaghrib,
-                              prayerProvider.formatTimeString(
+                              prayerProvider.formatTimeStringCompact(
                                   prayerProvider.todayPrayerTimes!.maghrib),
                             ),
                           ),
@@ -211,7 +211,7 @@ class PrayerTimeCard extends StatelessWidget {
                             child: _buildSmallTimeInfo(
                               context,
                               l10n.prayerCardIsha,
-                              prayerProvider.formatTimeString(
+                              prayerProvider.formatTimeStringCompact(
                                   prayerProvider.todayPrayerTimes!.isha),
                             ),
                           ),
@@ -260,38 +260,47 @@ class PrayerTimeCard extends StatelessWidget {
   }
 
   Widget _buildSmallTimeInfo(BuildContext context, String label, String time) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-      child: Column(
-        children: [
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onPrimary
-                  .withValues(alpha: 0.7),
-              fontSize: 11,
-            ),
-          ),
-          const SizedBox(height: 6),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              time,
-              maxLines: 1,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Scale with the space this column actually gets (narrow phones vs.
+        // tablets), clamped to a sensible range — responsive without relying
+        // on FittedBox to shrink text as a fallback for a too-long string.
+        final timeFontSize = (constraints.maxWidth * 0.22).clamp(15.0, 20.0);
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Column(
+            children: [
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onPrimary
+                      .withValues(alpha: 0.7),
+                  fontSize: 11,
+                ),
               ),
-            ),
+              const SizedBox(height: 6),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  time,
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontSize: timeFontSize,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -108,6 +108,12 @@ class PrayerTimeProvider extends ChangeNotifier {
   /// Clock pattern honouring the 12h/24h preference.
   String get _clockPattern => _settings.use24HourFormat ? 'HH:mm' : 'hh:mm a';
 
+  /// Same as [_clockPattern] but without the AM/PM marker — used where space
+  /// is tight (the five-prayer-times row) so the font doesn't have to shrink
+  /// to fit it.
+  String get _clockPatternCompact =>
+      _settings.use24HourFormat ? 'HH:mm' : 'hh:mm';
+
   String formatTime(DateTime? time) {
     if (time == null) return '--:--';
     return DateFormat(_clockPattern).format(time);
@@ -127,6 +133,16 @@ class PrayerTimeProvider extends ChangeNotifier {
     final m = int.tryParse(parts[1]);
     if (h == null || m == null) return hhmm;
     return formatClock(h, m);
+  }
+
+  /// Same as [formatTimeString] but without the AM/PM marker.
+  String formatTimeStringCompact(String hhmm) {
+    final parts = hhmm.split(':');
+    if (parts.length < 2) return hhmm;
+    final h = int.tryParse(parts[0]);
+    final m = int.tryParse(parts[1]);
+    if (h == null || m == null) return hhmm;
+    return DateFormat(_clockPatternCompact).format(DateTime(2000, 1, 1, h, m));
   }
 
   /// Time remaining until the next Fajr, or null when prayer times are
