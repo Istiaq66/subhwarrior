@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/fajr_widget_service.dart';
 import '../data/prayer_times_repository.dart';
 import '../domain/prayer_settings.dart';
 import '../domain/prayer_times.dart';
@@ -219,6 +222,7 @@ class PrayerTimeProvider extends ChangeNotifier {
 
     try {
       await body();
+      unawaited(FajrWidgetService.refresh());
     } catch (e) {
       _error = 'Failed to fetch prayer times: $e';
     } finally {
