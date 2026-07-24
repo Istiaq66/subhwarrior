@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mini-row panel — mirrors PrayerTimeCard's onPrimary @ 20% alpha
+     rounded Container behind Sunrise/Dhuhr/Asr/Maghrib/Isha. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="8dp" />
+    <solid android:color="#33FFFFFF" />
+</shape>
