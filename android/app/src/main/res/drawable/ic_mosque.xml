@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simplified mosque silhouette (dome, base, two minarets, crescent) —
+     replaces the earlier "🕌" emoji, which several Android system fonts
+     render as a blank/tofu glyph. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M3,17 L21,17 L21,20 L3,20 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M7,17 A5,5 0 0 1 17,17 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M3,17 L3,11 L5,11 L5,17 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M2.5,11 A1.5,1.5 0 0 1 5.5,11 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M19,17 L19,11 L21,11 L21,17 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M18.5,11 A1.5,1.5 0 0 1 21.5,11 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M12,4 A2.2,2.2 0 1 0 12,8.4 A2.8,2.8 0 1 1 12,4 Z" />
+</vector>

@@ -76,19 +76,42 @@ class FajrWidgetService {
 
       final l10n = await _loadL10n();
       final clockPattern = settings.use24HourFormat ? 'HH:mm' : 'hh:mm a';
+      final clockPatternCompact = settings.use24HourFormat ? 'HH:mm' : 'hh:mm';
       final countdownText = remaining == null
           ? l10n.prayerCardCountdownUnknown
           : l10n.prayerCardCountdownValue(
               remaining.inHours, remaining.inMinutes % 60);
 
+      final todaySunrise = _onDay(today, todayTimes.sunrise);
+      final isWithinWindow = todaySunrise != null &&
+          now.isAfter(todayFajr) &&
+          now.isBefore(todaySunrise);
+
       await HomeWidget.saveWidgetData<String>(
           'fajr_widget_title', l10n.prayerCardTitle);
       await HomeWidget.saveWidgetData<String>(
+          'fajr_widget_is_within_window', isWithinWindow.toString());
+      await HomeWidget.saveWidgetData<String>(
           'fajr_widget_time', DateFormat(clockPattern).format(todayFajr));
+      await HomeWidget.saveWidgetData<String>(
+          'fajr_widget_tomorrow_time',
+          tomorrowFajr == null
+              ? ''
+              : DateFormat(clockPattern).format(tomorrowFajr));
       await HomeWidget.saveWidgetData<String>(
           'fajr_widget_countdown', countdownText);
       await HomeWidget.saveWidgetData<String>(
           'fajr_widget_progress', (progress * 100).round().toString());
+      await HomeWidget.saveWidgetData<String>('fajr_widget_sunrise',
+          _formatCompact(todayTimes.sunrise, clockPatternCompact));
+      await HomeWidget.saveWidgetData<String>('fajr_widget_dhuhr',
+          _formatCompact(todayTimes.dhuhr, clockPatternCompact));
+      await HomeWidget.saveWidgetData<String>('fajr_widget_asr',
+          _formatCompact(todayTimes.asr, clockPatternCompact));
+      await HomeWidget.saveWidgetData<String>('fajr_widget_maghrib',
+          _formatCompact(todayTimes.maghrib, clockPatternCompact));
+      await HomeWidget.saveWidgetData<String>('fajr_widget_isha',
+          _formatCompact(todayTimes.isha, clockPatternCompact));
       await HomeWidget.updateWidget(androidName: _androidProviderName);
 
       final nextFajr = now.isBefore(todayFajr) ? todayFajr : tomorrowFajr;
@@ -126,6 +149,18 @@ class FajrWidgetService {
       locale = const Locale('en');
     }
     return lookupAppLocalizations(locale);
+  }
+
+  /// Formats a raw "HH:mm" prayer-time string using [pattern], mirroring
+  /// PrayerTimeProvider.formatTimeStringCompact. Returns the input
+  /// unchanged if it can't be parsed.
+  static String _formatCompact(String hhmm, String pattern) {
+    final parts = hhmm.split(':');
+    if (parts.length < 2) return hhmm;
+    final h = int.tryParse(parts[0]);
+    final m = int.tryParse(parts[1]);
+    if (h == null || m == null) return hhmm;
+    return DateFormat(pattern).format(DateTime(2000, 1, 1, h, m));
   }
 
   /// Builds a [DateTime] on [day]'s calendar date from an "HH:mm" string.

@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fajr_widget_placeholder">Open Subh Warrior to see prayer times</string>
+
+    <!-- Short, static widget-face labels. Not localized (English only) —
+         an accepted, deliberate exception like fajr_widget_placeholder:
+         wiring 9 more Dart-to-widget-data keys for a handful of static
+         words wasn't worth it. Actual time/countdown/progress values stay
+         locale/24h-format-aware, sourced from FajrWidgetService. -->
+    <string name="fajr_widget_now_badge">NOW</string>
+    <string name="fajr_widget_label_today">Today</string>
+    <string name="fajr_widget_label_tomorrow">Tomorrow</string>
+    <string name="fajr_widget_label_next_in">Next Fajr In</string>
+    <string name="fajr_widget_label_sunrise">Sunrise</string>
+    <string name="fajr_widget_label_dhuhr">Dhuhr</string>
+    <string name="fajr_widget_label_asr">Asr</string>
+    <string name="fajr_widget_label_maghrib">Maghrib</string>
+    <string name="fajr_widget_label_isha">Isha</string>
 </resources>

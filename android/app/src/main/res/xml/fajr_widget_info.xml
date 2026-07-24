@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- No android:updatePeriodMillis (0) — refresh is entirely driven by
+     FajrWidgetService's background_fetch scheduling, not the OS's own
+     periodic timer. minResizeWidth/Height let the user shrink this down
+     to the compact layout; FajrWidgetProvider picks compact vs full at
+     runtime based on the widget's actual current size. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="250dp"
-    android:minHeight="60dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="150dp"
+    android:minResizeHeight="60dp"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/fajr_widget"
+    android:initialLayout="@layout/fajr_widget_compact"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen" />
