@@ -18,6 +18,7 @@ class ChallengeLocalDataSource {
   // Prefs keys — single source of truth (base names, before uid namespacing).
   static const _kStartDate = 'challengeStartDate';
   static const _kActive = 'isChallengeActive';
+  static const _kHasUnseenCompletion = 'hasUnseenCompletion';
   static const _kStreak = 'currentStreak';
   static const _kTotalQualifying = 'totalQualifyingDays';
   static const _kWeek = 'currentWeek';
@@ -39,6 +40,7 @@ class ChallengeLocalDataSource {
   static const List<String> _allKeys = [
     _kStartDate,
     _kActive,
+    _kHasUnseenCompletion,
     _kStreak,
     _kTotalQualifying,
     _kWeek,
@@ -88,6 +90,8 @@ class ChallengeLocalDataSource {
     }
 
     data.isChallengeActive = prefs.getBool(_key(_kActive)) ?? false;
+    data.hasUnseenCompletion =
+        prefs.getBool(_key(_kHasUnseenCompletion)) ?? false;
     data.currentStreak = prefs.getInt(_key(_kStreak)) ?? 0;
     data.totalQualifyingDays = prefs.getInt(_key(_kTotalQualifying)) ?? 0;
     data.currentWeek = prefs.getInt(_key(_kWeek)) ?? 1;
@@ -123,6 +127,7 @@ class ChallengeLocalDataSource {
     }
 
     await prefs.setBool(_key(_kActive), data.isChallengeActive);
+    await prefs.setBool(_key(_kHasUnseenCompletion), data.hasUnseenCompletion);
     await prefs.setInt(_key(_kStreak), data.currentStreak);
     await prefs.setInt(_key(_kTotalQualifying), data.totalQualifyingDays);
     await prefs.setInt(_key(_kWeek), data.currentWeek);

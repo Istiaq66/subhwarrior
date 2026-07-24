@@ -6,6 +6,7 @@ import '../domain/day_log.dart';
 class ChallengeData {
   DateTime? challengeStartDate;
   bool isChallengeActive;
+  bool hasUnseenCompletion;
   int currentStreak;
   int totalQualifyingDays;
   int currentWeek;
@@ -26,6 +27,7 @@ class ChallengeData {
   ChallengeData({
     this.challengeStartDate,
     this.isChallengeActive = false,
+    this.hasUnseenCompletion = false,
     this.currentStreak = 0,
     this.totalQualifyingDays = 0,
     this.currentWeek = 1,
