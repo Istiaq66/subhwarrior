@@ -19,13 +19,6 @@
 - **D6 — restrict Firebase API key.** In Google Cloud console, restrict the
   key to the app's SHA-256 + package name.
 
-### Testing (deferred by owner decision, 2026-07-18)
-
-- **F3 — widget tests** for each screen's loading/error/empty/data states.
-- **F4 — golden tests** for design-system components (light + dark + RTL).
-- **F5 — integration test** of the core flow (onboarding → log day → streak),
-  via the `flutter-add-integration-test` skill.
-
 ### Optional architecture (take only if pain appears)
 
 - **B6 — Riverpod 2 + go_router migration.** Current `provider` +
@@ -38,9 +31,6 @@
   (`getNotificationLaunchDetails`) are not wired, only foreground/background taps.
 - Share bottom sheet may overflow on very short screens (~640 logical px);
   verify on device.
-- `logDay` uses real `DateTime.now()` — no clock seam, so its success path is
-  not unit-testable (weekend/cutoff flakiness). Add an injectable clock if F3+
-  testing resumes.
 
 ## Growth work
 
