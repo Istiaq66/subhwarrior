@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
@@ -162,6 +164,11 @@ class PrayerTimeCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  _FajrProgressBar(
+                    todayFajrTime: fajrTime,
+                    tomorrowFajrTime: tomorrowFajr,
+                  ),
                   if (prayerProvider.todayPrayerTimes != null) ...[
                     const SizedBox(height: 16),
                     Container(
@@ -302,6 +309,64 @@ class PrayerTimeCard extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Linear progress bar filling across the current Fajr-to-Fajr cycle —
+/// reaches 100% right at the next Fajr, then drops back to 0% and starts
+/// filling again. Ticks itself every 30s (the provider only rebuilds on a
+/// network fetch, not on a clock) so the fill keeps advancing in between.
+class _FajrProgressBar extends StatefulWidget {
+  const _FajrProgressBar({
+    required this.todayFajrTime,
+    required this.tomorrowFajrTime,
+  });
+
+  final DateTime? todayFajrTime;
+  final DateTime? tomorrowFajrTime;
+
+  @override
+  State<_FajrProgressBar> createState() => _FajrProgressBarState();
+}
+
+class _FajrProgressBarState extends State<_FajrProgressBar> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = PrayerTimeProvider.fajrCycleProgress(
+      todayFajrTime: widget.todayFajrTime,
+      tomorrowFajrTime: widget.tomorrowFajrTime,
+      now: DateTime.now(),
+    );
+    if (progress == null) return const SizedBox.shrink();
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: LinearProgressIndicator(
+        value: progress,
+        minHeight: 6,
+        backgroundColor:
+            Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.25),
+        valueColor: AlwaysStoppedAnimation(
+          Theme.of(context).colorScheme.onPrimary,
+        ),
+      ),
     );
   }
 }

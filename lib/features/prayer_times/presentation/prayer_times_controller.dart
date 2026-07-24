@@ -145,6 +145,44 @@ class PrayerTimeProvider extends ChangeNotifier {
     return DateFormat(_clockPatternCompact).format(DateTime(2000, 1, 1, h, m));
   }
 
+  /// Fraction (0.0–1.0) of the way through the current Fajr-to-Fajr cycle at
+  /// [now], or null when there isn't enough data to compute it. Pure/static
+  /// so it's unit-testable and so the progress-bar widget can recompute it
+  /// on its own timer tick without waiting for this provider to rebuild.
+  ///
+  /// We only fetch today's and tomorrow's Fajr (not yesterday's), so before
+  /// today's Fajr has passed, the cycle start is approximated as
+  /// `todayFajrTime - (tomorrowFajrTime - todayFajrTime)` — Fajr shifts by at
+  /// most a minute or two day-to-day, which is invisible on a progress bar.
+  static double? fajrCycleProgress({
+    required DateTime? todayFajrTime,
+    required DateTime? tomorrowFajrTime,
+    required DateTime now,
+  }) {
+    if (todayFajrTime == null) return null;
+
+    DateTime cycleStart;
+    DateTime cycleEnd;
+    if (now.isBefore(todayFajrTime)) {
+      final approxDuration = tomorrowFajrTime != null
+          ? tomorrowFajrTime.difference(todayFajrTime)
+          : const Duration(hours: 24);
+      cycleStart = todayFajrTime.subtract(approxDuration);
+      cycleEnd = todayFajrTime;
+    } else if (tomorrowFajrTime != null) {
+      cycleStart = todayFajrTime;
+      cycleEnd = tomorrowFajrTime;
+    } else {
+      return null;
+    }
+
+    final totalSeconds = cycleEnd.difference(cycleStart).inSeconds;
+    if (totalSeconds <= 0) return null;
+
+    final elapsedSeconds = now.difference(cycleStart).inSeconds;
+    return (elapsedSeconds / totalSeconds).clamp(0.0, 1.0);
+  }
+
   /// Time remaining until the next Fajr, or null when prayer times are
   /// unavailable. Formatting/localization happens at the widget layer.
   Duration? get untilNextFajr {
