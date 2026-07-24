@@ -13,24 +13,12 @@
   each in `lib/core/l10n/`) need a native-speaker pass before marketing those
   locales. Known nit: `shareCardWeekLabel` in Arabic mixes Arabic-Indic `{week}`
   digits with a literal Western "4".
-- **D2 — deploy Firestore rules.** `firestore.rules` is committed but not
-  deployed. Hard blocker before any public install. See memory note
-  `phase-d-auth-console-steps`.
-- **D6 — restrict Firebase API key.** In Google Cloud console, restrict the
-  key to the app's SHA-256 + package name.
 
 ### Optional architecture (take only if pain appears)
 
 - **B6 — Riverpod 2 + go_router migration.** Current `provider` +
   controller/repository split works; migrate feature-by-feature only if state
   management or routing becomes a bottleneck.
-
-### Known deferred minors (from analytics/share-cards branch review)
-
-- `notification_opened` undercounts: cold-start notification taps
-  (`getNotificationLaunchDetails`) are not wired, only foreground/background taps.
-- Share bottom sheet may overflow on very short screens (~640 logical px);
-  verify on device.
 
 ## Growth work
 
