@@ -265,7 +265,7 @@ class PrayerTimeCard extends StatelessWidget {
         // Scale with the space this column actually gets (narrow phones vs.
         // tablets), clamped to a sensible range — responsive without relying
         // on FittedBox to shrink text as a fallback for a too-long string.
-        final timeFontSize = (constraints.maxWidth * 0.22).clamp(15.0, 20.0);
+        final timeFontSize = (constraints.maxWidth * 0.18).clamp(13.0, 16.0);
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -280,11 +280,12 @@ class PrayerTimeCard extends StatelessWidget {
                   color: Theme.of(context)
                       .colorScheme
                       .onPrimary
-                      .withValues(alpha: 0.7),
-                  fontSize: 11,
+                      .withValues(alpha: 0.9),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
@@ -293,7 +294,7 @@ class PrayerTimeCard extends StatelessWidget {
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onPrimary,
                     fontSize: timeFontSize,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
