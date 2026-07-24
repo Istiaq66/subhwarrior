@@ -4,4 +4,8 @@
          Credential Manager / Google sign-in sheet is up). Matches the app's
          light surface so it doesn't flash black. -->
     <color name="window_background">#FAFBFC</color>
+
+    <!-- Matches AppPalette.primary (lib/core/theme/app_colors.dart) — the
+         Fajr home-screen widget's background. -->
+    <color name="fajr_widget_background">#3F72AF</color>
 </resources>
