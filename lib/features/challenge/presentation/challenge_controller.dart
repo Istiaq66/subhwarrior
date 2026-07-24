@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,6 +33,7 @@ class ChallengeProvider extends ChangeNotifier {
   ChallengeProvider(this._repository, {AnalyticsService? analytics})
       : _analytics = analytics {
     _data = _repository.load();
+    _closeIfExpired();
     _syncFromRemote();
   }
 
@@ -49,6 +53,7 @@ class ChallengeProvider extends ChangeNotifier {
       remote.fajrReminderMinutes = _data.fajrReminderMinutes;
 
       _data = remote;
+      _closeIfExpired();
       await _repository.saveLocal(_data);
       notifyListeners();
     } catch (_) {
@@ -93,7 +98,8 @@ class ChallengeProvider extends ChangeNotifier {
   // Progress
   double get overallProgress =>
       _data.totalQualifyingDays / AppConstants.qualifyingDaysGoal;
-  int get daysRemaining => AppConstants.challengeDays - _getDaysSinceStart();
+  int get daysRemaining =>
+      math.max(0, AppConstants.challengeDays - _getDaysSinceStart());
 
   Map<int, int> get weeklyProgress {
     final progress = {
@@ -192,6 +198,7 @@ class ChallengeProvider extends ChangeNotifier {
     }
 
     _data.currentWeek = AppDateUtils.weekNumber(_data.challengeStartDate, now);
+    _closeIfExpired();
 
     await _repository.save(_data);
     notifyListeners();
@@ -327,5 +334,18 @@ class ChallengeProvider extends ChangeNotifier {
     if (_data.challengeStartDate == null) return 0;
     return AppDateUtils.daysSinceStart(
         _data.challengeStartDate!, DateTime.now());
+  }
+
+  /// Auto-closes a challenge whose 28-day window has elapsed. Without this,
+  /// `isChallengeActive` stayed true forever and the dashboard kept showing
+  /// a negative days-remaining count instead of falling back to the
+  /// "start a new challenge" view.
+  void _closeIfExpired() {
+    if (_data.isChallengeActive &&
+        _data.challengeStartDate != null &&
+        _getDaysSinceStart() >= AppConstants.challengeDays) {
+      _data.isChallengeActive = false;
+      unawaited(_repository.save(_data));
+    }
   }
 }
