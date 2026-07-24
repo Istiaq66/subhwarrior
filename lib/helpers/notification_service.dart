@@ -49,6 +49,12 @@ class NotificationService {
           handleNotificationTap(response.payload),
     );
 
+    final launchDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    if (launchDetails?.didNotificationLaunchApp ?? false) {
+      handleNotificationTap(launchDetails!.notificationResponse?.payload);
+    }
+
     await _setNotification();
   }
 
