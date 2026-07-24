@@ -24,7 +24,10 @@ import 'prayer_times_repository.dart';
 /// success it also reschedules the next Fajr-boundary background task, so
 /// the refresh chain keeps going without the app running.
 class FajrWidgetService {
-  static const _androidProviderName = 'FajrWidgetProvider';
+  static const _androidProviderNames = [
+    'FajrWidgetProvider',
+    'FajrCompactWidgetProvider'
+  ];
   static const _boundaryTaskId = 'com.subhwarrior.app.fajr_widget_boundary';
 
   static Future<void> refresh() async {
@@ -112,7 +115,9 @@ class FajrWidgetService {
           _formatCompact(todayTimes.maghrib, clockPatternCompact));
       await HomeWidget.saveWidgetData<String>('fajr_widget_isha',
           _formatCompact(todayTimes.isha, clockPatternCompact));
-      await HomeWidget.updateWidget(androidName: _androidProviderName);
+      for (final providerName in _androidProviderNames) {
+        await HomeWidget.updateWidget(androidName: providerName);
+      }
 
       final nextFajr = now.isBefore(todayFajr) ? todayFajr : tomorrowFajr;
       if (nextFajr != null) {

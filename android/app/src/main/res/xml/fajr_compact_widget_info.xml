@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compact Fajr widget (FajrCompactWidgetProvider) — a separate, always-
+     available picker entry, matching Sadiq's pattern of shipping distinct
+     fixed widgets rather than one size-adaptive widget. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="60dp"
+    android:minResizeWidth="90dp"
+    android:minResizeHeight="50dp"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/fajr_widget_compact"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />
