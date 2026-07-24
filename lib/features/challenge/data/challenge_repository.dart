@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'challenge_data.dart';
@@ -53,7 +55,11 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
   @override
   Future<void> save(ChallengeData data) async {
     await _local.save(data);
-    await _remote.saveChallenge(data);
+    // Best-effort remote sync (see class docs): the caller shouldn't block
+    // on a live Firestore round-trip just to persist locally and update the
+    // UI — that made every restart/log-day tap visibly hang for a few
+    // seconds. `saveChallenge` already swallows its own errors.
+    unawaited(_remote.saveChallenge(data));
   }
 
   @override
