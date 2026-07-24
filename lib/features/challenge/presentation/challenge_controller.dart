@@ -82,6 +82,7 @@ class ChallengeProvider extends ChangeNotifier {
   int get totalQualifyingDays => _data.totalQualifyingDays;
   int get currentWeek => _data.currentWeek;
   bool get isChallengeActive => _data.isChallengeActive;
+  bool get hasUnseenCompletion => _data.hasUnseenCompletion;
   String get userName => _data.userName;
   String get userLocation => _data.userLocation;
   double get userLatitude => _data.userLatitude;
@@ -98,6 +99,13 @@ class ChallengeProvider extends ChangeNotifier {
   // Progress
   double get overallProgress =>
       _data.totalQualifyingDays / AppConstants.qualifyingDaysGoal;
+
+  /// Whether the just-finished (or in-progress) run hit the qualifying-days
+  /// goal. Must be read before `startChallenge()` resets `totalQualifyingDays`
+  /// — the completion screen reads it first.
+  bool get challengeGoalMet =>
+      _data.totalQualifyingDays >= AppConstants.qualifyingDaysGoal;
+
   int get daysRemaining =>
       math.max(0, AppConstants.challengeDays - _getDaysSinceStart());
 
@@ -122,6 +130,7 @@ class ChallengeProvider extends ChangeNotifier {
   Future<void> startChallenge() async {
     _data.challengeStartDate = AppDateUtils.dateOnly(DateTime.now());
     _data.isChallengeActive = true;
+    _data.hasUnseenCompletion = false;
     _data.dayLogs = [];
     _data.currentStreak = 0;
     _data.totalQualifyingDays = 0;
@@ -345,6 +354,7 @@ class ChallengeProvider extends ChangeNotifier {
         _data.challengeStartDate != null &&
         _getDaysSinceStart() >= AppConstants.challengeDays) {
       _data.isChallengeActive = false;
+      _data.hasUnseenCompletion = true;
       unawaited(_repository.save(_data));
     }
   }
