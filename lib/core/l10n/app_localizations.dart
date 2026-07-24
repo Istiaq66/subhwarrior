@@ -433,6 +433,13 @@ abstract class AppLocalizations {
   /// **'{hours}h {minutes}m'**
   String prayerCardCountdownValue(int hours, int minutes);
 
+  /// Live-ticking countdown to the next Fajr prayer, e.g. 5h 23m 07s
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m {seconds}s'**
+  String prayerCardCountdownValueWithSeconds(
+      int hours, int minutes, int seconds);
+
   /// Shown in place of the Fajr countdown when prayer times are unavailable
   ///
   /// In en, this message translates to:

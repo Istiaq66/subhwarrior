@@ -36,11 +36,6 @@ class PrayerTimeCard extends StatelessWidget {
         final fajrTime = prayerProvider.todayFajrTime;
         final tomorrowFajr = prayerProvider.tomorrowFajrTime;
         final isWithinWindow = prayerProvider.isWithinFajrTime();
-        final untilFajr = prayerProvider.untilNextFajr;
-        final timeUntilFajr = untilFajr == null
-            ? l10n.prayerCardCountdownUnknown
-            : l10n.prayerCardCountdownValue(
-                untilFajr.inHours, untilFajr.inMinutes % 60);
 
         return Card(
           elevation: 8,
@@ -156,11 +151,9 @@ class PrayerTimeCard extends StatelessWidget {
                             .onPrimary
                             .withValues(alpha: 0.3),
                       ),
-                      _buildTimeColumn(
-                        context,
-                        l10n.prayerCardNextFajrIn,
-                        timeUntilFajr,
-                        isCountdown: true,
+                      _LiveFajrCountdown(
+                        todayFajrTime: fajrTime,
+                        tomorrowFajrTime: tomorrowFajr,
                       ),
                     ],
                   ),
@@ -240,7 +233,6 @@ class PrayerTimeCard extends StatelessWidget {
     String label,
     String time, {
     bool isHighlighted = false,
-    bool isCountdown = false,
   }) {
     return Column(
       children: [
@@ -258,7 +250,7 @@ class PrayerTimeCard extends StatelessWidget {
           time,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onPrimary,
-            fontSize: isCountdown ? 18 : 20,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -309,6 +301,80 @@ class PrayerTimeCard extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Live HH:MM:SS countdown to the next Fajr — ticks itself every second
+/// (the provider only rebuilds on a network fetch, not on a clock).
+class _LiveFajrCountdown extends StatefulWidget {
+  const _LiveFajrCountdown({
+    required this.todayFajrTime,
+    required this.tomorrowFajrTime,
+  });
+
+  final DateTime? todayFajrTime;
+  final DateTime? tomorrowFajrTime;
+
+  @override
+  State<_LiveFajrCountdown> createState() => _LiveFajrCountdownState();
+}
+
+class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final remaining = PrayerTimeProvider.durationUntilNextFajr(
+      todayFajrTime: widget.todayFajrTime,
+      tomorrowFajrTime: widget.tomorrowFajrTime,
+      now: DateTime.now(),
+    );
+    final time = remaining == null
+        ? l10n.prayerCardCountdownUnknown
+        : l10n.prayerCardCountdownValueWithSeconds(
+            remaining.inHours,
+            remaining.inMinutes % 60,
+            remaining.inSeconds % 60,
+          );
+
+    return Column(
+      children: [
+        Text(
+          l10n.prayerCardNextFajrIn,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary.withValues(
+                  alpha: 0.8,
+                ),
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          time,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -55,6 +55,7 @@
   "prayerCardTomorrow": "کل",
   "prayerCardNextFajrIn": "اگلی فجر میں",
   "prayerCardCountdownValue": "{hours} گھنٹے {minutes} منٹ",
+  "prayerCardCountdownValueWithSeconds": "{hours}گھ {minutes}م {seconds}س",
   "prayerCardCountdownUnknown": "نامعلوم",
   "prayerCardSunrise": "طلوعِ آفتاب",
   "prayerCardDhuhr": "ظہر",

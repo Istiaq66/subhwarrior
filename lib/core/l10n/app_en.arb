@@ -171,6 +171,24 @@
       }
     }
   },
+  "prayerCardCountdownValueWithSeconds": "{hours}h {minutes}m {seconds}s",
+  "@prayerCardCountdownValueWithSeconds": {
+    "description": "Live-ticking countdown to the next Fajr prayer, e.g. 5h 23m 07s",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "minutes": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "seconds": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "prayerCardCountdownUnknown": "Unknown",
   "@prayerCardCountdownUnknown": {
     "description": "Shown in place of the Fajr countdown when prayer times are unavailable"

@@ -185,11 +185,23 @@ class PrayerTimeProvider extends ChangeNotifier {
 
   /// Time remaining until the next Fajr, or null when prayer times are
   /// unavailable. Formatting/localization happens at the widget layer.
-  Duration? get untilNextFajr {
-    DateTime? nextFajr;
-    final now = DateTime.now();
+  Duration? get untilNextFajr => durationUntilNextFajr(
+        todayFajrTime: todayFajrTime,
+        tomorrowFajrTime: tomorrowFajrTime,
+        now: DateTime.now(),
+      );
 
-    if (todayFajrTime != null && now.isBefore(todayFajrTime!)) {
+  /// Pure/static twin of [untilNextFajr] — lets the live-ticking countdown
+  /// widget recompute the remaining time on its own timer tick without
+  /// waiting for this provider to rebuild.
+  static Duration? durationUntilNextFajr({
+    required DateTime? todayFajrTime,
+    required DateTime? tomorrowFajrTime,
+    required DateTime now,
+  }) {
+    DateTime? nextFajr;
+
+    if (todayFajrTime != null && now.isBefore(todayFajrTime)) {
       nextFajr = todayFajrTime;
     } else if (tomorrowFajrTime != null) {
       nextFajr = tomorrowFajrTime;

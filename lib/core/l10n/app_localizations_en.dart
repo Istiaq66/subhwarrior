@@ -256,6 +256,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String prayerCardCountdownValueWithSeconds(
+      int hours, int minutes, int seconds) {
+    final intl.NumberFormat hoursNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String hoursString = hoursNumberFormat.format(hours);
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+    final intl.NumberFormat secondsNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String secondsString = secondsNumberFormat.format(seconds);
+
+    return '${hoursString}h ${minutesString}m ${secondsString}s';
+  }
+
+  @override
   String get prayerCardCountdownUnknown => 'Unknown';
 
   @override
