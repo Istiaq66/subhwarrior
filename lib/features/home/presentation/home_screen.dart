@@ -12,6 +12,7 @@ import 'package:subh_warrior/screens/progress_screen.dart';
 import 'package:subh_warrior/widgets/prayer_time_card.dart';
 import 'package:subh_warrior/widgets/streak_card.dart';
 
+import 'widgets/challenge_completion_view.dart';
 import 'widgets/greeting_header.dart';
 import 'widgets/inactive_challenge_view.dart';
 import 'widgets/motivational_quote_card.dart';
@@ -128,6 +129,21 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Consumer<ChallengeProvider>(
         builder: (context, provider, _) {
           if (!provider.isChallengeActive) {
+            if (provider.hasUnseenCompletion) {
+              return ChallengeCompletionView(
+                goalMet: provider.challengeGoalMet,
+                finalStreak: provider.currentStreak,
+                totalQualifyingDays: provider.totalQualifyingDays,
+                currentWeek: provider.currentWeek,
+                onShare: () => showShareSheet(
+                  context,
+                  currentStreak: provider.currentStreak,
+                  totalQualifyingDays: provider.totalQualifyingDays,
+                  currentWeek: provider.currentWeek,
+                ),
+                onRestart: () => _startChallenge(provider),
+              );
+            }
             return InactiveChallengeView(
               onStart: () => _startChallenge(provider),
             );
