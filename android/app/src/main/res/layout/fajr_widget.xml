@@ -3,7 +3,7 @@
     android:id="@+id/fajr_widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fajr_widget_background"
+    android:background="@drawable/fajr_widget_background"
     android:padding="12dp">
 
     <LinearLayout
@@ -18,12 +18,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="12sp" />
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:text="🕌 Fajr Prayer" />
 
         <TextView
             android:id="@+id/fajr_widget_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
