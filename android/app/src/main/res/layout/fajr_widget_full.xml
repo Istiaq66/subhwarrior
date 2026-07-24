@@ -153,7 +153,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:max="100"
-            android:progress="0" />
+            android:progress="0"
+            android:progressTint="@android:color/white"
+            android:progressBackgroundTint="#4DFFFFFF" />
 
         <!-- Sunrise / Dhuhr / Asr / Maghrib / Isha -->
         <LinearLayout

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Full-card Fajr widget (FajrWidgetProvider). No android:updatePeriodMillis
      (0) — refresh is entirely driven by FajrWidgetService's background_fetch
-     scheduling, not the OS's own periodic timer. Resizable within the full
-     layout's own flexible (weight-based) rows — does not switch layouts. -->
+     scheduling, not the OS's own periodic timer. minHeight matches the
+     layout's actual wrap_content height so there's no dead space below the
+     card; resizeMode is horizontal-only since the content doesn't grow
+     taller — only wider. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="250dp"
-    android:minHeight="110dp"
+    android:minHeight="190dp"
     android:minResizeWidth="200dp"
-    android:minResizeHeight="90dp"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/fajr_widget_full"
-    android:resizeMode="horizontal|vertical"
+    android:resizeMode="horizontal"
     android:widgetCategory="home_screen" />
