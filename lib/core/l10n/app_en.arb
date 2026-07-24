@@ -35,6 +35,19 @@
     }
   },
   "inactiveChallengeStartButton": "Start Challenge",
+  "challengeCompleteTitleGoalMet": "Challenge complete — well done!",
+  "challengeCompleteTitleFallShort": "Challenge complete — you built real momentum",
+  "challengeCompleteBody": "You logged {qualifyingDays} of {goal} qualifying days, with a best streak of {streak} and reached week {week}.",
+  "@challengeCompleteBody": {
+    "description": "Stats recap shown on the challenge completion screen",
+    "placeholders": {
+      "qualifyingDays": { "type": "int", "format": "decimalPattern" },
+      "goal": { "type": "int", "format": "decimalPattern" },
+      "streak": { "type": "int", "format": "decimalPattern" },
+      "week": { "type": "int", "format": "decimalPattern" }
+    }
+  },
+  "challengeCompleteRestartButton": "Start New Challenge",
   "todayStatusTitle": "Today's Status",
   "todayStatusChipQualifying": "Qualifying ✓",
   "@todayStatusChipQualifying": {

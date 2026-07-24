@@ -58,6 +58,36 @@ class AppLocalizationsUr extends AppLocalizations {
   String get inactiveChallengeStartButton => 'چیلنج شروع کریں';
 
   @override
+  String get challengeCompleteTitleGoalMet => 'چیلنج مکمل — شاندار کارکردگی!';
+
+  @override
+  String get challengeCompleteTitleFallShort =>
+      'چیلنج مکمل — آپ نے اچھی پیش رفت کی';
+
+  @override
+  String challengeCompleteBody(
+      int qualifyingDays, int goal, int streak, int week) {
+    final intl.NumberFormat qualifyingDaysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String qualifyingDaysString =
+        qualifyingDaysNumberFormat.format(qualifyingDays);
+    final intl.NumberFormat goalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String goalString = goalNumberFormat.format(goal);
+    final intl.NumberFormat streakNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String streakString = streakNumberFormat.format(streak);
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'آپ نے $goalString میں سے $qualifyingDaysString اہل دن لاگ کیے، بہترین اسٹریک $streakString کے ساتھ اور ہفتہ $weekString تک پہنچے۔';
+  }
+
+  @override
+  String get challengeCompleteRestartButton => 'نیا چیلنج شروع کریں';
+
+  @override
   String get todayStatusTitle => 'آج کی صورتحال';
 
   @override

@@ -57,6 +57,36 @@ class AppLocalizationsAr extends AppLocalizations {
   String get inactiveChallengeStartButton => 'ابدأ التحدي';
 
   @override
+  String get challengeCompleteTitleGoalMet => 'اكتمل التحدي — أحسنت!';
+
+  @override
+  String get challengeCompleteTitleFallShort =>
+      'اكتمل التحدي — لقد حققت زخمًا حقيقيًا';
+
+  @override
+  String challengeCompleteBody(
+      int qualifyingDays, int goal, int streak, int week) {
+    final intl.NumberFormat qualifyingDaysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String qualifyingDaysString =
+        qualifyingDaysNumberFormat.format(qualifyingDays);
+    final intl.NumberFormat goalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String goalString = goalNumberFormat.format(goal);
+    final intl.NumberFormat streakNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String streakString = streakNumberFormat.format(streak);
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'سجّلت $qualifyingDaysString من أصل $goalString أيام مؤهلة، بأفضل سلسلة متتالية $streakString ووصلت إلى الأسبوع $weekString.';
+  }
+
+  @override
+  String get challengeCompleteRestartButton => 'ابدأ تحديًا جديدًا';
+
+  @override
   String get todayStatusTitle => 'حالة اليوم';
 
   @override

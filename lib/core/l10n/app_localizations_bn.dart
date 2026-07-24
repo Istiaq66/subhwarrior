@@ -58,6 +58,37 @@ class AppLocalizationsBn extends AppLocalizations {
   String get inactiveChallengeStartButton => 'চ্যালেঞ্জ শুরু করুন';
 
   @override
+  String get challengeCompleteTitleGoalMet =>
+      'চ্যালেঞ্জ সম্পন্ন — চমৎকার করেছেন!';
+
+  @override
+  String get challengeCompleteTitleFallShort =>
+      'চ্যালেঞ্জ সম্পন্ন — আপনি ভালো অগ্রগতি অর্জন করেছেন';
+
+  @override
+  String challengeCompleteBody(
+      int qualifyingDays, int goal, int streak, int week) {
+    final intl.NumberFormat qualifyingDaysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String qualifyingDaysString =
+        qualifyingDaysNumberFormat.format(qualifyingDays);
+    final intl.NumberFormat goalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String goalString = goalNumberFormat.format(goal);
+    final intl.NumberFormat streakNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String streakString = streakNumberFormat.format(streak);
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'আপনি $goalString টির মধ্যে $qualifyingDaysString টি যোগ্য দিন লগ করেছেন, সেরা স্ট্রিক $streakString এবং সপ্তাহ $weekString পর্যন্ত পৌঁছেছেন।';
+  }
+
+  @override
+  String get challengeCompleteRestartButton => 'নতুন চ্যালেঞ্জ শুরু করুন';
+
+  @override
   String get todayStatusTitle => 'আজকের অবস্থা';
 
   @override

@@ -186,6 +186,31 @@ abstract class AppLocalizations {
   /// **'Start Challenge'**
   String get inactiveChallengeStartButton;
 
+  /// No description provided for @challengeCompleteTitleGoalMet.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge complete — well done!'**
+  String get challengeCompleteTitleGoalMet;
+
+  /// No description provided for @challengeCompleteTitleFallShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge complete — you built real momentum'**
+  String get challengeCompleteTitleFallShort;
+
+  /// Stats recap shown on the challenge completion screen
+  ///
+  /// In en, this message translates to:
+  /// **'You logged {qualifyingDays} of {goal} qualifying days, with a best streak of {streak} and reached week {week}.'**
+  String challengeCompleteBody(
+      int qualifyingDays, int goal, int streak, int week);
+
+  /// No description provided for @challengeCompleteRestartButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Start New Challenge'**
+  String get challengeCompleteRestartButton;
+
   /// No description provided for @todayStatusTitle.
   ///
   /// In en, this message translates to:
