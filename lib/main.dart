@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +15,7 @@ import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_local_data_source.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/home/presentation/home_screen.dart';
+import 'package:subh_warrior/features/prayer_times/data/fajr_widget_service.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/providers/locale_provider.dart';
@@ -47,11 +51,60 @@ void main() async {
 
   await ChallengeLocalDataSource.migrateLegacyIfNeeded(prefs, uid);
 
+  await _configureFajrWidgetBackgroundFetch();
+
   runApp(SubhWarriorApp(
     prefs: prefs,
     authService: authService,
     analytics: analytics,
   ));
+}
+
+/// Keeps the Android Fajr home-screen widget refreshed even when the app
+/// isn't running: a 30-minute periodic base task (Android's practical floor
+/// for background work) covers the in-between countdown ticking, and
+/// FajrWidgetService self-reschedules an exact one-shot task right at each
+/// Fajr boundary so the progress bar/countdown flip lands on time instead
+/// of waiting for the next periodic tick.
+Future<void> _configureFajrWidgetBackgroundFetch() async {
+  await BackgroundFetch.configure(
+    BackgroundFetchConfig(
+      minimumFetchInterval: 30,
+      forceAlarmManager: true,
+      stopOnTerminate: false,
+      enableHeadless: true,
+      startOnBoot: true,
+      requiredNetworkType: NetworkType.ANY,
+    ),
+    (String taskId) async {
+      await FajrWidgetService.refresh();
+      BackgroundFetch.finish(taskId);
+    },
+    (String taskId) async {
+      // Timeout — OS is reclaiming background time; finish immediately.
+      BackgroundFetch.finish(taskId);
+    },
+  );
+  BackgroundFetch.registerHeadlessTask(_fajrWidgetBackgroundFetchHeadlessTask);
+
+  // Kick off the first refresh immediately rather than waiting up to 30 min.
+  unawaited(FajrWidgetService.refresh());
+}
+
+/// Entry point for background-fetch events firing while the app process is
+/// dead. Must be a top-level function annotated `vm:entry-point` so the
+/// Android-side plugin can find it via reflection after a fresh Dart VM
+/// spin-up.
+@pragma('vm:entry-point')
+void _fajrWidgetBackgroundFetchHeadlessTask(HeadlessEvent task) async {
+  if (task.timeout) {
+    BackgroundFetch.finish(task.taskId);
+    return;
+  }
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FajrWidgetService.refresh();
+  BackgroundFetch.finish(task.taskId);
 }
 
 class SubhWarriorApp extends StatelessWidget {
