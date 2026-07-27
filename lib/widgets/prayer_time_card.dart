@@ -250,7 +250,7 @@ class PrayerTimeCard extends StatelessWidget {
           time,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onPrimary,
-            fontSize: 20,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -370,7 +370,7 @@ class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
           time,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onPrimary,
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
