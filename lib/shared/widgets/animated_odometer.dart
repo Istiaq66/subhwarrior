@@ -36,7 +36,7 @@ class AnimatedOdometer extends StatefulWidget {
     this.duration = const Duration(milliseconds: 800),
     this.curve = Curves.easeOutCubic,
     required this.textStyle,
-    this.digitSpacing = 2,
+    this.digitSpacing = 0,
     this.digitHeight,
     this.useGrouping = false,
     this.digitGlyph,
@@ -96,14 +96,32 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
   late String _previousDigits;
   late String _currentDigits;
 
-  /// Cached natural width/height of a digit glyph in [AnimatedOdometer.textStyle].
-  /// Computed once (or whenever the style changes) so every column reserves
-  /// identical width regardless of which digit it's showing — this is what
-  /// keeps the display from jittering as digits change. The measured height
-  /// also becomes the default digit-slot height (see [_measureDigitMetrics]).
+  /// Cached natural width/height/baseline of a digit glyph in
+  /// [AnimatedOdometer.textStyle]. Computed once (or whenever the style
+  /// changes) so every column reserves identical width regardless of
+  /// which digit it's showing — this is what keeps the display from
+  /// jittering as digits change. The measured height/baseline also
+  /// become the default digit-slot height and the value this whole
+  /// widget reports as its own baseline (see [_measureDigitMetrics]).
   double? _digitWidth;
   double? _measuredHeight;
+  double? _measuredBaseline;
   TextStyle? _measuredForStyle;
+
+  /// [AnimatedOdometer.textStyle] with tabular (fixed-width) figures
+  /// forced on, so every digit glyph — "1" as much as "8" — has the same
+  /// advance width. Without this, a digit slot sized to fit the *widest*
+  /// digit (see [_measureDigitMetrics]) leaves visible extra space around
+  /// narrower digits on a proportional font, reading as uneven/too-wide
+  /// gaps even with [AnimatedOdometer.digitSpacing] at 0. Most system
+  /// fonts (including Roboto) support this OpenType feature; on a font
+  /// that doesn't, this is a harmless no-op.
+  TextStyle _tabularStyle(TextStyle style) => style.copyWith(
+        fontFeatures: [
+          ...?style.fontFeatures,
+          const FontFeature.tabularFigures(),
+        ],
+      );
 
   @override
   void initState() {
@@ -154,19 +172,21 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
     super.dispose();
   }
 
-  /// Measures the widest digit glyph's width, plus the natural single-line
-  /// height of this text style. Using the *measured* height (rather than
-  /// a guessed `fontSize * 1.2`) as the digit slot's default height is
-  /// what keeps a rolling digit vertically aligned with a plain sibling
-  /// `Text` using the same style (e.g. the "h"/"m"/"s" suffix next to it)
-  /// — a box taller or shorter than the glyph's own line box shifts where
-  /// `Center` places it relative to that sibling.
-  (double width, double height) _measureDigitMetrics(
+  /// Measures the widest digit glyph's width, the natural single-line
+  /// height of this text style, and the alphabetic baseline's distance
+  /// from the top of that line. The measured height becomes the digit
+  /// slot's default height; the measured baseline is what this whole
+  /// widget reports as its own baseline via a [Baseline] wrapper in
+  /// [build] — that's the robust way to align with a plain sibling
+  /// `Text` (e.g. the "h"/"m"/"s" suffix next to it) regardless of any
+  /// mismatch between a guessed box height and the font's real metrics.
+  (double width, double height, double baseline) _measureDigitMetrics(
     TextStyle style,
     String Function(String) glyph,
   ) {
     var widest = 0.0;
     var tallest = 0.0;
+    var baseline = 0.0;
     for (var d = 0; d < 10; d++) {
       final painter = TextPainter(
         text: TextSpan(text: glyph('$d'), style: style),
@@ -174,21 +194,26 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
       )..layout();
       if (painter.width > widest) widest = painter.width;
       if (painter.height > tallest) tallest = painter.height;
+      final b =
+          painter.computeDistanceToActualBaseline(TextBaseline.alphabetic);
+      if (b > baseline) baseline = b;
     }
-    return (widest, tallest);
+    return (widest, tallest, baseline);
   }
 
   @override
   Widget build(BuildContext context) {
     final glyph = widget.digitGlyph ?? (String d) => d;
+    final digitStyle = _tabularStyle(widget.textStyle);
     // A custom glyph mapper is usually a fresh closure every build (it
     // typically closes over a locale-dependent formatter), so its width
     // can't be cached across builds the way the plain-ASCII default can.
     // Re-measuring 10 glyphs is cheap relative to how often this ticks.
     if (_measuredForStyle != widget.textStyle || widget.digitGlyph != null) {
-      final (width, height) = _measureDigitMetrics(widget.textStyle, glyph);
+      final (width, height, baseline) = _measureDigitMetrics(digitStyle, glyph);
       _digitWidth = width;
       _measuredHeight = height;
+      _measuredBaseline = baseline;
       _measuredForStyle = widget.textStyle;
     }
     final digitWidth = _digitWidth!;
@@ -215,7 +240,7 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
           char: newChar == _kNoDigit ? null : glyph(newChar),
           width: digitWidth,
           height: digitHeight,
-          style: widget.textStyle,
+          style: digitStyle,
         ));
       } else if (oldChar == _kNoDigit) {
         // A new leading column appearing (e.g. 999 -> 1000, this is the
@@ -225,7 +250,7 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
           newChar: glyph(newChar),
           fullWidth: digitWidth,
           height: digitHeight,
-          style: widget.textStyle,
+          style: digitStyle,
           animation: _animation,
         ));
       } else if (newChar == _kNoDigit) {
@@ -236,7 +261,7 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
           zeroChar: glyph('0'),
           fullWidth: digitWidth,
           height: digitHeight,
-          style: widget.textStyle,
+          style: digitStyle,
           animation: _animation,
         ));
       } else {
@@ -245,7 +270,7 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
           newChar: glyph(newChar),
           width: digitWidth,
           height: digitHeight,
-          style: widget.textStyle,
+          style: digitStyle,
           animation: _animation,
         ));
       }
@@ -262,7 +287,16 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
       }
     }
 
-    return Row(mainAxisSize: MainAxisSize.min, children: children);
+    // Reports this whole widget's alphabetic baseline as the measured
+    // digit baseline, so a parent Row using
+    // `crossAxisAlignment: CrossAxisAlignment.baseline` aligns it exactly
+    // with a plain sibling Text in the same style — the robust fix for
+    // vertical alignment, independent of any digit-slot height guessing.
+    return Baseline(
+      baseline: _measuredBaseline!,
+      baselineType: TextBaseline.alphabetic,
+      child: Row(mainAxisSize: MainAxisSize.min, children: children),
+    );
   }
 }
 

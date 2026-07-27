@@ -370,6 +370,8 @@ class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
             ? Text(l10n.prayerCardCountdownUnknown, style: style)
             : Row(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
                 children: [
                   _rollingSegment(context, remaining.inHours, style),
                   Text(l10n.prayerCardCountdownHourSuffix, style: style),
