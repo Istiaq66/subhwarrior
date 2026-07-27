@@ -272,6 +272,15 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get prayerCardCountdownHourSuffix => 'گھ';
+
+  @override
+  String get prayerCardCountdownMinuteSuffix => 'م';
+
+  @override
+  String get prayerCardCountdownSecondSuffix => 'س';
+
+  @override
   String get prayerCardCountdownUnknown => 'نامعلوم';
 
   @override

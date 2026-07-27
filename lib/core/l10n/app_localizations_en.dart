@@ -272,6 +272,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get prayerCardCountdownHourSuffix => 'h';
+
+  @override
+  String get prayerCardCountdownMinuteSuffix => 'm';
+
+  @override
+  String get prayerCardCountdownSecondSuffix => 's';
+
+  @override
   String get prayerCardCountdownUnknown => 'Unknown';
 
   @override

@@ -440,6 +440,24 @@ abstract class AppLocalizations {
   String prayerCardCountdownValueWithSeconds(
       int hours, int minutes, int seconds);
 
+  /// No description provided for @prayerCardCountdownHourSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'h'**
+  String get prayerCardCountdownHourSuffix;
+
+  /// No description provided for @prayerCardCountdownMinuteSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'m'**
+  String get prayerCardCountdownMinuteSuffix;
+
+  /// No description provided for @prayerCardCountdownSecondSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'s'**
+  String get prayerCardCountdownSecondSuffix;
+
   /// Shown in place of the Fajr countdown when prayer times are unavailable
   ///
   /// In en, this message translates to:

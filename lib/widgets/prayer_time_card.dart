@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/l10n/l10n_utils.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/shared/widgets/error_view.dart';
@@ -345,13 +346,11 @@ class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
       tomorrowFajrTime: widget.tomorrowFajrTime,
       now: DateTime.now(),
     );
-    final time = remaining == null
-        ? l10n.prayerCardCountdownUnknown
-        : l10n.prayerCardCountdownValueWithSeconds(
-            remaining.inHours,
-            remaining.inMinutes % 60,
-            remaining.inSeconds % 60,
-          );
+    final style = TextStyle(
+      color: Theme.of(context).colorScheme.onPrimary,
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+    );
 
     return Column(
       children: [
@@ -366,15 +365,48 @@ class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          time,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        remaining == null
+            ? Text(l10n.prayerCardCountdownUnknown, style: style)
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _rollingSegment(remaining.inHours, style),
+                  Text(l10n.prayerCardCountdownHourSuffix, style: style),
+                  const SizedBox(width: 3),
+                  _rollingSegment(remaining.inMinutes % 60, style),
+                  Text(l10n.prayerCardCountdownMinuteSuffix, style: style),
+                  const SizedBox(width: 3),
+                  _rollingSegment(remaining.inSeconds % 60, style),
+                  Text(l10n.prayerCardCountdownSecondSuffix, style: style),
+                ],
+              ),
       ],
+    );
+  }
+
+  /// Rolls only when [value] itself changes — the seconds segment ticks
+  /// every second, but minutes/hours stay static until they actually roll
+  /// over, instead of the whole countdown sliding together on every tick.
+  Widget _rollingSegment(int value, TextStyle style) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      transitionBuilder: (child, animation) {
+        final offsetAnimation = Tween<Offset>(
+          begin: const Offset(0, 0.4),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
+        return ClipRect(
+          child: SlideTransition(
+            position: offsetAnimation,
+            child: FadeTransition(opacity: animation, child: child),
+          ),
+        );
+      },
+      child: Text(
+        context.localizeNumber(value),
+        key: ValueKey(value),
+        style: style,
+      ),
     );
   }
 }

@@ -189,6 +189,9 @@
       }
     }
   },
+  "prayerCardCountdownHourSuffix": "h",
+  "prayerCardCountdownMinuteSuffix": "m",
+  "prayerCardCountdownSecondSuffix": "s",
   "prayerCardCountdownUnknown": "Unknown",
   "@prayerCardCountdownUnknown": {
     "description": "Shown in place of the Fajr countdown when prayer times are unavailable"
