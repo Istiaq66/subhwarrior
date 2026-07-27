@@ -60,8 +60,11 @@ class AnimatedOdometer extends StatefulWidget {
   /// Horizontal gap between adjacent digit/separator columns.
   final double digitSpacing;
 
-  /// Height of each digit's roll slot. Defaults to `fontSize * 1.2` if
-  /// not supplied.
+  /// Height of each digit's roll slot. Defaults to the text style's own
+  /// measured single-line height if not supplied — this is what keeps a
+  /// rolling digit vertically aligned with a plain sibling `Text` using
+  /// the same style. Only override this if you deliberately want extra
+  /// vertical padding around the roll.
   final double? digitHeight;
 
   /// Group digits with commas every 3 places from the right (e.g.
@@ -93,11 +96,13 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
   late String _previousDigits;
   late String _currentDigits;
 
-  /// Cached natural width of a single digit glyph in [AnimatedOdometer.textStyle].
+  /// Cached natural width/height of a digit glyph in [AnimatedOdometer.textStyle].
   /// Computed once (or whenever the style changes) so every column reserves
   /// identical width regardless of which digit it's showing — this is what
-  /// keeps the display from jittering as digits change.
+  /// keeps the display from jittering as digits change. The measured height
+  /// also becomes the default digit-slot height (see [_measureDigitMetrics]).
   double? _digitWidth;
+  double? _measuredHeight;
   TextStyle? _measuredForStyle;
 
   @override
@@ -149,16 +154,28 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
     super.dispose();
   }
 
-  double _measureDigitWidth(TextStyle style, String Function(String) glyph) {
+  /// Measures the widest digit glyph's width, plus the natural single-line
+  /// height of this text style. Using the *measured* height (rather than
+  /// a guessed `fontSize * 1.2`) as the digit slot's default height is
+  /// what keeps a rolling digit vertically aligned with a plain sibling
+  /// `Text` using the same style (e.g. the "h"/"m"/"s" suffix next to it)
+  /// — a box taller or shorter than the glyph's own line box shifts where
+  /// `Center` places it relative to that sibling.
+  (double width, double height) _measureDigitMetrics(
+    TextStyle style,
+    String Function(String) glyph,
+  ) {
     var widest = 0.0;
+    var tallest = 0.0;
     for (var d = 0; d < 10; d++) {
       final painter = TextPainter(
         text: TextSpan(text: glyph('$d'), style: style),
         textDirection: TextDirection.ltr,
       )..layout();
       if (painter.width > widest) widest = painter.width;
+      if (painter.height > tallest) tallest = painter.height;
     }
-    return widest;
+    return (widest, tallest);
   }
 
   @override
@@ -169,12 +186,13 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
     // can't be cached across builds the way the plain-ASCII default can.
     // Re-measuring 10 glyphs is cheap relative to how often this ticks.
     if (_measuredForStyle != widget.textStyle || widget.digitGlyph != null) {
-      _digitWidth = _measureDigitWidth(widget.textStyle, glyph);
+      final (width, height) = _measureDigitMetrics(widget.textStyle, glyph);
+      _digitWidth = width;
+      _measuredHeight = height;
       _measuredForStyle = widget.textStyle;
     }
     final digitWidth = _digitWidth!;
-    final digitHeight =
-        widget.digitHeight ?? (widget.textStyle.fontSize ?? 14) * 1.2;
+    final digitHeight = widget.digitHeight ?? _measuredHeight!;
 
     final maxLen = _previousDigits.length > _currentDigits.length
         ? _previousDigits.length
