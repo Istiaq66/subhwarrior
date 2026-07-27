@@ -387,25 +387,31 @@ class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
   /// Rolls only when [value] itself changes — the seconds segment ticks
   /// every second, but minutes/hours stay static until they actually roll
   /// over, instead of the whole countdown sliding together on every tick.
+  ///
+  /// A real odometer roll: pure vertical slide, no fade. The outgoing digit
+  /// is pushed straight down and out while the incoming digit slides straight
+  /// up into place from below, clipped to the text's own bounds so neither
+  /// digit is visible outside the line it's rolling on.
   Widget _rollingSegment(int value, TextStyle style) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      transitionBuilder: (child, animation) {
-        final offsetAnimation = Tween<Offset>(
-          begin: const Offset(0, 0.4),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
-        return ClipRect(
-          child: SlideTransition(
-            position: offsetAnimation,
-            child: FadeTransition(opacity: animation, child: child),
-          ),
-        );
-      },
-      child: Text(
-        context.localizeNumber(value),
-        key: ValueKey(value),
-        style: style,
+    return ClipRect(
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 350),
+        switchInCurve: Curves.easeOut,
+        switchOutCurve: Curves.easeIn,
+        transitionBuilder: (child, animation) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          );
+        },
+        child: Text(
+          context.localizeNumber(value),
+          key: ValueKey(value),
+          style: style,
+        ),
       ),
     );
   }
