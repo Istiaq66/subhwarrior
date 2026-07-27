@@ -39,6 +39,7 @@ class AnimatedOdometer extends StatefulWidget {
     this.digitSpacing = 2,
     this.digitHeight,
     this.useGrouping = false,
+    this.digitGlyph,
   });
 
   /// The number to display. Changing this value (e.g. via `setState` in
@@ -66,6 +67,13 @@ class AnimatedOdometer extends StatefulWidget {
   /// Group digits with commas every 3 places from the right (e.g.
   /// 1234567 -> "1,234,567").
   final bool useGrouping;
+
+  /// Maps a raw ASCII digit character ('0'-'9') to whatever glyph should
+  /// actually be drawn — e.g. Bengali/Arabic-Indic numerals for a
+  /// localized display. All internal diffing/padding still operates on
+  /// the canonical ASCII digits; this only affects what's rendered.
+  /// Defaults to identity (render the ASCII digit as-is).
+  final String Function(String rawDigit)? digitGlyph;
 
   @override
   State<AnimatedOdometer> createState() => _AnimatedOdometerState();
@@ -141,11 +149,11 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
     super.dispose();
   }
 
-  double _measureDigitWidth(TextStyle style) {
+  double _measureDigitWidth(TextStyle style, String Function(String) glyph) {
     var widest = 0.0;
     for (var d = 0; d < 10; d++) {
       final painter = TextPainter(
-        text: TextSpan(text: '$d', style: style),
+        text: TextSpan(text: glyph('$d'), style: style),
         textDirection: TextDirection.ltr,
       )..layout();
       if (painter.width > widest) widest = painter.width;
@@ -155,8 +163,13 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
 
   @override
   Widget build(BuildContext context) {
-    if (_measuredForStyle != widget.textStyle) {
-      _digitWidth = _measureDigitWidth(widget.textStyle);
+    final glyph = widget.digitGlyph ?? (String d) => d;
+    // A custom glyph mapper is usually a fresh closure every build (it
+    // typically closes over a locale-dependent formatter), so its width
+    // can't be cached across builds the way the plain-ASCII default can.
+    // Re-measuring 10 glyphs is cheap relative to how often this ticks.
+    if (_measuredForStyle != widget.textStyle || widget.digitGlyph != null) {
+      _digitWidth = _measureDigitWidth(widget.textStyle, glyph);
       _measuredForStyle = widget.textStyle;
     }
     final digitWidth = _digitWidth!;
@@ -181,7 +194,7 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
         // possible in practice since padding always aligns to the
         // longer side, but harmless to guard) — static, no animation.
         children.add(_StaticDigit(
-          char: newChar == _kNoDigit ? null : newChar,
+          char: newChar == _kNoDigit ? null : glyph(newChar),
           width: digitWidth,
           height: digitHeight,
           style: widget.textStyle,
@@ -190,7 +203,8 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
         // A new leading column appearing (e.g. 999 -> 1000, this is the
         // "1"): width grows in from 0 while the digit rolls in from "0".
         children.add(_GrowingDigit(
-          newChar: newChar,
+          zeroChar: glyph('0'),
+          newChar: glyph(newChar),
           fullWidth: digitWidth,
           height: digitHeight,
           style: widget.textStyle,
@@ -200,7 +214,8 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
         // A leading column disappearing (e.g. 1000 -> 999): width shrinks
         // to 0 while the digit rolls out toward "0".
         children.add(_ShrinkingDigit(
-          oldChar: oldChar,
+          oldChar: glyph(oldChar),
+          zeroChar: glyph('0'),
           fullWidth: digitWidth,
           height: digitHeight,
           style: widget.textStyle,
@@ -208,8 +223,8 @@ class _AnimatedOdometerState extends State<AnimatedOdometer>
         ));
       } else {
         children.add(_RollingDigit(
-          oldChar: oldChar,
-          newChar: newChar,
+          oldChar: glyph(oldChar),
+          newChar: glyph(newChar),
           width: digitWidth,
           height: digitHeight,
           style: widget.textStyle,
@@ -331,6 +346,7 @@ class _RollingDigit extends StatelessWidget {
 /// digit itself rolls in from "0" to [newChar], in lockstep.
 class _GrowingDigit extends StatelessWidget {
   const _GrowingDigit({
+    required this.zeroChar,
     required this.newChar,
     required this.fullWidth,
     required this.height,
@@ -338,6 +354,8 @@ class _GrowingDigit extends StatelessWidget {
     required this.animation,
   });
 
+  /// Glyph-mapped "0" — not necessarily the literal ASCII character.
+  final String zeroChar;
   final String newChar;
   final double fullWidth;
   final double height;
@@ -359,7 +377,7 @@ class _GrowingDigit extends StatelessWidget {
               children: [
                 Transform.translate(
                   offset: Offset(0, -t * height),
-                  child: Center(child: Text('0', style: style)),
+                  child: Center(child: Text(zeroChar, style: style)),
                 ),
                 Transform.translate(
                   offset: Offset(0, (1 - t) * height),
@@ -380,6 +398,7 @@ class _GrowingDigit extends StatelessWidget {
 class _ShrinkingDigit extends StatelessWidget {
   const _ShrinkingDigit({
     required this.oldChar,
+    required this.zeroChar,
     required this.fullWidth,
     required this.height,
     required this.style,
@@ -387,6 +406,9 @@ class _ShrinkingDigit extends StatelessWidget {
   });
 
   final String oldChar;
+
+  /// Glyph-mapped "0" — not necessarily the literal ASCII character.
+  final String zeroChar;
   final double fullWidth;
   final double height;
   final TextStyle style;
@@ -411,7 +433,7 @@ class _ShrinkingDigit extends StatelessWidget {
                 ),
                 Transform.translate(
                   offset: Offset(0, (1 - t) * height),
-                  child: Center(child: Text('0', style: style)),
+                  child: Center(child: Text(zeroChar, style: style)),
                 ),
               ],
             ),

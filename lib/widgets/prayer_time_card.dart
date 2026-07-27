@@ -6,6 +6,7 @@ import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/l10n/l10n_utils.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
+import 'package:subh_warrior/shared/widgets/animated_odometer.dart';
 import 'package:subh_warrior/shared/widgets/error_view.dart';
 import 'package:subh_warrior/shared/widgets/skeleton.dart';
 
@@ -370,13 +371,13 @@ class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
             : Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _rollingSegment(remaining.inHours, style),
+                  _rollingSegment(context, remaining.inHours, style),
                   Text(l10n.prayerCardCountdownHourSuffix, style: style),
                   const SizedBox(width: 3),
-                  _rollingSegment(remaining.inMinutes % 60, style),
+                  _rollingSegment(context, remaining.inMinutes % 60, style),
                   Text(l10n.prayerCardCountdownMinuteSuffix, style: style),
                   const SizedBox(width: 3),
-                  _rollingSegment(remaining.inSeconds % 60, style),
+                  _rollingSegment(context, remaining.inSeconds % 60, style),
                   Text(l10n.prayerCardCountdownSecondSuffix, style: style),
                 ],
               ),
@@ -387,32 +388,15 @@ class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
   /// Rolls only when [value] itself changes — the seconds segment ticks
   /// every second, but minutes/hours stay static until they actually roll
   /// over, instead of the whole countdown sliding together on every tick.
-  ///
-  /// A real odometer roll: pure vertical slide, no fade. The outgoing digit
-  /// is pushed straight down and out while the incoming digit slides straight
-  /// up into place from below, clipped to the text's own bounds so neither
-  /// digit is visible outside the line it's rolling on.
-  Widget _rollingSegment(int value, TextStyle style) {
-    return ClipRect(
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 350),
-        switchInCurve: Curves.easeOut,
-        switchOutCurve: Curves.easeIn,
-        transitionBuilder: (child, animation) {
-          return SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 1),
-              end: Offset.zero,
-            ).animate(animation),
-            child: child,
-          );
-        },
-        child: Text(
-          context.localizeNumber(value),
-          key: ValueKey(value),
-          style: style,
-        ),
-      ),
+  /// `digitGlyph` keeps the roll in the user's chosen locale's numerals
+  /// (Bengali/Arabic-Indic/etc), matching the rest of the app.
+  Widget _rollingSegment(BuildContext context, int value, TextStyle style) {
+    return AnimatedOdometer(
+      value: value,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOut,
+      textStyle: style,
+      digitGlyph: (rawDigit) => context.localizeNumber(int.parse(rawDigit)),
     );
   }
 }
