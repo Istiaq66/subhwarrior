@@ -34,7 +34,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get homeGreetingMorning => 'শুভ সকাল';
 
   @override
-  String get homeGreetingAfternoon => 'শুভ অপরাহ্ণ';
+  String get homeGreetingAfternoon => 'শুভ দুপুর';
 
   @override
   String get homeGreetingEvening => 'শুভ সন্ধ্যা';
@@ -1159,7 +1159,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get notifPermEnable => 'চালু করুন';
 
   @override
-  String get shareCardTitle => 'সুবহ ওয়ারিয়র';
+  String get shareCardTitle => 'Subh Warrior';
 
   @override
   String get shareCardStreakLabel => 'দিনের স্ট্রিক';
@@ -1173,7 +1173,7 @@ class AppLocalizationsBn extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String weekString = weekNumberFormat.format(week);
 
-    return '৪ সপ্তাহের মধ্যে $weekStringতম সপ্তাহ';
+    return 'সপ্তাহ $weekString (৪ সপ্তাহের মধ্যে)';
   }
 
   @override

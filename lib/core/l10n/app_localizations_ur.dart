@@ -467,7 +467,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get authCreateAccountTitle => 'اپنا اکاؤنٹ بنائیں';
 
   @override
-  String get authWelcomeBackTitle => 'خوش آمدید، واپسی مبارک';
+  String get authWelcomeBackTitle => 'دوبارہ خوش آمدید';
 
   @override
   String get authUsernameLabel => 'صارف نام';
@@ -710,7 +710,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get settingsProgressSavedLocally => 'پیش رفت اسی ڈیوائس پر محفوظ ہے';
 
   @override
-  String get settingsSynced => 'ہم آہنگ (Synced)';
+  String get settingsSynced => 'ہم آہنگ ہو گیا';
 
   @override
   String get settingsGuidelines => 'ہدایات';
@@ -1154,7 +1154,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get notifPermEnable => 'فعال کریں';
 
   @override
-  String get shareCardTitle => 'صبح واریئر';
+  String get shareCardTitle => 'Subh Warrior';
 
   @override
   String get shareCardStreakLabel => 'دن کی اسٹریک';

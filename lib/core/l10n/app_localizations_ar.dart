@@ -33,7 +33,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeGreetingMorning => 'صباح الخير';
 
   @override
-  String get homeGreetingAfternoon => 'مساء الخير';
+  String get homeGreetingAfternoon => 'نهارك سعيد';
 
   @override
   String get homeGreetingEvening => 'مساء الخير';
@@ -568,7 +568,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsStatTotalDays => 'إجمالي الأيام';
 
   @override
-  String get settingsStatCurrentStreak => 'التتابع الحالي';
+  String get settingsStatCurrentStreak => 'سلسلتك الحالية';
 
   @override
   String get settingsStatChallengeWeek => 'أسبوع التحدي';
@@ -702,7 +702,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsSignedIn => 'مسجَّل الدخول';
 
   @override
-  String get settingsLinkGooglePrompt => 'اضغط لنسخ تقدمك احتياطيًا عبر Google';
+  String get settingsLinkGooglePrompt =>
+      'اضغط لحفظ نسخة احتياطية من تقدمك عبر Google';
 
   @override
   String get settingsProgressSavedLocally => 'يتم حفظ التقدم على هذا الجهاز';
@@ -779,7 +780,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get progressStatRemaining => 'متبقٍ';
 
   @override
-  String get progressStatStreak => 'التتابع';
+  String get progressStatStreak => 'السلسلة';
 
   @override
   String get progressWeeklyPerformance => 'الأداء الأسبوعي';
@@ -1067,7 +1068,7 @@ class AppLocalizationsAr extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String streakString = streakNumberFormat.format(streak);
 
-    return 'تتابع $streakString';
+    return 'سلسلة $streakString';
   }
 
   @override
@@ -1180,22 +1181,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get a11yHidePassword => 'إخفاء كلمة المرور';
 
   @override
-  String get a11yStreakDormant => 'لا يوجد تتابع نشط';
+  String get a11yStreakDormant => 'لا توجد سلسلة نشطة';
 
   @override
-  String get a11yStreakBuilding => 'التتابع في ازدياد';
+  String get a11yStreakBuilding => 'السلسلة تنمو';
 
   @override
-  String get a11yStreakOnFire => 'تتابع متوهج';
+  String get a11yStreakOnFire => 'سلسلة مشتعلة';
 
   @override
-  String get a11yStreakStrong => 'تتابع قوي';
+  String get a11yStreakStrong => 'سلسلة قوية';
 
   @override
-  String get a11yStreakSoaring => 'تتابع محلّق';
+  String get a11yStreakSoaring => 'سلسلة صاعدة';
 
   @override
-  String get a11yStreakLegendary => 'تتابع أسطوري';
+  String get a11yStreakLegendary => 'سلسلة أسطورية';
 
   @override
   String get a11yGoalTrophy => 'تم تحقيق هدف مرحلي';
