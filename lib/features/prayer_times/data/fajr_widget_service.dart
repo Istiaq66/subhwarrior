@@ -73,6 +73,7 @@ class FajrWidgetService {
             now: now,
           ) ??
           0.0;
+      final nextFajr = now.isBefore(todayFajr) ? todayFajr : tomorrowFajr;
 
       final l10n = await _loadL10n();
       final clockPattern = settings.use24HourFormat ? 'HH:mm' : 'hh:mm a';
@@ -103,6 +104,12 @@ class FajrWidgetService {
               : DateFormat(clockPattern).format(tomorrowFajr));
       await HomeWidget.saveWidgetData<String>(
           'fajr_widget_countdown', countdownText);
+      // Native side turns this into a live-ticking android.widget.Chronometer
+      // (see FajrWidgetProvider.bindLiveCountdown) — Dart can't drive a
+      // per-second UI update in a home-screen widget itself, but Android's
+      // own Chronometer view can, entirely on-device.
+      await HomeWidget.saveWidgetData<String>('fajr_widget_next_fajr_epoch_ms',
+          nextFajr == null ? '' : nextFajr.millisecondsSinceEpoch.toString());
       await HomeWidget.saveWidgetData<String>(
           'fajr_widget_progress', (progress * 100).round().toString());
       await HomeWidget.saveWidgetData<String>('fajr_widget_sunrise',
@@ -117,7 +124,6 @@ class FajrWidgetService {
           _formatCompact(todayTimes.isha, clockPatternCompact));
       await HomeWidget.updateWidget(androidName: _androidProviderName);
 
-      final nextFajr = now.isBefore(todayFajr) ? todayFajr : tomorrowFajr;
       if (nextFajr != null) {
         await _scheduleNextBoundary(nextFajr);
       }

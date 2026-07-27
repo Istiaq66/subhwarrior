@@ -3,6 +3,7 @@ package com.subhwarrior.app
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.SystemClock
 import android.view.View
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
@@ -35,10 +36,15 @@ class FajrWidgetProvider : HomeWidgetProvider() {
                     R.id.fajr_widget_tomorrow_time,
                     widgetData.getString("fajr_widget_tomorrow_time", "")
                 )
+                // Fallback text (e.g. "Unknown" when there's no next-Fajr
+                // time to count down to) — overwritten below by the real
+                // ticking Chronometer whenever we have a target to count
+                // down to.
                 views.setTextViewText(
                     R.id.fajr_widget_countdown,
                     widgetData.getString("fajr_widget_countdown", "")
                 )
+                bindLiveCountdown(views, widgetData)
                 views.setTextViewText(
                     R.id.fajr_widget_sunrise_value,
                     widgetData.getString("fajr_widget_sunrise", "")
@@ -103,5 +109,30 @@ class FajrWidgetProvider : HomeWidgetProvider() {
         )
         val progress = widgetData.getString("fajr_widget_progress", null)?.toIntOrNull() ?: 0
         views.setProgressBar(R.id.fajr_widget_progress_bar, 100, progress, false)
+    }
+
+    /**
+     * Starts the countdown TextView (an `android.widget.Chronometer` in the
+     * layout) ticking down live, once per second, entirely on-device — the
+     * launcher process runs the tick loop itself, no app wake-up needed.
+     * This is the only way to get a genuinely live-updating number in a
+     * home-screen widget; our own background refresh (every 30 min) is far
+     * too coarse to redraw a seconds digit convincingly.
+     *
+     * [RemoteViews.setChronometer]'s `base` must be in
+     * [SystemClock.elapsedRealtime] terms, not wall-clock time — Dart has no
+     * access to that clock, so it hands us the plain target epoch
+     * (`System.currentTimeMillis()`-compatible) instead and we convert here,
+     * at bind time.
+     */
+    private fun bindLiveCountdown(views: RemoteViews, widgetData: SharedPreferences) {
+        val targetEpochMs =
+            widgetData.getString("fajr_widget_next_fajr_epoch_ms", null)?.toLongOrNull()
+                ?: return
+        val msUntilTarget = targetEpochMs - System.currentTimeMillis()
+        if (msUntilTarget <= 0) return
+
+        val base = SystemClock.elapsedRealtime() + msUntilTarget
+        views.setChronometer(R.id.fajr_widget_countdown, base, null, true)
     }
 }

@@ -137,7 +137,12 @@
                     android:textColor="#CCFFFFFF"
                     android:textSize="10sp" />
 
-                <TextView
+                <!-- Chronometer (not TextView): lets the OS tick this down
+                     live, once per second, without any app wake-up — see
+                     FajrWidgetProvider.bindLiveCountdown. Falls back to
+                     plain static text (e.g. "Unknown") when there's no
+                     target time to count down to. -->
+                <Chronometer
                     android:id="@+id/fajr_widget_countdown"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
