@@ -124,6 +124,16 @@ class FajrWidgetProvider : HomeWidgetProvider() {
      * access to that clock, so it hands us the plain target epoch
      * (`System.currentTimeMillis()`-compatible) instead and we convert here,
      * at bind time.
+     *
+     * The 4th parameter of [RemoteViews.setChronometer] is `started`
+     * (whether the Chronometer should be running), **not** "count down" —
+     * a genuinely easy mix-up given the two overloads' names. Counting
+     * down requires the separate [RemoteViews.setChronometerCountDown]
+     * call below; without it the Chronometer silently runs in its default
+     * count-*up* mode and displays `now - base` with no negation, which
+     * — since `base` is in the future — renders as a *negative* number
+     * that shrinks toward zero and then flips positive once the target
+     * passes, instead of a positive countdown that reaches zero.
      */
     private fun bindLiveCountdown(views: RemoteViews, widgetData: SharedPreferences) {
         val targetEpochMs =
@@ -134,5 +144,6 @@ class FajrWidgetProvider : HomeWidgetProvider() {
 
         val base = SystemClock.elapsedRealtime() + msUntilTarget
         views.setChronometer(R.id.fajr_widget_countdown, base, null, true)
+        views.setChronometerCountDown(R.id.fajr_widget_countdown, true)
     }
 }
