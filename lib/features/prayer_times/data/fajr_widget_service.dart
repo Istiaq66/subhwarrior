@@ -79,8 +79,11 @@ class FajrWidgetService {
       final clockPatternCompact = settings.use24HourFormat ? 'HH:mm' : 'hh:mm';
       final countdownText = remaining == null
           ? l10n.prayerCardCountdownUnknown
-          : l10n.prayerCardCountdownValue(
-              remaining.inHours, remaining.inMinutes % 60);
+          : l10n.prayerCardCountdownValueWithSeconds(
+              remaining.inHours,
+              remaining.inMinutes % 60,
+              remaining.inSeconds % 60,
+            );
 
       final todaySunrise = _onDay(today, todayTimes.sunrise);
       final isWithinWindow = todaySunrise != null &&
