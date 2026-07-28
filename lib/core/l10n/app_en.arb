@@ -655,6 +655,7 @@
   "logDayWeekendError": "Weekends don't count toward the challenge.",
   "logDayAlreadyLogged": "You've already logged today.",
   "logDayNotesTooLong": "Your notes are too long — please shorten them.",
+  "logDayNoActiveChallenge": "Start a challenge before logging a day.",
   "leaderboardTabGlobal": "Global",
   "leaderboardTabFriends": "Friends",
   "leaderboardTabLocal": "Local",

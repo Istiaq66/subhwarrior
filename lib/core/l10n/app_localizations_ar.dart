@@ -1025,6 +1025,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get logDayNotesTooLong => 'ملاحظاتك طويلة جدًا — يرجى اختصارها.';
 
   @override
+  String get logDayNoActiveChallenge => 'ابدأ تحديًا قبل تسجيل اليوم.';
+
+  @override
   String get leaderboardTabGlobal => 'عالمي';
 
   @override

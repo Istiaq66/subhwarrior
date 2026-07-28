@@ -1030,6 +1030,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your notes are too long — please shorten them.';
 
   @override
+  String get logDayNoActiveChallenge =>
+      'Start a challenge before logging a day.';
+
+  @override
   String get leaderboardTabGlobal => 'Global';
 
   @override

@@ -165,6 +165,10 @@ class ChallengeProvider extends ChangeNotifier {
       return LogResult.invalidInput;
     }
 
+    if (!_data.isChallengeActive) {
+      return LogResult.noActiveChallenge;
+    }
+
     // Logging window closes at 8 AM (08:00 is already closed).
     if (now.hour >= AppConstants.logCutoffHour) {
       return LogResult.afterCutoff;

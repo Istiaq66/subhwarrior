@@ -761,6 +761,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
         return l10n.logDayAlreadyLogged;
       case LogResult.invalidInput:
         return l10n.logDayNotesTooLong;
+      case LogResult.noActiveChallenge:
+        return l10n.logDayNoActiveChallenge;
       case LogResult.success:
         return '';
     }

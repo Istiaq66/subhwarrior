@@ -270,6 +270,7 @@
   "logDayWeekendError": "لا تُحتسب عطلات نهاية الأسبوع في التحدي.",
   "logDayAlreadyLogged": "لقد سجّلت اليوم بالفعل.",
   "logDayNotesTooLong": "ملاحظاتك طويلة جدًا — يرجى اختصارها.",
+  "logDayNoActiveChallenge": "ابدأ تحديًا قبل تسجيل اليوم.",
   "leaderboardTabGlobal": "عالمي",
   "leaderboardTabFriends": "الأصدقاء",
   "leaderboardTabLocal": "محلي",

@@ -1029,6 +1029,9 @@ class AppLocalizationsUr extends AppLocalizations {
       'آپ کے نوٹس بہت لمبے ہیں — براہ کرم انہیں مختصر کریں۔';
 
   @override
+  String get logDayNoActiveChallenge => 'دن لاگ کرنے سے پہلے چیلنج شروع کریں۔';
+
+  @override
   String get leaderboardTabGlobal => 'عالمی';
 
   @override

@@ -270,6 +270,7 @@
   "logDayWeekendError": "সাপ্তাহিক ছুটির দিন চ্যালেঞ্জে গণ্য হয় না।",
   "logDayAlreadyLogged": "আপনি আজকের দিনটি ইতিমধ্যে লগ করেছেন।",
   "logDayNotesTooLong": "আপনার নোট খুব দীর্ঘ — অনুগ্রহ করে সংক্ষিপ্ত করুন।",
+  "logDayNoActiveChallenge": "দিন লগ করার আগে একটি চ্যালেঞ্জ শুরু করুন।",
   "leaderboardTabGlobal": "বৈশ্বিক",
   "leaderboardTabFriends": "বন্ধুরা",
   "leaderboardTabLocal": "স্থানীয়",

@@ -1035,6 +1035,10 @@ class AppLocalizationsBn extends AppLocalizations {
       'আপনার নোট খুব দীর্ঘ — অনুগ্রহ করে সংক্ষিপ্ত করুন।';
 
   @override
+  String get logDayNoActiveChallenge =>
+      'দিন লগ করার আগে একটি চ্যালেঞ্জ শুরু করুন।';
+
+  @override
   String get leaderboardTabGlobal => 'বৈশ্বিক';
 
   @override

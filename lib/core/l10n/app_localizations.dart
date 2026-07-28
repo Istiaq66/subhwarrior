@@ -1724,6 +1724,12 @@ abstract class AppLocalizations {
   /// **'Your notes are too long — please shorten them.'**
   String get logDayNotesTooLong;
 
+  /// No description provided for @logDayNoActiveChallenge.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a challenge before logging a day.'**
+  String get logDayNoActiveChallenge;
+
   /// No description provided for @leaderboardTabGlobal.
   ///
   /// In en, this message translates to:

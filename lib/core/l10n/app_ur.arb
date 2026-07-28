@@ -270,6 +270,7 @@
   "logDayWeekendError": "ویک اینڈ چیلنج میں شمار نہیں ہوتے۔",
   "logDayAlreadyLogged": "آپ آج کا دن پہلے ہی لاگ کر چکے ہیں۔",
   "logDayNotesTooLong": "آپ کے نوٹس بہت لمبے ہیں — براہ کرم انہیں مختصر کریں۔",
+  "logDayNoActiveChallenge": "دن لاگ کرنے سے پہلے چیلنج شروع کریں۔",
   "leaderboardTabGlobal": "عالمی",
   "leaderboardTabFriends": "دوست",
   "leaderboardTabLocal": "مقامی",
