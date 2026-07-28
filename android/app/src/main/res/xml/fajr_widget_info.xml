@@ -7,7 +7,7 @@
      taller — only wider. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="250dp"
-    android:minHeight="150dp"
+    android:minHeight="180dp"
     android:minResizeWidth="200dp"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/fajr_widget_full"

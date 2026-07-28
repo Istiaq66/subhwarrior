@@ -1,7 +1,7 @@
 name: subh_warrior
 description: Subh Warrior Challenge app to build powerful morning routines with Fajr prayer and productive work.
 publish_to: 'none'
-version: 1.2.0+3
+version: 1.2.1+4
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
