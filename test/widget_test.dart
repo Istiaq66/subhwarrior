@@ -39,7 +39,12 @@ void main() {
       await tester.pumpWidget(buildApp(
         home: SplashScreen(bootFailed: true, onRetry: () => retried = true),
       ));
-      await tester.tap(find.byType(OutlinedButton));
+      // Matched by subtype, not `find.byType`: `OutlinedButton.icon` builds a
+      // private `_OutlinedButtonWithIcon` subclass on some Flutter versions
+      // (3.35, which CI pins) and a plain `OutlinedButton` on others, and
+      // `find.byType` only matches the exact runtime type.
+      await tester
+          .tap(find.byWidgetPredicate((widget) => widget is OutlinedButton));
       expect(retried, isTrue);
     });
   });
