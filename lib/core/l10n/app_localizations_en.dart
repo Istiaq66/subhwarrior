@@ -1210,6 +1210,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifPermEnable => 'Enable';
 
   @override
+  String get shareCardEyebrow => 'Morning routine';
+
+  @override
   String get shareCardTitle => 'Subh Warrior';
 
   @override

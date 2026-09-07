@@ -1215,6 +1215,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get notifPermEnable => 'চালু করুন';
 
   @override
+  String get shareCardEyebrow => 'সকালের রুটিন';
+
+  @override
   String get shareCardTitle => 'Subh Warrior';
 
   @override

@@ -2030,6 +2030,12 @@ abstract class AppLocalizations {
   /// **'Enable'**
   String get notifPermEnable;
 
+  /// No description provided for @shareCardEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning routine'**
+  String get shareCardEyebrow;
+
   /// No description provided for @shareCardTitle.
   ///
   /// In en, this message translates to:

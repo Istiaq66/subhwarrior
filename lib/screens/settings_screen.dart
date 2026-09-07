@@ -382,12 +382,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (_fajrReminder) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
+                  // The two labels flex around the dropdown: with three
+                  // fixed-width children this row overflowed by 17px on the
+                  // app's type scale, and the Arabic, Bengali and Urdu strings
+                  // are longer still.
                   child: Row(
                     children: [
-                      Text(l10n.settingsRemindMe),
+                      Flexible(
+                        child: Text(l10n.settingsRemindMe, maxLines: 2),
+                      ),
                       const SizedBox(width: 8),
                       DropdownButton<int>(
                         value: _fajrReminderMinutes,
+                        isDense: true,
                         items: [5, 10, 15, 20, 30].map((minutes) {
                           return DropdownMenuItem(
                             value: minutes,
@@ -401,7 +408,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                       ),
                       const SizedBox(width: 8),
-                      Text(l10n.settingsBeforeFajr),
+                      Flexible(
+                        child: Text(l10n.settingsBeforeFajr, maxLines: 2),
+                      ),
                     ],
                   ),
                 ),

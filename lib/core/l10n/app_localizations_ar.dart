@@ -1199,6 +1199,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notifPermEnable => 'تفعيل';
 
   @override
+  String get shareCardEyebrow => 'روتين الصباح';
+
+  @override
   String get shareCardTitle => 'محارب الصبح';
 
   @override

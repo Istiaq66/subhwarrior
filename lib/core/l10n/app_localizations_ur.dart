@@ -1210,6 +1210,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get notifPermEnable => 'فعال کریں';
 
   @override
+  String get shareCardEyebrow => 'صبح کا معمول';
+
+  @override
   String get shareCardTitle => 'Subh Warrior';
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/l10n/l10n_utils.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
 
 /// Three stat tiles: the current streak as the hero figure, then qualifying
@@ -40,7 +41,7 @@ class QuickStatsRow extends StatelessWidget {
               Expanded(
                 child: _StatTile(
                   icon: Icons.verified,
-                  value: '$totalQualifyingDays',
+                  value: context.localizeNumber(totalQualifyingDays),
                   label: l10n.streakCardQualifyingDays,
                 ),
               ),
@@ -48,7 +49,7 @@ class QuickStatsRow extends StatelessWidget {
               Expanded(
                 child: _StatTile(
                   icon: Icons.calendar_today,
-                  value: '$daysRemaining',
+                  value: context.localizeNumber(daysRemaining),
                   label: l10n.quickStatsDaysLeft,
                 ),
               ),
@@ -124,7 +125,7 @@ class _StreakTile extends StatelessWidget {
                     textDirection: Directionality.of(context),
                   ),
                   child: Text(
-                    '$currentStreak',
+                    context.localizeNumber(currentStreak),
                     style: theme.textTheme.displayMedium?.copyWith(
                       color: Colors.white,
                       fontFeatures: const [FontFeature.tabularFigures()],
