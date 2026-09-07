@@ -44,15 +44,19 @@ class PrayerTimeCard extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
+              // Both stops of both gradients stay dark enough that the
+              // `onPrimary` labels stacked on top clear 4.5:1. Ending the
+              // brand gradient at `colorScheme.secondary` (mint) instead put
+              // the small labels at ~3.0:1.
               gradient: LinearGradient(
                 colors: isWithinWindow
                     ? [
                         context.appColors.success,
-                        context.appColors.success.withValues(alpha: 0.85),
+                        context.appColors.successDeep,
                       ]
                     : [
                         Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.secondary,
+                        context.appColors.brandGradientEnd,
                       ],
                 begin: AlignmentDirectional.topStart,
                 end: AlignmentDirectional.bottomEnd,

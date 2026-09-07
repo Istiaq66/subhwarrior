@@ -3,5 +3,5 @@
     <!-- Dark window background shown behind the Flutter UI (e.g. while the
          system Credential Manager / Google sign-in sheet is up). Matches the
          app's dark surface so it doesn't flash pure black. -->
-    <color name="window_background">#141218</color>
+    <color name="window_background">#121710</color>
 </resources>

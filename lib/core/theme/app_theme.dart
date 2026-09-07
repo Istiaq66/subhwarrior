@@ -57,36 +57,59 @@ abstract final class AppTheme {
 
   /// Light scheme: harmonised from the brand seed, then the explicit brand
   /// roles are layered on top so the palette is honoured exactly.
+  ///
+  /// Note the surface mapping: M3's `surface` is the scaffold canvas, so it
+  /// takes the *parchment* [AppPalette.background], while cards (which default
+  /// to `surfaceContainerLow`) take the *cream* [AppPalette.surface]. That
+  /// cream-on-parchment step is what separates cards from the canvas.
   static final ColorScheme _lightScheme = ColorScheme.fromSeed(
     seedColor: AppPalette.seed,
   ).copyWith(
     primary: AppPalette.primary,
     onPrimary: Colors.white,
     primaryContainer: AppPalette.primaryContainer,
-    onPrimaryContainer: AppPalette.text,
+    onPrimaryContainer: AppPalette.onPrimaryContainer,
     secondary: AppPalette.secondary,
-    onSecondary: AppPalette.text,
+    onSecondary: Colors.white,
     tertiary: AppPalette.accent,
-    onTertiary: AppPalette.text,
-    surface: AppPalette.surface,
+    onTertiary: Colors.white,
+    surface: AppPalette.background,
     onSurface: AppPalette.text,
-    surfaceContainerLowest: Colors.white,
+    onSurfaceVariant: AppPalette.textMuted,
+    surfaceContainerLowest: AppPalette.surfaceBright,
     surfaceContainerLow: AppPalette.surface,
-    surfaceContainer: AppPalette.background,
+    surfaceContainer: AppPalette.surfaceDim,
+    outline: AppPalette.outline,
+    outlineVariant: AppPalette.outlineVariant,
     error: AppPalette.error,
     onError: Colors.white,
     errorContainer: AppPalette.errorContainer,
     onErrorContainer: AppPalette.onErrorContainer,
   );
 
-  /// Dark scheme: seed-derived (proper dark surfaces/contrast) with the
-  /// brand secondary/tertiary kept so the accent identity survives.
+  /// Dark scheme: seeded for the roles nothing names, then pinned to the
+  /// explicit dark brand values. Left seed-derived, the greens came out too
+  /// desaturated to read as the brand.
   static final ColorScheme _darkScheme = ColorScheme.fromSeed(
     seedColor: AppPalette.seed,
     brightness: Brightness.dark,
   ).copyWith(
-    secondary: AppPalette.secondary,
-    tertiary: AppPalette.accent,
+    primary: AppPalette.primaryDark,
+    onPrimary: AppPalette.onPrimaryDark,
+    primaryContainer: AppPalette.primaryContainerDark,
+    onPrimaryContainer: AppPalette.onPrimaryContainerDark,
+    secondary: AppPalette.secondaryDark,
+    onSecondary: AppPalette.onPrimaryDark,
+    tertiary: AppPalette.accentDark,
+    onTertiary: AppPalette.onWarningDark,
+    surface: AppPalette.backgroundDark,
+    onSurface: AppPalette.textDark,
+    onSurfaceVariant: AppPalette.textMutedDark,
+    surfaceContainerLowest: AppPalette.surfaceDarkLowest,
+    surfaceContainerLow: AppPalette.surfaceDarkCard,
+    surfaceContainer: AppPalette.surfaceDarkCard,
+    outline: AppPalette.outlineDark,
+    outlineVariant: AppPalette.outlineDark,
     error: AppPalette.errorDark,
     onError: AppPalette.onErrorDark,
   );

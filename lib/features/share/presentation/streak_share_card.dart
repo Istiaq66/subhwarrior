@@ -22,7 +22,10 @@ class StreakShareCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final onPrimary = Theme.of(context).colorScheme.onPrimary;
+    // The card is filled with the streak gradient, not the primary colour, so
+    // its ink comes from [AppColorsX.onStreak] — `onPrimary` would be white in
+    // light mode and near-invisible on the ochre gradient.
+    final ink = context.appColors.onStreak;
     return Container(
       width: 320,
       height: 400,
@@ -41,14 +44,14 @@ class StreakShareCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.mosque, color: onPrimary, size: 28),
+              Icon(Icons.mosque, color: ink, size: 28),
               AppSpacing.hGapSm,
               Flexible(
                 child: Text(
                   l10n.shareCardTitle,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: onPrimary,
+                        color: ink,
                         fontWeight: FontWeight.bold,
                       ),
                 ),
@@ -57,11 +60,11 @@ class StreakShareCard extends StatelessWidget {
           ),
           Column(
             children: [
-              Icon(Icons.local_fire_department, color: onPrimary, size: 48),
+              Icon(Icons.local_fire_department, color: ink, size: 48),
               Text(
                 context.localizeNumber(currentStreak),
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      color: onPrimary,
+                      color: ink,
                       fontWeight: FontWeight.bold,
                     ),
               ),
@@ -70,7 +73,7 @@ class StreakShareCard extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium
-                    ?.copyWith(color: onPrimary),
+                    ?.copyWith(color: ink),
               ),
             ],
           ),
@@ -79,7 +82,7 @@ class StreakShareCard extends StatelessWidget {
               Text(
                 context.localizeNumber(totalQualifyingDays),
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: onPrimary,
+                      color: ink,
                       fontWeight: FontWeight.bold,
                     ),
               ),
@@ -88,7 +91,7 @@ class StreakShareCard extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
-                    ?.copyWith(color: onPrimary),
+                    ?.copyWith(color: ink),
               ),
               AppSpacing.vGapSm,
               Text(
@@ -96,7 +99,7 @@ class StreakShareCard extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
-                    ?.copyWith(color: onPrimary),
+                    ?.copyWith(color: ink),
               ),
             ],
           ),
@@ -106,7 +109,7 @@ class StreakShareCard extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
-                ?.copyWith(color: onPrimary),
+                ?.copyWith(color: ink),
           ),
         ],
       ),

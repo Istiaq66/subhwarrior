@@ -41,10 +41,7 @@ class StreakCard extends StatelessWidget {
                 height: 60,
                 width: 1,
                 color: currentStreak > 0
-                    ? Theme.of(context)
-                        .colorScheme
-                        .onPrimary
-                        .withValues(alpha: 0.3)
+                    ? context.appColors.onStreak.withValues(alpha: 0.3)
                     : Theme.of(context).dividerColor,
               ),
               _buildTotalDaysSection(context),
@@ -68,7 +65,7 @@ class StreakCard extends StatelessWidget {
               Icon(
                 hasStreak ? Icons.local_fire_department : Icons.whatshot,
                 color: hasStreak
-                    ? Theme.of(context).colorScheme.onPrimary
+                    ? context.appColors.onStreak
                     : Theme.of(context).colorScheme.primary,
                 size: 32,
               ),
@@ -83,7 +80,7 @@ class StreakCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 IconButton(
                   icon: const Icon(Icons.share, size: 20),
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: context.appColors.onStreak,
                   tooltip: AppLocalizations.of(context)!.a11yShareStreak,
                   onPressed: onShare,
                 ),
@@ -104,7 +101,7 @@ class StreakCard extends StatelessWidget {
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
                 color: hasStreak
-                    ? Theme.of(context).colorScheme.onPrimary
+                    ? context.appColors.onStreak
                     : Theme.of(context).textTheme.headlineLarge?.color,
               ),
             ),
@@ -116,10 +113,7 @@ class StreakCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               color: hasStreak
-                  ? Theme.of(context)
-                      .colorScheme
-                      .onPrimary
-                      .withValues(alpha: 0.9)
+                  ? context.appColors.onStreak.withValues(alpha: 0.9)
                   : Theme.of(context).textTheme.bodyMedium?.color,
             ),
           ),
@@ -128,16 +122,13 @@ class StreakCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onPrimary
-                    .withValues(alpha: 0.3),
+                color: context.appColors.onStreak.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 _getStreakMessage(context, currentStreak),
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: context.appColors.onStreak,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
@@ -166,14 +157,11 @@ class StreakCard extends StatelessWidget {
                   value: progress,
                   strokeWidth: 6,
                   backgroundColor: currentStreak > 0
-                      ? Theme.of(context)
-                          .colorScheme
-                          .onPrimary
-                          .withValues(alpha: 0.3)
+                      ? context.appColors.onStreak.withValues(alpha: 0.3)
                       : Theme.of(context).colorScheme.surfaceContainerHighest,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     currentStreak > 0
-                        ? Theme.of(context).colorScheme.onPrimary
+                        ? context.appColors.onStreak
                         : (isOnTrack
                             ? context.appColors.success
                             : Theme.of(context).colorScheme.primary),
@@ -188,7 +176,7 @@ class StreakCard extends StatelessWidget {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: currentStreak > 0
-                          ? Theme.of(context).colorScheme.onPrimary
+                          ? context.appColors.onStreak
                           : Theme.of(context).textTheme.headlineMedium?.color,
                     ),
                   ),
@@ -197,10 +185,7 @@ class StreakCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       color: currentStreak > 0
-                          ? Theme.of(context)
-                              .colorScheme
-                              .onPrimary
-                              .withValues(alpha: 0.8)
+                          ? context.appColors.onStreak.withValues(alpha: 0.8)
                           : Theme.of(context).textTheme.bodySmall?.color,
                     ),
                   ),
@@ -214,10 +199,7 @@ class StreakCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               color: currentStreak > 0
-                  ? Theme.of(context)
-                      .colorScheme
-                      .onPrimary
-                      .withValues(alpha: 0.9)
+                  ? context.appColors.onStreak.withValues(alpha: 0.9)
                   : Theme.of(context).textTheme.bodyMedium?.color,
             ),
           ),
@@ -227,7 +209,7 @@ class StreakCard extends StatelessWidget {
               Icons.emoji_events,
               semanticLabel: AppLocalizations.of(context)!.a11yGoalTrophy,
               color: currentStreak > 0
-                  ? Theme.of(context).colorScheme.onPrimary
+                  ? context.appColors.onStreak
                   : context.appColors.gold,
               size: 20,
             ),
