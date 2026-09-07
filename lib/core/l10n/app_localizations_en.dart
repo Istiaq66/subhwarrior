@@ -31,6 +31,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeNavLeaderboard => 'Leaderboard';
 
   @override
+  String get homeGreetingSalam => 'As-salamu alaykum';
+
+  @override
+  String get hijriMonth1 => 'Muharram';
+
+  @override
+  String get hijriMonth2 => 'Safar';
+
+  @override
+  String get hijriMonth3 => 'Rabi\' al-Awwal';
+
+  @override
+  String get hijriMonth4 => 'Rabi\' al-Thani';
+
+  @override
+  String get hijriMonth5 => 'Jumada al-Ula';
+
+  @override
+  String get hijriMonth6 => 'Jumada al-Akhirah';
+
+  @override
+  String get hijriMonth7 => 'Rajab';
+
+  @override
+  String get hijriMonth8 => 'Sha\'ban';
+
+  @override
+  String get hijriMonth9 => 'Ramadan';
+
+  @override
+  String get hijriMonth10 => 'Shawwal';
+
+  @override
+  String get hijriMonth11 => 'Dhu al-Qi\'dah';
+
+  @override
+  String get hijriMonth12 => 'Dhu al-Hijjah';
+
+  @override
   String get homeGreetingMorning => 'Good Morning';
 
   @override
@@ -470,6 +509,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authWelcomeBackTitle => 'Welcome back';
+
+  @override
+  String get authTagline => 'Rise with purpose, build your morning routine.';
+
+  @override
+  String get authWelcomeBackSubtitle => 'Sign in to track your progress.';
+
+  @override
+  String get authCreateAccountSubtitle =>
+      'Start building your morning routine today.';
+
+  @override
+  String get splashTagline => 'Own your mornings';
 
   @override
   String get authUsernameLabel => 'Username';

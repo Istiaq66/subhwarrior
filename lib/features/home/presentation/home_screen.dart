@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/leaderboard/presentation/leaderboard_screen.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
@@ -10,7 +11,6 @@ import 'package:subh_warrior/helpers/notification_permission.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/screens/progress_screen.dart';
 import 'package:subh_warrior/widgets/prayer_time_card.dart';
-import 'package:subh_warrior/widgets/streak_card.dart';
 
 import 'widgets/challenge_completion_view.dart';
 import 'widgets/greeting_header.dart';
@@ -46,12 +46,33 @@ class _HomeScreenState extends State<HomeScreen> {
     final challengeProvider = context.read<ChallengeProvider>();
     final prayerProvider = context.read<PrayerTimeProvider>();
 
-    if (challengeProvider.hasLocation) {
+    if (!challengeProvider.hasLocation) return;
+
+    if (challengeProvider.hasUsableCoordinates) {
       await prayerProvider.fetchPrayerTimes(
         challengeProvider.userLatitude,
         challengeProvider.userLongitude,
       );
+      return;
     }
+
+    // Profile has a location name but no coordinates (sign-up writes 0,0, and
+    // remote profiles saved without coordinates restore as 0,0). Looking the
+    // city up by name is far better than fetching 0,0, which the API rejects
+    // with HTTP 400 and which surfaced as a permanent "unable to load prayer
+    // times" card.
+    final parts = challengeProvider.userLocation.split(',');
+    if (parts.length >= 2) {
+      final city = parts.first.trim();
+      final country = parts.sublist(1).join(',').trim();
+      if (city.isNotEmpty && country.isNotEmpty) {
+        await prayerProvider.fetchPrayerTimesByCity(city, country);
+        return;
+      }
+    }
+
+    // Only a bare name (or nothing usable) — ask the device instead.
+    await prayerProvider.fetchPrayerTimesForCurrentLocation();
   }
 
   Future<void> _setupNotifications() async {
@@ -153,21 +174,34 @@ class _HomeScreenState extends State<HomeScreen> {
             slivers: [
               _buildAppBar(context),
               SliverPadding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                ),
                 sliver: SliverList(
+                  // Section order follows the design comps: greeting, the
+                  // today hero, then prayer times, week, stats, quote.
                   delegate: SliverChildListDelegate([
                     GreetingHeader(userName: provider.userName),
-                    const SizedBox(height: 20),
-                    const PrayerTimeCard(),
-                    const SizedBox(height: 16),
+                    AppSpacing.vGapXl,
                     TodayStatusCard(
                       todayLog: provider.getTodayLog(),
                       canLog: provider.canLogToday(),
                     ),
-                    const SizedBox(height: 16),
-                    StreakCard(
+                    AppSpacing.vGapXl,
+                    // Not in the comps, which show Fajr only — kept because it
+                    // carries the other five prayer times, and dropping it
+                    // would remove a feature rather than restyle one.
+                    const PrayerTimeCard(),
+                    AppSpacing.vGapXl,
+                    WeeklyProgressCard(dayLogs: provider.dayLogs),
+                    AppSpacing.vGapXl,
+                    QuickStatsRow(
                       currentStreak: provider.currentStreak,
-                      totalDays: provider.totalQualifyingDays,
+                      totalQualifyingDays: provider.totalQualifyingDays,
+                      daysRemaining: provider.daysRemaining,
                       onShare: () => showShareSheet(
                         context,
                         currentStreak: provider.currentStreak,
@@ -175,18 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         currentWeek: provider.currentWeek,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    WeeklyProgressCard(
-                      weeklyProgress: provider.weeklyProgress,
-                      currentWeek: provider.currentWeek,
-                    ),
-                    const SizedBox(height: 16),
-                    QuickStatsRow(
-                      daysRemaining: provider.daysRemaining,
-                      overallProgress: provider.overallProgress,
-                      totalQualifyingDays: provider.totalQualifyingDays,
-                    ),
-                    const SizedBox(height: 20),
+                    AppSpacing.vGapXl,
                     const MotivationalQuoteCard(),
                   ]),
                 ),
@@ -198,47 +221,64 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Flat parchment bar with the wordmark leading and a circular settings
+  /// button trailing, per the design comps.
+  ///
+  /// This replaces a `primary → tertiary` gradient banner. That gradient was
+  /// fine while `tertiary` was a pale peach, but the palette makes it a warm
+  /// ochre, which put the bar's white title at roughly 1.9:1 on the trailing
+  /// end. A flat surface with primary-coloured text sidesteps it entirely.
   Widget _buildAppBar(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    // Primary + its `on` color is a guaranteed-contrast pair in both light and
-    // dark mode — no washout, no hardcoded colors.
-    final onBanner = scheme.onPrimary;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    // Mirrors the comp's `<header>`: `bg-background`, `px-4 py-3`, a 24px
+    // leading icon, an 18px bold wordmark, and a 40x40 `bg-surface` circle
+    // holding the settings action. py-3 + a 40px control = a 64px bar.
     return SliverAppBar(
-      expandedHeight: 96,
       pinned: true,
-      // Solid primary when collapsed (the gradient lives in flexibleSpace and
-      // fades out on collapse, otherwise the bar shows surface = looks
-      // transparent over the scrolling content).
-      backgroundColor: scheme.primary,
+      centerTitle: false,
+      toolbarHeight: 64,
+      titleSpacing: AppSpacing.md,
+      backgroundColor: scheme.surface,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
-      foregroundColor: onBanner,
-      flexibleSpace: FlexibleSpaceBar(
-        centerTitle: true,
-        titlePadding: const EdgeInsets.only(bottom: 14),
-        title: Text(
-          AppLocalizations.of(context)!.homeAppBarTitle,
-          style: TextStyle(
-            color: onBanner,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        background: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [scheme.primary, scheme.tertiary],
-              begin: AlignmentDirectional.topStart,
-              end: AlignmentDirectional.bottomEnd,
+      foregroundColor: scheme.primary,
+      title: Row(
+        children: [
+          Icon(Icons.person, color: scheme.primary, size: 24),
+          const SizedBox(width: 12),
+          Text(
+            AppLocalizations.of(context)!.homeAppBarTitle,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: scheme.primary,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ),
+        ],
       ),
       actions: [
-        IconButton(
-          icon: Icon(Icons.settings, color: onBanner),
-          tooltip: AppLocalizations.of(context)!.a11yOpenSettings,
-          onPressed: () => Navigator.pushNamed(context, '/settings'),
+        Padding(
+          padding: const EdgeInsetsDirectional.only(end: AppSpacing.md),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: Material(
+              color: scheme.surfaceContainerLow,
+              shape: const CircleBorder(),
+              clipBehavior: Clip.antiAlias,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                iconSize: 20,
+                constraints: const BoxConstraints.tightFor(
+                  width: 40,
+                  height: 40,
+                ),
+                icon: Icon(Icons.settings, color: scheme.primary),
+                tooltip: AppLocalizations.of(context)!.a11yOpenSettings,
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
+              ),
+            ),
+          ),
         ),
       ],
     );

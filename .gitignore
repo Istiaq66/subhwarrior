@@ -48,3 +48,8 @@ app.*.map.json
 android/key.properties
 **/*.jks
 **/*.keystore
+
+# Stitch design export — reference comps (HTML + PNG), ~4MB.
+# Kept out of the repo: it is design input, not source, and the design system
+# it describes now lives in lib/core/theme.
+stitch_subh_warrior_forest_green_redesign/

@@ -113,12 +113,27 @@ class ChallengeRemoteDataSource {
       final startDateStr = map['startDate'] as String?;
       final logsRaw = (map['logs'] as List?) ?? const [];
 
+      // A remote profile can carry a location *name* with no coordinates
+      // (older documents, or a geocode that failed at onboarding). Deriving
+      // `hasLocation` from the name alone then restores a profile that claims
+      // a location while holding 0,0 — and the prayer-times API rejects
+      // 0,0 with HTTP 400, so the home screen shows a permanent
+      // "unable to load prayer times". Require the coordinates to be present.
+      //
+      // Absent is tested, not equality with zero: (0, 0) is a real coordinate
+      // in the Gulf of Guinea, per the contract on
+      // `ChallengeProvider.hasLocation`.
+      final latitude = (map['latitude'] as num?)?.toDouble();
+      final longitude = (map['longitude'] as num?)?.toDouble();
+
       return ChallengeData(
         userName: userName,
         userLocation: location,
-        userLatitude: (map['latitude'] as num?)?.toDouble() ?? 0.0,
-        userLongitude: (map['longitude'] as num?)?.toDouble() ?? 0.0,
-        hasLocation: location.trim().isNotEmpty,
+        userLatitude: latitude ?? 0.0,
+        userLongitude: longitude ?? 0.0,
+        hasLocation: location.trim().isNotEmpty &&
+            latitude != null &&
+            longitude != null,
         challengeStartDate:
             startDateStr != null ? DateTime.tryParse(startDateStr) : null,
         isChallengeActive:

@@ -22,35 +22,163 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: colorScheme.surface,
       extensions: [appColors],
     );
+    final textTheme = AppTypography.apply(base.textTheme);
 
     return base.copyWith(
-      textTheme: AppTypography.apply(base.textTheme),
+      textTheme: textTheme,
+      // App bars sit flat on the parchment canvas — the comps have no coloured
+      // banner. 64dp matches the comp header (`py-3` around a 40dp control).
       appBarTheme: AppBarTheme(
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
-        scrolledUnderElevation: 2,
+        scrolledUnderElevation: 0,
+        toolbarHeight: 64,
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
-        surfaceTintColor: colorScheme.surfaceTint,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: textTheme.titleMedium?.copyWith(
+          color: colorScheme.primary,
+          fontWeight: FontWeight.bold,
+        ),
       ),
+      // Cards: `bg-surface rounded-xl shadow-sm border border-divider` — the
+      // hairline divider border is what separates cream cards from the
+      // parchment canvas, with elevation kept low.
       cardTheme: CardThemeData(
         clipBehavior: Clip.antiAlias,
         elevation: 1,
-        surfaceTintColor: colorScheme.surfaceTint,
-        shape: const RoundedRectangleBorder(borderRadius: AppRadius.brMd),
+        color: colorScheme.surfaceContainerLow,
+        shadowColor: colorScheme.shadow.withValues(alpha: 0.06),
+        surfaceTintColor: Colors.transparent,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadius.brLg,
+          side: BorderSide(color: colorScheme.outlineVariant),
+        ),
+      ),
+      // Primary buttons: full-width fills, `text-lg` semibold, `py-4`
+      // (=> 56dp min height), `rounded-xl`.
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(0, 56),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          textStyle: textTheme.titleMedium,
+          shape: const RoundedRectangleBorder(borderRadius: AppRadius.brLg),
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
+          minimumSize: const Size(0, 56),
+          elevation: 1,
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.xl,
+            horizontal: AppSpacing.lg,
             vertical: AppSpacing.md,
           ),
-          shape: const RoundedRectangleBorder(borderRadius: AppRadius.brMd),
+          textStyle: textTheme.titleMedium,
+          shape: const RoundedRectangleBorder(borderRadius: AppRadius.brLg),
         ),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(borderRadius: AppRadius.brSm),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(0, 56),
+          foregroundColor: colorScheme.onSurface,
+          backgroundColor: colorScheme.surfaceContainerLow,
+          side: BorderSide(color: colorScheme.outlineVariant),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          textStyle: textTheme.titleMedium,
+          shape: const RoundedRectangleBorder(borderRadius: AppRadius.brLg),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: colorScheme.primary,
+          textStyle: textTheme.labelLarge,
+          shape: const RoundedRectangleBorder(borderRadius: AppRadius.brLg),
+        ),
+      ),
+      // Inputs: cream fill, `rounded-lg` (12), no resting border, 2px primary
+      // focus ring, muted placeholder.
+      inputDecorationTheme: InputDecorationTheme(
         filled: true,
+        fillColor: colorScheme.surfaceContainerLow,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md - 4,
+        ),
+        hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+        // Hairline divider border at rest, matching the comp's sign-in fields
+        // and the same border cards carry, then a 2px primary ring on focus.
+        border: OutlineInputBorder(
+          borderRadius: AppRadius.brMd,
+          borderSide: BorderSide(color: colorScheme.outlineVariant),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: AppRadius.brMd,
+          borderSide: BorderSide(color: colorScheme.outlineVariant),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: AppRadius.brMd,
+          borderSide: BorderSide(color: colorScheme.primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: AppRadius.brMd,
+          borderSide: BorderSide(color: colorScheme.error),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: AppRadius.brMd,
+          borderSide: BorderSide(color: colorScheme.error, width: 2),
+        ),
+      ),
+      // Chips are fully rounded pills in the comps.
+      chipTheme: ChipThemeData(
+        backgroundColor: colorScheme.surfaceContainerLow,
+        side: BorderSide(color: colorScheme.outlineVariant),
+        labelStyle: textTheme.labelMedium,
+        shape: const StadiumBorder(),
+      ),
+      dividerTheme: DividerThemeData(
+        color: colorScheme.outlineVariant,
+        thickness: 1,
+        space: 1,
+      ),
+      // Bottom nav sits on the parchment canvas with a mint-tinted pill behind
+      // the active destination.
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: colorScheme.surface,
+        indicatorColor: colorScheme.secondary.withValues(alpha: 0.18),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        height: 72,
+        labelTextStyle: WidgetStatePropertyAll(
+          textTheme.labelSmall,
+        ),
+      ),
+      // Sheets and dialogs share the card language: cream, `rounded-xl`.
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: colorScheme.surfaceContainerLow,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: colorScheme.surfaceContainerLow,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.brLg),
+        titleTextStyle: textTheme.titleLarge,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.brMd),
+        contentTextStyle: textTheme.bodyMedium,
       ),
     );
   }

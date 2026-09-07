@@ -15,17 +15,22 @@ Future<void> showShareSheet(
   required int currentWeek,
 }) {
   final boundaryKey = GlobalKey();
+  // Shape, background and radius come from the shared bottomSheetTheme, so
+  // this sheet matches the day-detail sheet and dialogs in both brightnesses.
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-    ),
+    showDragHandle: true,
     builder: (sheetContext) {
       final l10n = AppLocalizations.of(sheetContext)!;
       return SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            0,
+            AppSpacing.lg,
+            AppSpacing.lg,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -33,7 +38,7 @@ Future<void> showShareSheet(
                 l10n.shareCardSheetTitle,
                 style: Theme.of(sheetContext).textTheme.titleMedium,
               ),
-              AppSpacing.vGapMd,
+              AppSpacing.vGapLg,
               RepaintBoundary(
                 key: boundaryKey,
                 child: StreakShareCard(

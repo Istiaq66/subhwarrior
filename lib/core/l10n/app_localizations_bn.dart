@@ -31,6 +31,45 @@ class AppLocalizationsBn extends AppLocalizations {
   String get homeNavLeaderboard => 'লিডারবোর্ড';
 
   @override
+  String get homeGreetingSalam => 'আসসালামু আলাইকুম';
+
+  @override
+  String get hijriMonth1 => 'মুহাররম';
+
+  @override
+  String get hijriMonth2 => 'সফর';
+
+  @override
+  String get hijriMonth3 => 'রবিউল আউয়াল';
+
+  @override
+  String get hijriMonth4 => 'রবিউস সানি';
+
+  @override
+  String get hijriMonth5 => 'জুমাদাল উলা';
+
+  @override
+  String get hijriMonth6 => 'জুমাদাল আখিরাহ';
+
+  @override
+  String get hijriMonth7 => 'রজব';
+
+  @override
+  String get hijriMonth8 => 'শাবান';
+
+  @override
+  String get hijriMonth9 => 'রমজান';
+
+  @override
+  String get hijriMonth10 => 'শাওয়াল';
+
+  @override
+  String get hijriMonth11 => 'জিলকদ';
+
+  @override
+  String get hijriMonth12 => 'জিলহজ';
+
+  @override
   String get homeGreetingMorning => 'শুভ সকাল';
 
   @override
@@ -471,6 +510,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get authWelcomeBackTitle => 'আবারও স্বাগতম';
+
+  @override
+  String get authTagline => 'উদ্দেশ্য নিয়ে জাগুন, নিজের সকাল গড়ুন।';
+
+  @override
+  String get authWelcomeBackSubtitle => 'অগ্রগতি দেখতে সাইন ইন করুন।';
+
+  @override
+  String get authCreateAccountSubtitle =>
+      'আজই আপনার সকালের রুটিন গড়া শুরু করুন।';
+
+  @override
+  String get splashTagline => 'সকাল হোক আপনার';
 
   @override
   String get authUsernameLabel => 'ইউজারনেম';

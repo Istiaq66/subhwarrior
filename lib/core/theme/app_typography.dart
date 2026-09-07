@@ -1,24 +1,101 @@
 import 'package:flutter/material.dart';
 
-/// App text theme. Tokenizes the font weights that were previously scattered
-/// as inline `TextStyle(fontSize: 24, fontWeight: bold)`.
+/// App text theme, matching the design system: Plus Jakarta Sans for display,
+/// headline and title levels, Noto Sans for body and label levels.
 ///
-/// Uses the platform default font (no `google_fonts` dependency, so it works
-/// offline and in CI). Takes the brightness-correct base [TextTheme] that
-/// `ThemeData` derives from the [ColorScheme] and only bumps weights, so text
-/// colors stay correct in both light and dark mode. Widgets should read styles
-/// via `Theme.of(context).textTheme.*`.
+/// Sizes come from the comps, which are built on Tailwind's type scale
+/// (`text-xs` 12 → `text-6xl` 60) at a 390pt viewport, so those values map
+/// 1:1 onto Flutter logical pixels. The Material 3 defaults are noticeably
+/// larger than that scale, so each role is pinned here rather than inherited —
+/// this is what keeps every screen on one type system instead of each widget
+/// hard-coding its own `fontSize`.
+///
+/// | role          | comp token   | px |
+/// |---------------|--------------|----|
+/// | displayLarge  | `text-6xl`   | 60 |
+/// | displayMedium | `text-5xl`   | 48 |
+/// | displaySmall  | `text-4xl`   | 36 |
+/// | headline*     | `text-3xl/2xl` | 30/24 |
+/// | titleLarge    | `text-xl`    | 20 |
+/// | titleMedium   | `text-lg`    | 18 |
+/// | body/label    | `text-base/sm/xs` | 16/14/12 |
+///
+/// Both families are bundled as variable fonts (see `pubspec.yaml`), so each
+/// style sets `fontVariations` alongside `fontWeight`. `fontWeight` alone is
+/// honoured inconsistently across platforms for a variable font declared as a
+/// single asset — driving the `wght` axis explicitly renders the intended
+/// weight everywhere.
+///
+/// Colors are left untouched: this takes the brightness-correct base
+/// [TextTheme] that `ThemeData` derives from the [ColorScheme], so text stays
+/// readable in both light and dark mode.
+///
+/// The bundled families cover Latin only. Arabic, Bengali and Urdu glyphs fall
+/// through to the platform's own fonts via the engine's default fallback chain.
 abstract final class AppTypography {
   AppTypography._();
 
+  static const String headlineFamily = 'PlusJakartaSans';
+  static const String bodyFamily = 'NotoSans';
+
+  /// Tight leading for large display/headline text, per the comps.
+  static const double _tight = 1.15;
+  static const double _snug = 1.3;
+  static const double _relaxed = 1.5;
+
+  static TextStyle? _display(
+    TextStyle? base,
+    double size,
+    FontWeight weight, {
+    double height = _tight,
+  }) =>
+      base?.copyWith(
+        fontFamily: headlineFamily,
+        fontSize: size,
+        height: height,
+        fontWeight: weight,
+        fontVariations: [FontVariation('wght', weight.value.toDouble())],
+      );
+
+  static TextStyle? _body(
+    TextStyle? base,
+    double size,
+    FontWeight weight, {
+    double height = _relaxed,
+  }) =>
+      base?.copyWith(
+        fontFamily: bodyFamily,
+        fontSize: size,
+        height: height,
+        fontWeight: weight,
+        fontVariations: [FontVariation('wght', weight.value.toDouble())],
+      );
+
   static TextTheme apply(TextTheme base) {
     return base.copyWith(
-      displaySmall: base.displaySmall?.copyWith(fontWeight: FontWeight.bold),
-      headlineMedium:
-          base.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-      headlineSmall: base.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-      titleLarge: base.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-      titleMedium: base.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+      // Display — the big numerals: Fajr time (6xl) and streak count (5xl).
+      displayLarge: _display(base.displayLarge, 60, FontWeight.bold),
+      displayMedium: _display(base.displayMedium, 48, FontWeight.bold),
+      displaySmall: _display(base.displaySmall, 36, FontWeight.bold),
+      // Headline — screen titles and greetings.
+      headlineLarge: _display(base.headlineLarge, 36, FontWeight.bold),
+      headlineMedium: _display(base.headlineMedium, 30, FontWeight.bold),
+      headlineSmall: _display(base.headlineSmall, 24, FontWeight.bold),
+      // Title — card and section headers, semibold in the comps.
+      titleLarge: _display(base.titleLarge, 20, FontWeight.w600,
+          height: _snug),
+      titleMedium: _display(base.titleMedium, 18, FontWeight.w600,
+          height: _snug),
+      titleSmall: _display(base.titleSmall, 16, FontWeight.w600,
+          height: _snug),
+      // Body — Noto Sans, regular.
+      bodyLarge: _body(base.bodyLarge, 16, FontWeight.w400),
+      bodyMedium: _body(base.bodyMedium, 14, FontWeight.w400),
+      bodySmall: _body(base.bodySmall, 12, FontWeight.w400),
+      // Labels — buttons, chips, nav. Medium weight, tighter leading.
+      labelLarge: _body(base.labelLarge, 16, FontWeight.w600, height: _snug),
+      labelMedium: _body(base.labelMedium, 14, FontWeight.w500, height: _snug),
+      labelSmall: _body(base.labelSmall, 12, FontWeight.w500, height: _snug),
     );
   }
 }

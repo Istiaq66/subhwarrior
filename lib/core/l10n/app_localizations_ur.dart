@@ -31,6 +31,45 @@ class AppLocalizationsUr extends AppLocalizations {
   String get homeNavLeaderboard => 'لیڈر بورڈ';
 
   @override
+  String get homeGreetingSalam => 'السلام علیکم';
+
+  @override
+  String get hijriMonth1 => 'محرم';
+
+  @override
+  String get hijriMonth2 => 'صفر';
+
+  @override
+  String get hijriMonth3 => 'ربیع الاول';
+
+  @override
+  String get hijriMonth4 => 'ربیع الثانی';
+
+  @override
+  String get hijriMonth5 => 'جمادی الاول';
+
+  @override
+  String get hijriMonth6 => 'جمادی الثانی';
+
+  @override
+  String get hijriMonth7 => 'رجب';
+
+  @override
+  String get hijriMonth8 => 'شعبان';
+
+  @override
+  String get hijriMonth9 => 'رمضان';
+
+  @override
+  String get hijriMonth10 => 'شوال';
+
+  @override
+  String get hijriMonth11 => 'ذوالقعدہ';
+
+  @override
+  String get hijriMonth12 => 'ذوالحجہ';
+
+  @override
   String get homeGreetingMorning => 'صبح بخیر';
 
   @override
@@ -468,6 +507,20 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get authWelcomeBackTitle => 'دوبارہ خوش آمدید';
+
+  @override
+  String get authTagline => 'مقصد کے ساتھ اٹھیں، اپنی صبح سنواریں۔';
+
+  @override
+  String get authWelcomeBackSubtitle =>
+      'اپنی پیش رفت دیکھنے کے لیے سائن ان کریں۔';
+
+  @override
+  String get authCreateAccountSubtitle =>
+      'آج ہی اپنی صبح کا معمول بنانا شروع کریں۔';
+
+  @override
+  String get splashTagline => 'اپنی صبح کے مالک بنیں';
 
   @override
   String get authUsernameLabel => 'صارف نام';

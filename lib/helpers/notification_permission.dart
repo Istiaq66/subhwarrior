@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/theme/app_spacing.dart';
 
 const int notificationPermissionLaunchLimit = 31;
 const int notificationPermissionLaunchInterval = 10;
@@ -34,8 +35,8 @@ Future<bool> getNotificationPermission(BuildContext context) async {
     final bool? isAllowed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+        shape: const RoundedRectangleBorder(
+          borderRadius: AppRadius.brLg,
         ),
         title: Text(
           AppLocalizations.of(context)!.notifPermTitle,

@@ -58,7 +58,18 @@ class PrayerTimeProvider extends ChangeNotifier {
     return now.isAfter(fajrTime) && now.isBefore(sunriseTime);
   }
 
+  /// Fetches by coordinates.
+  ///
+  /// Rejects 0,0 outright: that is the app's "no coordinates yet" sentinel
+  /// (see `ChallengeProvider.hasUsableCoordinates`), and the Aladhan API
+  /// answers it with HTTP 400, so sending it only produces a generic failure
+  /// card. Callers should fall back to a city or device-location lookup.
   Future<void> fetchPrayerTimes(double latitude, double longitude) async {
+    if (latitude == 0.0 && longitude == 0.0) {
+      _error = 'No coordinates set';
+      _notifyDeferred();
+      return;
+    }
     await _runFetch(() async {
       final today = DateTime.now();
       final tomorrow = today.add(const Duration(days: 1));

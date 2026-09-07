@@ -75,3 +75,18 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+
+  assets:
+    - assets/icons/
+
+  # Bundled rather than pulled via google_fonts: the app must theme itself
+  # offline and in CI, with no runtime font download. Both files are variable
+  # fonts carrying a `wght` axis, so one asset covers every weight — see
+  # AppTypography, which drives the axis with FontVariation.
+  fonts:
+    - family: PlusJakartaSans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans-var.ttf
+    - family: NotoSans
+      fonts:
+        - asset: assets/fonts/NotoSans-var.ttf

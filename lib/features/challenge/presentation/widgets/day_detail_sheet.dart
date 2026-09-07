@@ -37,14 +37,16 @@ class DayDetailSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      DateFormat('EEEE, MMMM d').format(log.date),
+                      DateFormat.yMMMMEEEEd(
+                        Localizations.localeOf(context).toLanguageTag(),
+                      ).format(log.date),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Text(
                       log.isQualifying
                           ? l10n.dayDetailQualifying
                           : l10n.dayDetailNonQualifying,
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: log.isQualifying
                             ? context.appColors.success
                             : context.appColors.warning,
@@ -115,14 +117,18 @@ class _DetailRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, size: 20),
+          Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 12),
-          Text(label),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
           const Spacer(),
           Text(
             value,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
               color: success ? context.appColors.success : null,
             ),
           ),

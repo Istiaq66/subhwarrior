@@ -34,8 +34,13 @@ abstract final class AppRadius {
   static const double lg = 16;
   static const double xl = 20;
 
+  /// Fully-rounded, for the design system's pill shapes (chips, segmented
+  /// controls, progress tracks). Matches the comps' `rounded-full`.
+  static const double full = 999;
+
   static const BorderRadius brSm = BorderRadius.all(Radius.circular(sm));
   static const BorderRadius brMd = BorderRadius.all(Radius.circular(md));
   static const BorderRadius brLg = BorderRadius.all(Radius.circular(lg));
   static const BorderRadius brXl = BorderRadius.all(Radius.circular(xl));
+  static const BorderRadius brFull = BorderRadius.all(Radius.circular(full));
 }

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 
@@ -142,7 +143,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Column(
               children: [
@@ -224,7 +225,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: context.appColors.warning.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.brSm,
             ),
             child: Row(
               children: [
@@ -288,12 +289,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               labelText: l10n.onboardingLocationFieldLabel,
               hintText: l10n.onboardingLocationFieldHint,
               prefixIcon: const Icon(Icons.map),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+              border: const OutlineInputBorder(
+                borderRadius: AppRadius.brMd,
               ),
             ),
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 18),
+            style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 16),
           Text(l10n.commonOr),
@@ -360,7 +361,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brMd,
             ),
             child: Column(
               children: [
@@ -489,34 +490,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+  /// Comp rule card: cream surface, `p-4`, a 40dp filled primary badge with a
+  /// white numeral, then the title and description.
+  ///
+  /// This previously coloured itself with `colorScheme.surface`, which is the
+  /// parchment canvas — the card was invisible against the page. It now uses
+  /// the shared [Card] so it picks up the cream fill, hairline border and
+  /// radius every other card has.
   Widget _buildRuleCard(
       String number, String title, String description, IconData icon) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-        ),
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        borderRadius: AppRadius.brMd,
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color:
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.primary,
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Text(
                 number,
-                style: TextStyle(
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ),

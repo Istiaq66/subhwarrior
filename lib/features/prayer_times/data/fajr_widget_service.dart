@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +28,23 @@ class FajrWidgetService {
   static const _androidProviderName = 'FajrWidgetProvider';
   static const _boundaryTaskId = 'com.subhwarrior.app.fajr_widget_boundary';
 
+  /// Best-effort refresh that never throws.
+  ///
+  /// Callers fire this and forget — `PrayerTimeProvider` uses
+  /// `unawaited(refresh())` — so anything escaping here surfaces as an
+  /// unhandled async error rather than something a caller can react to. The
+  /// widget is decoration: if the platform services it depends on
+  /// (SharedPreferences, Firebase) are unavailable, the right outcome is a
+  /// stale widget, not a crash in the prayer-times fetch path.
   static Future<void> refresh() async {
+    try {
+      await _refresh();
+    } catch (e) {
+      debugPrint('FajrWidgetService.refresh skipped: $e');
+    }
+  }
+
+  static Future<void> _refresh() async {
     final prefs = await SharedPreferences.getInstance();
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     final challengeData = ChallengeLocalDataSource(prefs, uid: uid).load();

@@ -144,6 +144,84 @@ abstract class AppLocalizations {
   /// **'Leaderboard'**
   String get homeNavLeaderboard;
 
+  /// No description provided for @homeGreetingSalam.
+  ///
+  /// In en, this message translates to:
+  /// **'As-salamu alaykum'**
+  String get homeGreetingSalam;
+
+  /// No description provided for @hijriMonth1.
+  ///
+  /// In en, this message translates to:
+  /// **'Muharram'**
+  String get hijriMonth1;
+
+  /// No description provided for @hijriMonth2.
+  ///
+  /// In en, this message translates to:
+  /// **'Safar'**
+  String get hijriMonth2;
+
+  /// No description provided for @hijriMonth3.
+  ///
+  /// In en, this message translates to:
+  /// **'Rabi\' al-Awwal'**
+  String get hijriMonth3;
+
+  /// No description provided for @hijriMonth4.
+  ///
+  /// In en, this message translates to:
+  /// **'Rabi\' al-Thani'**
+  String get hijriMonth4;
+
+  /// No description provided for @hijriMonth5.
+  ///
+  /// In en, this message translates to:
+  /// **'Jumada al-Ula'**
+  String get hijriMonth5;
+
+  /// No description provided for @hijriMonth6.
+  ///
+  /// In en, this message translates to:
+  /// **'Jumada al-Akhirah'**
+  String get hijriMonth6;
+
+  /// No description provided for @hijriMonth7.
+  ///
+  /// In en, this message translates to:
+  /// **'Rajab'**
+  String get hijriMonth7;
+
+  /// No description provided for @hijriMonth8.
+  ///
+  /// In en, this message translates to:
+  /// **'Sha\'ban'**
+  String get hijriMonth8;
+
+  /// No description provided for @hijriMonth9.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramadan'**
+  String get hijriMonth9;
+
+  /// No description provided for @hijriMonth10.
+  ///
+  /// In en, this message translates to:
+  /// **'Shawwal'**
+  String get hijriMonth10;
+
+  /// No description provided for @hijriMonth11.
+  ///
+  /// In en, this message translates to:
+  /// **'Dhu al-Qi\'dah'**
+  String get hijriMonth11;
+
+  /// No description provided for @hijriMonth12.
+  ///
+  /// In en, this message translates to:
+  /// **'Dhu al-Hijjah'**
+  String get hijriMonth12;
+
   /// No description provided for @homeGreetingMorning.
   ///
   /// In en, this message translates to:
@@ -799,6 +877,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome back'**
   String get authWelcomeBackTitle;
+
+  /// No description provided for @authTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Rise with purpose, build your morning routine.'**
+  String get authTagline;
+
+  /// No description provided for @authWelcomeBackSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to track your progress.'**
+  String get authWelcomeBackSubtitle;
+
+  /// No description provided for @authCreateAccountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start building your morning routine today.'**
+  String get authCreateAccountSubtitle;
+
+  /// No description provided for @splashTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Own your mornings'**
+  String get splashTagline;
 
   /// No description provided for @authUsernameLabel.
   ///

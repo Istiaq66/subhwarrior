@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/features/prayer_times/data/location_data_source.dart';
 import 'package:subh_warrior/features/prayer_times/data/prayer_times_repository.dart';
 import 'package:subh_warrior/features/prayer_times/domain/prayer_settings.dart';
@@ -90,6 +91,13 @@ void main() {
   });
 
   group('PrayerTimeProvider', () {
+    // PrayerTimeProvider's fetch path also refreshes the home-screen
+    // widget, which reads
+    // SharedPreferences. Without a mock store that async call throws
+    // MissingPluginException, and whether the test sees it depends on
+    // timing — which made this group intermittently fail.
+    setUp(() => SharedPreferences.setMockInitialValues({}));
+
     test('loads settings from the repository on construction', () {
       final repo = FakePrayerTimesRepository(
         settings:

@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/core/utils/input_validators.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
@@ -33,19 +35,6 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   AuthService get _auth => context.read<AuthService>();
-
-  /// Pill-rounded, borderless edge shared by all auth text fields. The filled
-  /// background carries the shape, so the outline is hidden until focus.
-  OutlineInputBorder get _fieldBorder => OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-        borderSide: BorderSide.none,
-      );
-
-  /// Subtle fill behind each auth text field.
-  Color get _fillColor => Theme.of(context)
-      .colorScheme
-      .surfaceContainerHighest
-      .withValues(alpha: 0.5);
 
   void _showError(String message) {
     if (!mounted) return;
@@ -217,95 +206,112 @@ class _AuthScreenState extends State<AuthScreen> {
     final l10n = AppLocalizations.of(context)!;
     final googleEnabled = AuthService.googleServerClientId.isNotEmpty;
 
+    // Comp layout: centred wordmark, then the welcome pair, then labelled
+    // fields, primary submit, an "or" rule, and the Google button. Field
+    // styling comes from the shared input theme.
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.xl,
+            ),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(Icons.wb_sunny,
-                      size: 72, color: theme.colorScheme.primary),
-                  const SizedBox(height: 16),
+                  // Comp: wordmark and tagline centred, then the welcome pair
+                  // left-aligned above the fields.
+                  Text(
+                    l10n.splashTitle,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineMedium
+                        ?.copyWith(color: theme.colorScheme.primary),
+                  ),
+                  AppSpacing.vGapSm,
+                  Text(
+                    l10n.authTagline,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ),
+                  AppSpacing.vGapXl,
                   Text(
                     _isRegister
                         ? l10n.authCreateAccountTitle
                         : l10n.authWelcomeBackTitle,
                     style: theme.textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+                        ?.copyWith(color: theme.colorScheme.primary),
                   ),
-                  const SizedBox(height: 24),
+                  AppSpacing.vGapXs,
+                  Text(
+                    _isRegister
+                        ? l10n.authCreateAccountSubtitle
+                        : l10n.authWelcomeBackSubtitle,
+                    style: theme.textTheme.bodyLarge
+                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ),
+                  AppSpacing.vGapLg,
                   if (_isRegister) ...[
-                    TextFormField(
-                      controller: _usernameController,
-                      maxLength: AppConstants.usernameMaxLength,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: InputDecoration(
-                        labelText: l10n.authUsernameLabel,
-                        prefixIcon: const Icon(Icons.badge),
-                        filled: true,
-                        fillColor: _fillColor,
-                        border: _fieldBorder,
+                    _LabelledField(
+                      label: l10n.authUsernameLabel,
+                      child: TextFormField(
+                        controller: _usernameController,
+                        maxLength: AppConstants.usernameMaxLength,
+                        textCapitalization: TextCapitalization.words,
+                        validator: (v) => InputValidators.username(v ?? ''),
                       ),
-                      validator: (v) => InputValidators.username(v ?? ''),
                     ),
-                    const SizedBox(height: 12),
+                    AppSpacing.vGapMd,
                   ],
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    autofillHints: const [AutofillHints.email],
-                    decoration: InputDecoration(
-                      labelText: l10n.authEmailLabel,
-                      prefixIcon: const Icon(Icons.email),
-                      filled: true,
-                      fillColor: _fillColor,
-                      border: _fieldBorder,
+                  _LabelledField(
+                    label: l10n.authEmailLabel,
+                    child: TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      autofillHints: const [AutofillHints.email],
+                      validator: (v) => InputValidators.email(v ?? ''),
                     ),
-                    validator: (v) => InputValidators.email(v ?? ''),
                   ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: l10n.authPasswordLabel,
-                      prefixIcon: const Icon(Icons.lock),
-                      filled: true,
-                      fillColor: _fillColor,
-                      border: _fieldBorder,
-                      suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        tooltip: _obscurePassword
-                            ? l10n.a11yShowPassword
-                            : l10n.a11yHidePassword,
-                        onPressed: () => setState(
-                            () => _obscurePassword = !_obscurePassword),
+                  AppSpacing.vGapMd,
+                  _LabelledField(
+                    label: l10n.authPasswordLabel,
+                    trailing: _isRegister
+                        ? null
+                        : TextButton(
+                            onPressed: _busy ? null : _forgotPassword,
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(l10n.authForgotPassword),
+                          ),
+                    child: TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined),
+                          tooltip: _obscurePassword
+                              ? l10n.a11yShowPassword
+                              : l10n.a11yHidePassword,
+                          onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword),
+                        ),
                       ),
+                      validator: (v) => InputValidators.password(v ?? ''),
                     ),
-                    validator: (v) => InputValidators.password(v ?? ''),
                   ),
-                  if (!_isRegister)
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: TextButton(
-                        onPressed: _busy ? null : _forgotPassword,
-                        child: Text(l10n.authForgotPassword),
-                      ),
-                    ),
-                  const SizedBox(height: 12),
+                  AppSpacing.vGapLg,
                   FilledButton(
                     onPressed: _busy ? null : _submit,
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
                     child: _busy
                         ? const SizedBox(
                             width: 20,
@@ -316,7 +322,38 @@ class _AuthScreenState extends State<AuthScreen> {
                             ? l10n.authCreateAccountButton
                             : l10n.authLogInButton),
                   ),
-                  const SizedBox(height: 8),
+                  if (googleEnabled) ...[
+                    AppSpacing.vGapLg,
+                    Row(children: [
+                      const Expanded(child: Divider()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm + 4,
+                        ),
+                        child: Text(
+                          l10n.commonOr,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      const Expanded(child: Divider()),
+                    ]),
+                    AppSpacing.vGapLg,
+                    OutlinedButton.icon(
+                      onPressed: _busy ? null : _signInWithGoogle,
+                      // The real Google mark, per the comp — a generic login
+                      // glyph read as any-provider sign-in. Left un-tinted:
+                      // Google's brand guidelines require its own colours.
+                      icon: SvgPicture.asset(
+                        'assets/icons/google_icon.svg',
+                        width: 20,
+                        height: 20,
+                      ),
+                      label: Text(l10n.authContinueWithGoogle),
+                    ),
+                  ],
+                  AppSpacing.vGapLg,
                   TextButton(
                     onPressed: _busy
                         ? null
@@ -325,32 +362,50 @@ class _AuthScreenState extends State<AuthScreen> {
                         ? l10n.authToggleToLogin
                         : l10n.authToggleToRegister),
                   ),
-                  if (googleEnabled) ...[
-                    const SizedBox(height: 8),
-                    Row(children: [
-                      const Expanded(child: Divider()),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Text(l10n.commonOr),
-                      ),
-                      const Expanded(child: Divider()),
-                    ]),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: _busy ? null : _signInWithGoogle,
-                      icon: const Icon(Icons.login),
-                      label: Text(l10n.authContinueWithGoogle),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Field with its label above it, per the comp, and an optional trailing
+/// action on the label row (used for "Forgot password?").
+class _LabelledField extends StatelessWidget {
+  final String label;
+  final Widget child;
+  final Widget? trailing;
+
+  const _LabelledField({
+    required this.label,
+    required this.child,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            if (trailing != null) ...[const Spacer(), trailing!],
+          ],
+        ),
+        AppSpacing.vGapXs,
+        child,
+      ],
     );
   }
 }

@@ -9,6 +9,7 @@ import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/l10n/l10n_utils.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
@@ -99,22 +100,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.save),
+            icon: const Icon(Icons.check),
             onPressed: _saveSettings,
             tooltip: AppLocalizations.of(context)!.settingsSaveTooltip,
           ),
         ],
       ),
+      // Comp layout: uppercase muted section labels sitting on the canvas
+      // above each card, rather than an icon+title header inside every card.
       body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          AppSpacing.xl,
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildProfileSection(),
-            _buildLocationSection(),
-            _buildPrayerSettingsSection(),
-            _buildNotificationSection(),
-            _buildAppearanceSection(),
-            _buildChallengeSection(),
-            _buildAboutSection(),
+            _SettingsSection(
+              label: AppLocalizations.of(context)!.settingsProfileTitle,
+              child: _buildProfileSection(),
+            ),
+            _SettingsSection(
+              label: AppLocalizations.of(context)!.settingsLocationTitle,
+              child: _buildLocationSection(),
+            ),
+            _SettingsSection(
+              label:
+                  AppLocalizations.of(context)!.settingsPrayerSettingsTitle,
+              child: _buildPrayerSettingsSection(),
+            ),
+            _SettingsSection(
+              label: AppLocalizations.of(context)!.settingsNotificationsTitle,
+              child: _buildNotificationSection(),
+            ),
+            _SettingsSection(
+              label: AppLocalizations.of(context)!.settingsAppearanceTitle,
+              child: _buildAppearanceSection(),
+            ),
+            _SettingsSection(
+              label: AppLocalizations.of(context)!.settingsChallengeTitle,
+              child: _buildChallengeSection(),
+            ),
+            _SettingsSection(
+              label: AppLocalizations.of(context)!.settingsAboutTitle,
+              child: _buildAboutSection(),
+            ),
           ],
         ),
       ),
@@ -124,37 +156,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildProfileSection() {
     final l10n = AppLocalizations.of(context)!;
     return Card(
-      margin: const EdgeInsets.all(16),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.person,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.settingsProfileTitle,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: l10n.settingsNameLabel,
                 hintText: l10n.settingsNameHint,
                 prefixIcon: const Icon(Icons.badge),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -187,37 +199,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildLocationSection() {
     final l10n = AppLocalizations.of(context)!;
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.location_on,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.settingsLocationTitle,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
             TextField(
               controller: _locationController,
               decoration: InputDecoration(
                 labelText: l10n.onboardingLocationFieldLabel,
                 hintText: l10n.onboardingLocationFieldHint,
                 prefixIcon: const Icon(Icons.map),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -264,44 +256,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildPrayerSettingsSection() {
     final l10n = AppLocalizations.of(context)!;
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.mosque,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.settingsPrayerSettingsTitle,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
             Consumer<PrayerTimeProvider>(
               builder: (context, provider, _) {
                 return DropdownButtonFormField<int>(
                   value: provider.calculationMethod,
                   decoration: InputDecoration(
                     labelText: l10n.settingsCalculationMethodLabel,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
                   ),
                   items: _calculationMethods.entries.map((entry) {
                     return DropdownMenuItem(
                       value: entry.key,
                       child: Text(
                         entry.value,
-                        style: const TextStyle(fontSize: 14),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     );
                   }).toList(),
@@ -347,7 +319,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               .colorScheme
                               .primaryContainer
                               .withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.brSm,
                         ),
                         child: Row(
                           children: [
@@ -379,28 +351,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildNotificationSection() {
     final l10n = AppLocalizations.of(context)!;
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.notifications,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.settingsNotificationsTitle,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
             SwitchListTile(
               title: Text(l10n.settingsEnableNotifications),
               subtitle: Text(l10n.settingsEnableNotificationsSubtitle),
@@ -475,28 +430,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildAppearanceSection() {
     final l10n = AppLocalizations.of(context)!;
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.palette,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.settingsAppearanceTitle,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
             Consumer<ThemeProvider>(
               builder: (context, themeProvider, _) {
                 return Column(
@@ -642,8 +580,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         final l10n = AppLocalizations.of(context)!;
         return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Padding(
+              child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -703,28 +640,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildAboutSection() {
     final l10n = AppLocalizations.of(context)!;
     return Card(
-      margin: const EdgeInsets.all(16),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.info,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.settingsAboutTitle,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.apps),
@@ -1066,6 +986,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(l10n.settingsGotIt),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Settings group: an uppercase muted label on the canvas, then the card of
+/// rows it describes — the comp's grouping pattern.
+class _SettingsSection extends StatelessWidget {
+  final String label;
+  final Widget child;
+
+  const _SettingsSection({required this.label, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsetsDirectional.only(
+              start: AppSpacing.xs,
+              bottom: AppSpacing.sm,
+            ),
+            child: Text(
+              label.toUpperCase(),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ),
+          child,
         ],
       ),
     );

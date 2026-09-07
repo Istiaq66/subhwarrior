@@ -1,34 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/l10n/l10n_utils.dart';
 
-/// Time-of-day greeting plus the user's name at the top of the dashboard.
+/// Salam greeting with the user's name, and today's date in both calendars.
+///
+/// The comp greets with a salam rather than a time-of-day greeting, and pairs
+/// the Gregorian weekday/date with the Hijri day and month —
+/// "Monday, 7 September · 25 Safar". Both halves localize: the Gregorian side
+/// through `intl`, the Hijri side through [LocalizedHijriX], which formats the
+/// month name and digits for the active locale.
 class GreetingHeader extends StatelessWidget {
   final String userName;
 
   const GreetingHeader({super.key, required this.userName});
 
-  String _greetingFor(AppLocalizations l10n, int hour) {
-    if (hour < 12) return l10n.homeGreetingMorning;
-    if (hour < 17) return l10n.homeGreetingAfternoon;
-    return l10n.homeGreetingEvening;
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final name =
+        userName.isNotEmpty ? userName : l10n.homeGreetingFallbackName;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final now = DateTime.now();
+    final gregorian = DateFormat.MMMMEEEEd(locale).format(now);
+    final hijri = context.formatHijri(now);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Comp sizes: greeting `text-3xl` (30) bold, `mb-1`; date `text-sm`
+        // (14) medium. Both come straight from the text theme, which carries
+        // the comp's scale — headlineMedium is 30 and bodyMedium is 14.
         Text(
-          _greetingFor(l10n, DateTime.now().hour),
-          style: Theme.of(context).textTheme.headlineSmall,
+          '${l10n.homeGreetingSalam}, $name',
+          style: theme.textTheme.headlineMedium?.copyWith(
+            color: theme.colorScheme.primary,
+            height: 1.2,
+          ),
         ),
+        const SizedBox(height: 4),
         Text(
-          userName.isNotEmpty ? userName : l10n.homeGreetingFallbackName,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          '$gregorian  ·  $hijri',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ],
     );

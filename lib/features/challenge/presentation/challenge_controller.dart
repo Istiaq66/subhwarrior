@@ -91,6 +91,19 @@ class ChallengeProvider extends ChangeNotifier {
   /// Whether the user has set a real location. Do NOT infer this from
   /// `lat == 0 && lon == 0`: (0, 0) is a valid coordinate (Gulf of Guinea).
   bool get hasLocation => _data.hasLocation;
+
+  /// Whether the stored coordinates can actually be used for a prayer-times
+  /// lookup.
+  ///
+  /// Despite the note above, `0` is what the app itself writes when it has no
+  /// coordinates — `AuthScreen` calls `updateUserSettings(latitude: 0,
+  /// longitude: 0)` after sign-up, and a remote profile saved without
+  /// coordinates restores as `0.0`. So a profile can carry a real city name
+  /// alongside 0,0, and the prayer-times API rejects 0,0 with HTTP 400. This
+  /// distinguishes "we have coordinates" from "we have a location", so callers
+  /// can fall back to a city lookup instead of showing a permanent error.
+  bool get hasUsableCoordinates =>
+      _data.userLatitude != 0.0 || _data.userLongitude != 0.0;
   bool get notificationsEnabled => _data.notificationsEnabled;
   bool get fajrReminder => _data.fajrReminder;
   bool get loggingReminder => _data.loggingReminder;

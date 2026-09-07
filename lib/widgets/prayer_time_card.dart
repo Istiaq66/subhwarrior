@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/l10n/l10n_utils.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/shared/widgets/animated_odometer.dart';
 import 'package:subh_warrior/shared/widgets/error_view.dart';
@@ -43,7 +44,7 @@ class PrayerTimeCard extends StatelessWidget {
           elevation: 8,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.brLg,
               // Both stops of both gradients stay dark enough that the
               // `onPrimary` labels stacked on top clear 4.5:1. Ending the
               // brand gradient at `colorScheme.secondary` (mint) instead put
@@ -102,7 +103,7 @@ class PrayerTimeCard extends StatelessWidget {
                                 .colorScheme
                                 .onPrimary
                                 .withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: AppRadius.brFull,
                           ),
                           child: Row(
                             children: [
@@ -114,12 +115,15 @@ class PrayerTimeCard extends StatelessWidget {
                               const SizedBox(width: 6),
                               Text(
                                 l10n.prayerCardNowBadge,
-                                style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelSmall
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                             ],
                           ),
@@ -177,7 +181,7 @@ class PrayerTimeCard extends StatelessWidget {
                             .colorScheme
                             .onPrimary
                             .withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppRadius.brSm,
                       ),
                       child: Row(
                         children: [
@@ -244,19 +248,17 @@ class PrayerTimeCard extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color:
                 Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
-            fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           time,
-          style: TextStyle(
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: Theme.of(context).colorScheme.onPrimary,
-            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -281,14 +283,13 @@ class PrayerTimeCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onPrimary
-                      .withValues(alpha: 0.9),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onPrimary
+                          .withValues(alpha: 0.9),
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
               const SizedBox(height: 4),
               FittedBox(
@@ -351,9 +352,8 @@ class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
       tomorrowFajrTime: widget.tomorrowFajrTime,
       now: DateTime.now(),
     );
-    final style = TextStyle(
+    final style = Theme.of(context).textTheme.bodyLarge!.copyWith(
       color: Theme.of(context).colorScheme.onPrimary,
-      fontSize: 16,
       fontWeight: FontWeight.bold,
     );
 
@@ -361,11 +361,10 @@ class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
       children: [
         Text(
           l10n.prayerCardNextFajrIn,
-          style: TextStyle(
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: Theme.of(context).colorScheme.onPrimary.withValues(
                   alpha: 0.8,
                 ),
-            fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
         ),

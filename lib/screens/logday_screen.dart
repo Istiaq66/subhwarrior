@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/challenge/domain/log_result.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
@@ -184,7 +185,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.errorContainer,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.brSm,
       ),
       child: Row(
         children: [
@@ -295,47 +296,99 @@ class _LogDayScreenState extends State<LogDayScreen> {
     );
   }
 
+  /// Comp layout: the Fajr question as a centred heading with two large
+  /// choice tiles beneath it, then the masjid bonus as its own card.
+  ///
+  /// This replaces a pair of `SwitchListTile`s. The question is the single most
+  /// important input on the screen, and the comp gives it a deliberate
+  /// two-option commitment rather than a toggle that defaults to "no".
   Widget _buildFajrPrayerSection() {
     final l10n = AppLocalizations.of(context)!;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.todayStatusFajrPrayer,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 12),
-            SwitchListTile(
-              title: Text(l10n.logDayPrayedFajrOnTime),
-              subtitle: Text(l10n.logDayWithinWindow),
-              value: _prayedFajrOnTime,
-              onChanged: (value) {
-                setState(() {
-                  _prayedFajrOnTime = value;
-                });
-              },
-              activeColor: Theme.of(context).colorScheme.primary,
-            ),
-            if (_prayedFajrOnTime) ...[
-              const Divider(),
-              SwitchListTile(
-                title: Text(l10n.logDayPrayedAtMasjid),
-                subtitle: Text(l10n.logDayMasjidSubtitle),
-                value: _prayedAtMasjid,
-                onChanged: (value) {
-                  setState(() {
-                    _prayedAtMasjid = value;
-                  });
-                },
-                activeColor: context.appColors.success,
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.logDayPrayedFajrOnTime,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleLarge
+              ?.copyWith(color: theme.colorScheme.primary),
+        ),
+        AppSpacing.vGapSm,
+        Text(
+          l10n.logDayWithinWindow,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium
+              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
+        AppSpacing.vGapMd,
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _ChoiceTile(
+                  icon: Icons.check_circle,
+                  label: l10n.logDayExcellent,
+                  selected: _prayedFajrOnTime,
+                  onTap: () => setState(() => _prayedFajrOnTime = true),
+                ),
+              ),
+              AppSpacing.hGapMd,
+              Expanded(
+                child: _ChoiceTile(
+                  icon: Icons.cancel,
+                  label: l10n.todayStatusFajrMissed,
+                  selected: !_prayedFajrOnTime,
+                  isNegative: true,
+                  onTap: () => setState(() {
+                    _prayedFajrOnTime = false;
+                    // A missed Fajr cannot also be a masjid prayer.
+                    _prayedAtMasjid = false;
+                  }),
+                ),
               ),
             ],
-          ],
+          ),
         ),
-      ),
+        if (_prayedFajrOnTime) ...[
+          AppSpacing.vGapMd,
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md + 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.logDayPrayedAtMasjid,
+                          style: theme.textTheme.titleSmall
+                              ?.copyWith(color: theme.colorScheme.primary),
+                        ),
+                        AppSpacing.vGapXs,
+                        Text(
+                          l10n.logDayMasjidSubtitle,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  AppSpacing.hGapMd,
+                  Switch(
+                    value: _prayedAtMasjid,
+                    onChanged: (value) =>
+                        setState(() => _prayedAtMasjid = value),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -405,9 +458,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
                     Expanded(
                       child: Text(
                         l10n.logDayWorkNotQualify,
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.error,
-                          fontSize: 12,
                         ),
                       ),
                     ),
@@ -438,9 +490,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
             if (_minutesWorked < AppConstants.minDeepWorkMinutes)
               Text(
                 l10n.logDayMinimumMinutes(AppConstants.minDeepWorkMinutes),
-                style: TextStyle(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.error,
-                  fontSize: 12,
                 ),
               ),
             const SizedBox(height: 16),
@@ -529,7 +580,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
         color: isQualifying
             ? context.appColors.success.withValues(alpha: 0.1)
             : Theme.of(context).colorScheme.errorContainer,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.brMd,
         border: Border.all(
           color: isQualifying
               ? context.appColors.success
@@ -766,5 +817,71 @@ class _LogDayScreenState extends State<LogDayScreen> {
       case LogResult.success:
         return '';
     }
+  }
+}
+
+/// Large two-option choice tile from the comp: cream and outlined when
+/// unselected, filled when chosen. The negative option fills with the error
+/// colour so the two states never read as interchangeable.
+class _ChoiceTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final bool isNegative;
+  final VoidCallback onTap;
+
+  const _ChoiceTile({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.isNegative = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final fill = isNegative ? scheme.error : scheme.primary;
+    final onFill = isNegative ? scheme.onError : scheme.onPrimary;
+
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: selected ? fill : scheme.surfaceContainerLow,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadius.brLg,
+          side: BorderSide(
+            color: selected ? fill : scheme.outlineVariant,
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 30,
+                  color: selected ? onFill : scheme.onSurfaceVariant,
+                ),
+                AppSpacing.vGapSm,
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: selected ? onFill : scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

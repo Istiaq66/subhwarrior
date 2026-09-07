@@ -30,6 +30,45 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeNavLeaderboard => 'لوحة الصدارة';
 
   @override
+  String get homeGreetingSalam => 'السلام عليكم';
+
+  @override
+  String get hijriMonth1 => 'محرم';
+
+  @override
+  String get hijriMonth2 => 'صفر';
+
+  @override
+  String get hijriMonth3 => 'ربيع الأول';
+
+  @override
+  String get hijriMonth4 => 'ربيع الآخر';
+
+  @override
+  String get hijriMonth5 => 'جمادى الأولى';
+
+  @override
+  String get hijriMonth6 => 'جمادى الآخرة';
+
+  @override
+  String get hijriMonth7 => 'رجب';
+
+  @override
+  String get hijriMonth8 => 'شعبان';
+
+  @override
+  String get hijriMonth9 => 'رمضان';
+
+  @override
+  String get hijriMonth10 => 'شوال';
+
+  @override
+  String get hijriMonth11 => 'ذو القعدة';
+
+  @override
+  String get hijriMonth12 => 'ذو الحجة';
+
+  @override
   String get homeGreetingMorning => 'صباح الخير';
 
   @override
@@ -466,6 +505,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authWelcomeBackTitle => 'مرحبًا بعودتك';
+
+  @override
+  String get authTagline => 'انهض بعزيمة وابنِ روتين صباحك.';
+
+  @override
+  String get authWelcomeBackSubtitle => 'سجّل الدخول لمتابعة تقدّمك.';
+
+  @override
+  String get authCreateAccountSubtitle => 'ابدأ ببناء روتين صباحك اليوم.';
+
+  @override
+  String get splashTagline => 'امتلك صباحك';
 
   @override
   String get authUsernameLabel => 'اسم المستخدم';
