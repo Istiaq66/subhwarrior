@@ -102,8 +102,12 @@ class ChallengeProvider extends ChangeNotifier {
   /// alongside 0,0, and the prayer-times API rejects 0,0 with HTTP 400. This
   /// distinguishes "we have coordinates" from "we have a location", so callers
   /// can fall back to a city lookup instead of showing a permanent error.
-  bool get hasUsableCoordinates =>
-      _data.userLatitude != 0.0 || _data.userLongitude != 0.0;
+  /// Shared with `FajrWidgetService` via [ChallengeData.hasUsableCoordinates].
+  bool get hasUsableCoordinates => _data.hasUsableCoordinates;
+
+  /// [userLocation] split for a by-city prayer-times lookup, or null when the
+  /// stored name isn't a "City, Country" pair.
+  ({String city, String country})? get cityCountry => _data.cityCountry;
   bool get notificationsEnabled => _data.notificationsEnabled;
   bool get fajrReminder => _data.fajrReminder;
   bool get loggingReminder => _data.loggingReminder;

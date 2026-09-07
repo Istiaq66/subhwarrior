@@ -264,7 +264,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Consumer<PrayerTimeProvider>(
               builder: (context, provider, _) {
                 return DropdownButtonFormField<int>(
-                  value: provider.calculationMethod,
+                  initialValue: provider.calculationMethod,
                   decoration: InputDecoration(
                     labelText: l10n.settingsCalculationMethodLabel,
                   ),
@@ -548,18 +548,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder: (context) => SimpleDialog(
         title: Text(l10n.settingsLanguageLabel),
         children: [
-          RadioListTile<String>(
-            value: '',
+          RadioGroup<String>(
             groupValue: current,
-            title: Text(l10n.settingsLanguageSystem),
-            onChanged: (_) => select(null),
-          ),
-          ..._languageNames.entries.map(
-            (entry) => RadioListTile<String>(
-              value: entry.key,
-              groupValue: current,
-              title: Text(entry.value),
-              onChanged: (_) => select(Locale(entry.key)),
+            onChanged: (value) =>
+                select(value == null || value.isEmpty ? null : Locale(value)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                RadioListTile<String>(
+                  value: '',
+                  title: Text(l10n.settingsLanguageSystem),
+                ),
+                ..._languageNames.entries.map(
+                  (entry) => RadioListTile<String>(
+                    value: entry.key,
+                    title: Text(entry.value),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

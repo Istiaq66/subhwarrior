@@ -281,6 +281,8 @@
         android:id="@+id/fajr_widget_placeholder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:textColor="@android:color/white"
         android:textSize="13sp"
         android:text="@string/fajr_widget_placeholder"

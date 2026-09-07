@@ -61,14 +61,11 @@ class _HomeScreenState extends State<HomeScreen> {
     // city up by name is far better than fetching 0,0, which the API rejects
     // with HTTP 400 and which surfaced as a permanent "unable to load prayer
     // times" card.
-    final parts = challengeProvider.userLocation.split(',');
-    if (parts.length >= 2) {
-      final city = parts.first.trim();
-      final country = parts.sublist(1).join(',').trim();
-      if (city.isNotEmpty && country.isNotEmpty) {
-        await prayerProvider.fetchPrayerTimesByCity(city, country);
-        return;
-      }
+    final cityCountry = challengeProvider.cityCountry;
+    if (cityCountry != null) {
+      await prayerProvider.fetchPrayerTimesByCity(
+          cityCountry.city, cityCountry.country);
+      return;
     }
 
     // Only a bare name (or nothing usable) — ask the device instead.

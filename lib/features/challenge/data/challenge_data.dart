@@ -42,4 +42,28 @@ class ChallengeData {
     this.fajrReminderMinutes = AppConstants.defaultFajrReminderMinutes,
     List<DayLog>? dayLogs,
   }) : dayLogs = dayLogs ?? [];
+
+  /// Whether the stored coordinates can actually be used for a prayer-times
+  /// lookup.
+  ///
+  /// `0` is what the app itself writes when it has no coordinates —
+  /// `AuthScreen` calls `updateUserSettings(latitude: 0, longitude: 0)` after
+  /// sign-up, and a remote profile saved without coordinates restores as
+  /// `0.0`. So a profile can carry a real city name alongside 0,0, and the
+  /// prayer-times API rejects 0,0 with HTTP 400. This distinguishes "we have
+  /// coordinates" from "we have a location" so callers can fall back to a
+  /// city lookup instead of failing.
+  bool get hasUsableCoordinates => userLatitude != 0.0 || userLongitude != 0.0;
+
+  /// [userLocation] split into a city/country pair usable for a by-city
+  /// prayer-times lookup ("Mountain View, United States"), or null when the
+  /// stored name is a bare city or empty.
+  ({String city, String country})? get cityCountry {
+    final parts = userLocation.split(',');
+    if (parts.length < 2) return null;
+    final city = parts.first.trim();
+    final country = parts.sublist(1).join(',').trim();
+    if (city.isEmpty || country.isEmpty) return null;
+    return (city: city, country: country);
+  }
 }

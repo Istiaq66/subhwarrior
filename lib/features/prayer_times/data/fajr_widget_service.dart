@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../providers/locale_provider.dart';
 import '../../challenge/data/challenge_local_data_source.dart';
+import '../domain/prayer_times.dart';
 import '../presentation/prayer_times_controller.dart';
 import 'prayer_times_local_data_source.dart';
 import 'prayer_times_repository.dart';
@@ -52,7 +53,11 @@ class FajrWidgetService {
     // Never configured (onboarding not completed) — nothing to show yet.
     // Leave any previously-saved widget data untouched; the native side
     // treats "nothing ever saved" as the placeholder case.
-    if (!challengeData.hasLocation) return;
+    if (!challengeData.hasLocation) {
+      debugPrint(
+          'FajrWidgetService: no location configured yet — leaving widget as-is.');
+      return;
+    }
 
     final settings = PrayerTimesLocalDataSource(prefs).load();
     final repository = PrayerTimesRepositoryImpl.fromPrefs(prefs);
@@ -60,23 +65,44 @@ class FajrWidgetService {
     final today = DateTime.now();
     final tomorrow = today.add(const Duration(days: 1));
 
+    // Same resolution ladder HomeScreen._loadPrayerTimes uses: real
+    // coordinates when we have them, otherwise a by-city lookup off the
+    // stored location name. Fetching 0,0 — what sign-up and coordinate-less
+    // remote profiles write — is rejected with HTTP 400, which used to land
+    // in the catch below and leave the widget on its placeholder forever.
+    final cityCountry = challengeData.cityCountry;
+    if (!challengeData.hasUsableCoordinates && cityCountry == null) {
+      debugPrint('FajrWidgetService: no usable coordinates and no '
+          'city/country to fall back on — leaving widget as-is.');
+      return;
+    }
+
+    Future<PrayerTimes> fetchFor(DateTime day) =>
+        challengeData.hasUsableCoordinates
+            ? repository.fetchByCoordinates(
+                day,
+                challengeData.userLatitude,
+                challengeData.userLongitude,
+                settings,
+              )
+            : repository.fetchByCity(
+                day,
+                cityCountry!.city,
+                cityCountry.country,
+                settings,
+              );
+
     try {
-      final todayTimes = await repository.fetchByCoordinates(
-        today,
-        challengeData.userLatitude,
-        challengeData.userLongitude,
-        settings,
-      );
-      final tomorrowTimes = await repository.fetchByCoordinates(
-        tomorrow,
-        challengeData.userLatitude,
-        challengeData.userLongitude,
-        settings,
-      );
+      final todayTimes = await fetchFor(today);
+      final tomorrowTimes = await fetchFor(tomorrow);
 
       final todayFajr = _onDay(today, todayTimes.fajr);
       final tomorrowFajr = _onDay(tomorrow, tomorrowTimes.fajr);
-      if (todayFajr == null) return;
+      if (todayFajr == null) {
+        debugPrint(
+            'FajrWidgetService: unparseable Fajr time — skipping update.');
+        return;
+      }
 
       final now = DateTime.now();
       final remaining = PrayerTimeProvider.durationUntilNextFajr(
@@ -144,7 +170,8 @@ class FajrWidgetService {
       if (nextFajr != null) {
         await _scheduleNextBoundary(nextFajr);
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('FajrWidgetService: prayer-times fetch/save failed: $e');
       // Offline or API error — leave previously-saved widget data as-is,
       // same offline-tolerant contract as PrayerTimeProvider._runFetch.
     }

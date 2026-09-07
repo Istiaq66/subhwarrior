@@ -415,7 +415,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<WorkType>(
-              value: _selectedWorkType,
+              initialValue: _selectedWorkType,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 fillColor: isQualifyingWork

@@ -21,7 +21,6 @@ val keystoreProperties = Properties().apply {
 }
 val hasReleaseSigning = keystorePropertiesFile.exists()
 
-val kotlinVersion = "1.9.10"
 val flutterMinSdk: Int by extra(24)
 val flutterTargetSdk: Int by extra(36)
 val flutterVersionCode: Int by extra(1)
@@ -86,7 +85,6 @@ flutter {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation("com.google.firebase:firebase-analytics")
