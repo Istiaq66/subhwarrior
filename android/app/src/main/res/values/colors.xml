@@ -4,4 +4,9 @@
          Credential Manager / Google sign-in sheet is up). Matches the app's
          light surface so it doesn't flash black. -->
     <color name="window_background">#EAEAD9</color>
+
+    <!-- Pre-Flutter launch window. Brand primary, matching the splash screen's
+         gradient start, so the handoff to Flutter's first frame has no colour
+         jump. This used to be plain white, which flashed against the app. -->
+    <color name="launch_background">#0F5233</color>
 </resources>

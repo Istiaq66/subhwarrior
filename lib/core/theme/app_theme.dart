@@ -9,8 +9,17 @@ import 'app_typography.dart';
 abstract final class AppTheme {
   AppTheme._();
 
-  static ThemeData light() => _build(Brightness.light, AppColorsX.light);
-  static ThemeData dark() => _build(Brightness.dark, AppColorsX.dark);
+  // Built once and reused. `MaterialApp` is rebuilt whenever the theme or
+  // locale provider notifies, or the auth state changes, and each call
+  // allocates a full ThemeData: a 15-style TextTheme plus a dozen-odd
+  // sub-themes. The result is immutable and depends on nothing but the
+  // brightness, so there is no reason to rebuild it per frame.
+  static ThemeData? _light;
+  static ThemeData? _dark;
+
+  static ThemeData light() =>
+      _light ??= _build(Brightness.light, AppColorsX.light);
+  static ThemeData dark() => _dark ??= _build(Brightness.dark, AppColorsX.dark);
 
   static ThemeData _build(Brightness brightness, AppColorsX appColors) {
     final colorScheme =

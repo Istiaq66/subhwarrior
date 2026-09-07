@@ -4,4 +4,8 @@
          system Credential Manager / Google sign-in sheet is up). Matches the
          app's dark surface so it doesn't flash pure black. -->
     <color name="window_background">#121710</color>
+
+    <!-- Same brand green as light mode: the splash gradient does not change
+         between brightnesses, so neither should the window behind it. -->
+    <color name="launch_background">#0F5233</color>
 </resources>

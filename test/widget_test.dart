@@ -23,14 +23,24 @@ void main() {
       expect(find.text('Subh Warrior'), findsOneWidget);
     });
 
-    // Regression for A1: navigating away (disposing) before the 2s timer
-    // fires must not throw "Navigator in disposed context".
-    testWidgets('cancels navigation timer on dispose', (tester) async {
+    // Regression for A1: the splash used to self-navigate on a 2s timer, which
+    // could fire after disposal and throw "Navigator in disposed context". It
+    // is now a passive screen that `main.dart`'s boot gate swaps out, so
+    // disposing it early — and letting time pass — must stay silent.
+    testWidgets('is inert after disposal', (tester) async {
       await tester.pumpWidget(buildApp());
       await tester.pumpWidget(buildApp(home: const SizedBox()));
-      // Advance past the splash duration; the cancelled timer must be a no-op.
       await tester.pump(const Duration(seconds: 3));
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('offers a retry when boot fails', (tester) async {
+      var retried = false;
+      await tester.pumpWidget(buildApp(
+        home: SplashScreen(bootFailed: true, onRetry: () => retried = true),
+      ));
+      await tester.tap(find.byType(OutlinedButton));
+      expect(retried, isTrue);
     });
   });
 }

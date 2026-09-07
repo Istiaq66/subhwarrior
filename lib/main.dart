@@ -23,13 +23,37 @@ import 'package:subh_warrior/providers/theme_provider.dart';
 import 'package:subh_warrior/screens/auth_screen.dart';
 import 'package:subh_warrior/screens/onboarding_screen.dart';
 import 'package:subh_warrior/screens/settings_screen.dart';
+import 'package:subh_warrior/screens/splash_screen.dart';
 
 import 'firebase_options.dart';
+
+/// Everything the provider tree needs that depends on Firebase.
+class _Services {
+  const _Services({required this.authService, required this.analytics});
+
+  final AuthService authService;
+  final AnalyticsService analytics;
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
+  // Only SharedPreferences is awaited before the first frame — it costs a few
+  // milliseconds and the theme, locale and prayer-times providers need it.
+  //
+  // Everything else used to be awaited here too, which meant nothing was drawn
+  // until Firebase had initialized (measured at ~1.1s) and an anonymous
+  // sign-in round-trip had completed (unbounded on a slow network, and the
+  // very first launch always pays it). The user stared at the bare Android
+  // launch window for all of it. Now that work runs behind the splash screen
+  // instead — see [_AppShell].
+  final prefs = await SharedPreferences.getInstance();
+
+  runApp(SubhWarriorApp(prefs: prefs));
+}
+
+/// Firebase-dependent initialization, run after the first frame.
+Future<_Services> _bootstrap(SharedPreferences prefs) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -39,25 +63,19 @@ void main() async {
   final authService = AuthService();
   final uid = await authService.ensureSignedIn();
 
-  // Initialize analytics
   final analytics = FirebaseAnalyticsService();
   AnalyticsService.maybeInstance = analytics;
 
-  // Initialize notifications
-  NotificationService().initBackground();
-
-  // Load preferences
-  final prefs = await SharedPreferences.getInstance();
-
   await ChallengeLocalDataSource.migrateLegacyIfNeeded(prefs, uid);
 
-  await _configureFajrWidgetBackgroundFetch();
+  // Deliberately not awaited: notification channels and the widget's
+  // background-fetch registration are not needed to render, and the widget
+  // refresh does network I/O. Letting these settle in the background keeps
+  // them off the path to the first interactive frame.
+  NotificationService().initBackground();
+  unawaited(_configureFajrWidgetBackgroundFetch());
 
-  runApp(SubhWarriorApp(
-    prefs: prefs,
-    authService: authService,
-    analytics: analytics,
-  ));
+  return _Services(authService: authService, analytics: analytics);
 }
 
 /// Keeps the Android Fajr home-screen widget refreshed even when the app
@@ -107,70 +125,133 @@ void _fajrWidgetBackgroundFetchHeadlessTask(HeadlessEvent task) async {
   BackgroundFetch.finish(task.taskId);
 }
 
-class SubhWarriorApp extends StatelessWidget {
+class SubhWarriorApp extends StatefulWidget {
   final SharedPreferences prefs;
-  final AuthService authService;
-  final AnalyticsService analytics;
 
-  const SubhWarriorApp({
-    super.key,
-    required this.prefs,
-    required this.authService,
-    required this.analytics,
-  });
+  const SubhWarriorApp({super.key, required this.prefs});
+
+  @override
+  State<SubhWarriorApp> createState() => _SubhWarriorAppState();
+}
+
+class _SubhWarriorAppState extends State<SubhWarriorApp> {
+  /// Kicked off once so a rebuild never restarts boot; replaced only by an
+  /// explicit retry from the splash screen.
+  late Future<_Services> _services = _bootstrap(widget.prefs);
+
+  void _retry() => setState(() => _services = _bootstrap(widget.prefs));
 
   @override
   Widget build(BuildContext context) {
+    // Theme, locale and prayer-times providers need only SharedPreferences, so
+    // they sit above the boot gate and the splash is themed and localized like
+    // the rest of the app.
     return MultiProvider(
       providers: [
-        Provider<AuthService>.value(value: authService),
-        Provider<AnalyticsService>.value(value: analytics),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(
-            create: (_) => PrayerTimeProvider.fromPrefs(prefs)),
+            create: (_) => PrayerTimeProvider.fromPrefs(widget.prefs)),
       ],
       child: Consumer2<ThemeProvider, LocaleProvider>(
         builder: (context, themeProvider, localeProvider, _) {
-          return StreamBuilder<User?>(
-            stream: authService.authStateChanges(),
-            initialData: authService.currentUser,
+          return FutureBuilder<_Services>(
+            future: _services,
             builder: (context, snapshot) {
-              final user = snapshot.data;
-              final uid = user?.uid ?? '';
-              return ChangeNotifierProvider<ChallengeProvider>(
-                key: ValueKey(uid),
-                create: (_) => ChallengeProvider.fromPrefs(prefs,
-                    uid: uid, analytics: analytics),
-                child: MaterialApp(
-                  onGenerateTitle: (context) =>
-                      AppLocalizations.of(context)!.appTitle,
-                  debugShowCheckedModeBanner: false,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  locale: localeProvider.locale,
-                  builder: (context, child) {
-                    // Keep intl's global locale in sync so bare DateFormat /
-                    // NumberFormat calls (prayer times, dates) use the app
-                    // locale's native digits and month names.
-                    Intl.defaultLocale =
-                        Localizations.localeOf(context).toString();
-                    return child!;
-                  },
-                  theme: AppTheme.light(),
-                  darkTheme: AppTheme.dark(),
-                  themeMode: themeProvider.themeMode,
-                  home: _RootRouter(user: user),
-                  routes: {
-                    '/auth': (context) => const AuthScreen(),
-                    '/home': (context) => const HomeScreen(),
-                    '/onboarding': (context) => const OnboardingScreen(),
-                    '/settings': (context) => const SettingsScreen(),
-                  },
-                ),
+              final services = snapshot.data;
+              return _AppShell(
+                themeProvider: themeProvider,
+                localeProvider: localeProvider,
+                prefs: widget.prefs,
+                services: services,
+                error: snapshot.error,
+                onRetry: _retry,
               );
             },
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Builds the `MaterialApp`. Until [services] arrives the home is the splash
+/// screen; after that the Firebase-dependent providers wrap the real router.
+///
+/// The auth providers have to sit *above* `MaterialApp` because named routes
+/// like `/settings` read `ChallengeProvider`, so this rebuilds the whole
+/// `MaterialApp` once when boot completes — a single swap, not per-frame work.
+class _AppShell extends StatelessWidget {
+  const _AppShell({
+    required this.themeProvider,
+    required this.localeProvider,
+    required this.prefs,
+    required this.services,
+    required this.error,
+    required this.onRetry,
+  });
+
+  final ThemeProvider themeProvider;
+  final LocaleProvider localeProvider;
+  final SharedPreferences prefs;
+  final _Services? services;
+  final Object? error;
+  final VoidCallback onRetry;
+
+  MaterialApp _app({required Widget home}) {
+    return MaterialApp(
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: localeProvider.locale,
+      builder: (context, child) {
+        // Keep intl's global locale in sync so bare DateFormat /
+        // NumberFormat calls (prayer times, dates) use the app locale's
+        // native digits and month names.
+        Intl.defaultLocale = Localizations.localeOf(context).toString();
+        return child!;
+      },
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: themeProvider.themeMode,
+      home: home,
+      routes: {
+        '/auth': (context) => const AuthScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/onboarding': (context) => const OnboardingScreen(),
+        '/settings': (context) => const SettingsScreen(),
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ready = services;
+    if (ready == null) {
+      // Boot failed (no network on a first launch, Firebase misconfigured):
+      // the splash offers a retry rather than hanging on the brand mark.
+      return _app(
+        home: SplashScreen(bootFailed: error != null, onRetry: onRetry),
+      );
+    }
+
+    return MultiProvider(
+      providers: [
+        Provider<AuthService>.value(value: ready.authService),
+        Provider<AnalyticsService>.value(value: ready.analytics),
+      ],
+      child: StreamBuilder<User?>(
+        stream: ready.authService.authStateChanges(),
+        initialData: ready.authService.currentUser,
+        builder: (context, snapshot) {
+          final user = snapshot.data;
+          final uid = user?.uid ?? '';
+          return ChangeNotifierProvider<ChallengeProvider>(
+            key: ValueKey(uid),
+            create: (_) => ChallengeProvider.fromPrefs(prefs,
+                uid: uid, analytics: ready.analytics),
+            child: _app(home: _RootRouter(user: user)),
           );
         },
       ),

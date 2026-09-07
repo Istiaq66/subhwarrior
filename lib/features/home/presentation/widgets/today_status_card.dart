@@ -20,8 +20,11 @@ import 'package:subh_warrior/screens/logday_screen.dart';
 /// pending and confirmed states, so the closed and qualifying variants keep
 /// their existing copy rather than being dropped.
 ///
-/// The countdown ticks every second, mirroring [PrayerTimeCard].
-class TodayStatusCard extends StatefulWidget {
+/// The per-second tick lives in [_Countdown], not here: this card holds a
+/// 160px watermark, a 60px numeral and the action area, and rebuilding all of
+/// that once a second is wasted main-thread work when only three digits
+/// change. [PrayerTimeCard] scopes its own countdown the same way.
+class TodayStatusCard extends StatelessWidget {
   final DayLog? todayLog;
   final bool canLog;
 
@@ -30,32 +33,6 @@ class TodayStatusCard extends StatefulWidget {
     required this.todayLog,
     required this.canLog,
   });
-
-  @override
-  State<TodayStatusCard> createState() => _TodayStatusCardState();
-}
-
-class _TodayStatusCardState extends State<TodayStatusCard> {
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  /// Two digits in the active locale's numerals, so the clock does not jump
-  /// between Latin and Bengali/Arabic digits.
-  String _two(BuildContext context, int value) =>
-      context.localizeNumber(value).padLeft(2, context.localizeNumber(0));
 
   @override
   Widget build(BuildContext context) {
@@ -71,12 +48,6 @@ class _TodayStatusCardState extends State<TodayStatusCard> {
     final parts = formatted.split(' ');
     final clock = parts.first;
     final meridiem = parts.length > 1 ? parts.sublist(1).join(' ') : null;
-
-    final remaining = PrayerTimeProvider.durationUntilNextFajr(
-      todayFajrTime: prayer.todayFajrTime,
-      tomorrowFajrTime: prayer.tomorrowFajrTime,
-      now: DateTime.now(),
-    );
 
     return Card(
       child: Stack(
@@ -116,12 +87,8 @@ class _TodayStatusCardState extends State<TodayStatusCard> {
                 _FajrTime(clock: clock, meridiem: meridiem),
                 AppSpacing.vGapMd,
                 _Countdown(
-                  text: remaining == null
-                      ? l10n.prayerCardCountdownUnknown
-                      : '${_two(context, remaining.inHours)}:'
-                          '${_two(context, remaining.inMinutes.remainder(60))}:'
-                          '${_two(context, remaining.inSeconds.remainder(60))}',
-                  isClock: remaining != null,
+                  todayFajrTime: prayer.todayFajrTime,
+                  tomorrowFajrTime: prayer.tomorrowFajrTime,
                 ),
                 AppSpacing.vGapXl,
                 ..._buildAction(context),
@@ -138,7 +105,7 @@ class _TodayStatusCardState extends State<TodayStatusCard> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final log = widget.todayLog;
+    final log = todayLog;
 
     if (log != null) {
       final qualifying = log.isQualifying;
@@ -191,7 +158,7 @@ class _TodayStatusCardState extends State<TodayStatusCard> {
       ];
     }
 
-    if (widget.canLog) {
+    if (canLog) {
       return [
         FilledButton.icon(
           onPressed: () => Navigator.push(
@@ -273,16 +240,60 @@ class _FajrTime extends StatelessWidget {
   }
 }
 
-class _Countdown extends StatelessWidget {
-  final String text;
-  final bool isClock;
+/// Live countdown to the next Fajr.
+///
+/// Owns the one-second timer so the tick repaints these three digits and
+/// nothing else — the surrounding hero is rebuilt only when the prayer-times
+/// provider actually changes.
+class _Countdown extends StatefulWidget {
+  final DateTime? todayFajrTime;
+  final DateTime? tomorrowFajrTime;
 
-  const _Countdown({required this.text, required this.isClock});
+  const _Countdown({required this.todayFajrTime, required this.tomorrowFajrTime});
+
+  @override
+  State<_Countdown> createState() => _CountdownState();
+}
+
+class _CountdownState extends State<_Countdown> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  /// Two digits in the active locale's numerals, so the clock does not jump
+  /// between Latin and Bengali/Arabic digits.
+  String _two(int value) =>
+      context.localizeNumber(value).padLeft(2, context.localizeNumber(0));
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
+
+    final remaining = PrayerTimeProvider.durationUntilNextFajr(
+      todayFajrTime: widget.todayFajrTime,
+      tomorrowFajrTime: widget.tomorrowFajrTime,
+      now: DateTime.now(),
+    );
+    final isClock = remaining != null;
+    final text = remaining == null
+        ? l10n.prayerCardCountdownUnknown
+        : '${_two(remaining.inHours)}:'
+            '${_two(remaining.inMinutes.remainder(60))}:'
+            '${_two(remaining.inSeconds.remainder(60))}';
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
