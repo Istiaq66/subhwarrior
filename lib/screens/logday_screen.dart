@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/core/theme/app_snack_bars.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/challenge/domain/log_result.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
@@ -689,11 +690,9 @@ class _LogDayScreenState extends State<LogDayScreen> {
 
     // Additional validation
     if (!_wokeUpForFajr || !_stayedAwakeAfter) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.logDayMustBeAwake),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
+      context.showSnack(
+        AppLocalizations.of(context)!.logDayMustBeAwake,
+        kind: AppSnackKind.error,
       );
       return;
     }
@@ -731,11 +730,9 @@ class _LogDayScreenState extends State<LogDayScreen> {
       _showSuccessDialog(isQualifying: _isQualifyingDay);
     } else {
       HapticFeedback.vibrate();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(_logFailureMessage(result, context)),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
+      context.showSnack(
+        _logFailureMessage(result, context),
+        kind: AppSnackKind.error,
       );
     }
   }

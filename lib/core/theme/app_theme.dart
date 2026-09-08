@@ -184,10 +184,18 @@ abstract final class AppTheme {
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.brLg),
         titleTextStyle: textTheme.titleLarge,
       ),
+      // A snackbar rides on `inverseSurface`, so its label needs
+      // `onInverseSurface`. Handing it a bare `textTheme.bodyMedium` — which
+      // carries the *onSurface* ink meant for the canvas — put dark text on
+      // that dark fill and made every default snackbar near-unreadable.
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.brMd),
-        contentTextStyle: textTheme.bodyMedium,
+        backgroundColor: colorScheme.inverseSurface,
+        contentTextStyle: textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onInverseSurface,
+        ),
+        actionTextColor: colorScheme.inversePrimary,
       ),
     );
   }

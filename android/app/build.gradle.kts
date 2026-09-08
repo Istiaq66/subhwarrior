@@ -23,8 +23,6 @@ val hasReleaseSigning = keystorePropertiesFile.exists()
 
 val flutterMinSdk: Int by extra(24)
 val flutterTargetSdk: Int by extra(36)
-val flutterVersionCode: Int by extra(1)
-val flutterVersionName: String by extra("1.0.0")
 
 android {
     namespace = "com.subhwarrior.app"
@@ -35,8 +33,13 @@ android {
         applicationId = "com.subhwarrior.app"
         minSdk = flutterMinSdk
         targetSdk = flutterTargetSdk
-        versionCode = flutterVersionCode
-        versionName = flutterVersionName
+        // Sourced from pubspec.yaml's `version: <name>+<code>` — the Flutter
+        // tool writes it into android/local.properties on every build, which
+        // the Flutter Gradle plugin exposes here. These used to be hardcoded
+        // to 1 / "1.0.0", so every APK shipped as 1.0.0(1) no matter what
+        // pubspec said, on CI and locally alike.
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
 
         multiDexEnabled = true
     }

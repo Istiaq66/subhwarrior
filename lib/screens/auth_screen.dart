@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/theme/app_snack_bars.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/core/utils/input_validators.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
@@ -38,12 +39,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   void _showError(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Theme.of(context).colorScheme.error,
-      ),
-    );
+    context.showSnack(message, kind: AppSnackKind.error);
   }
 
   /// Maps Firebase/Google auth errors to friendly text.

@@ -8,7 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/l10n/l10n_utils.dart';
-import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/core/theme/app_snack_bars.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
@@ -738,11 +738,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
+        context.showSnack(
+          e.toString().replaceAll('Exception: ', ''),
+          kind: AppSnackKind.error,
         );
       }
     } finally {
@@ -779,11 +777,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!mounted) return;
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.settingsNoEmailApp(_feedbackEmail)),
-          backgroundColor: context.appColors.warning,
-        ),
+      context.showSnack(
+        l10n.settingsNoEmailApp(_feedbackEmail),
+        kind: AppSnackKind.warning,
       );
     }
   }
@@ -862,12 +858,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!
-              .onboardingErrorGettingLocation('$e')),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
+      context.showSnack(
+        AppLocalizations.of(context)!.onboardingErrorGettingLocation('$e'),
+        kind: AppSnackKind.error,
       );
     } finally {
       if (mounted) {
@@ -894,11 +887,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _saveSettings() async {
     final l10n = AppLocalizations.of(context)!;
     if (_nameController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.settingsEnterNamePrompt),
-          backgroundColor: context.appColors.warning,
-        ),
+      context.showSnack(
+        l10n.settingsEnterNamePrompt,
+        kind: AppSnackKind.warning,
       );
       return;
     }
@@ -934,22 +925,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.settingsSavedSuccess),
-            backgroundColor: context.appColors.success,
-          ),
+        context.showSnack(
+          l10n.settingsSavedSuccess,
+          kind: AppSnackKind.success,
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            duration: const Duration(seconds: 3),
-          ),
+        context.showSnack(
+          e.toString().replaceAll('Exception: ', ''),
+          kind: AppSnackKind.error,
+          duration: const Duration(seconds: 3),
         );
       }
     }

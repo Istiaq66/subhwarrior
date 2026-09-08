@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_colors.dart';
+import 'package:subh_warrior/core/theme/app_snack_bars.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
@@ -62,22 +63,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           _hasCoordinates = true;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text(AppLocalizations.of(context)!.onboardingLocationNotFound),
-            backgroundColor: context.appColors.warning,
-          ),
+        context.showSnack(
+          AppLocalizations.of(context)!.onboardingLocationNotFound,
+          kind: AppSnackKind.warning,
         );
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!
-              .onboardingErrorFindingLocation(e.toString())),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
+      context.showSnack(
+        AppLocalizations.of(context)!
+            .onboardingErrorFindingLocation(e.toString()),
+        kind: AppSnackKind.error,
       );
     }
   }
@@ -441,11 +437,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   final locationText = _locationController.text.trim();
 
                   if (locationText.isEmpty && mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(l10n.onboardingSetLocationPrompt),
-                        backgroundColor: context.appColors.warning,
-                      ),
+                    context.showSnack(
+                      l10n.onboardingSetLocationPrompt,
+                      kind: AppSnackKind.warning,
                     );
                     return;
                   }
@@ -456,11 +450,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                     // Still failed to get coordinates
                     if (!_hasCoordinates && mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.onboardingCoordinatesNotFound),
-                          backgroundColor: Theme.of(context).colorScheme.error,
-                        ),
+                      context.showSnack(
+                        l10n.onboardingCoordinatesNotFound,
+                        kind: AppSnackKind.error,
                       );
                       return;
                     }
@@ -558,12 +550,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!
-                .onboardingLocationServicesDisabled),
-            backgroundColor: context.appColors.warning,
-          ),
+        context.showSnack(
+          AppLocalizations.of(context)!.onboardingLocationServicesDisabled,
+          kind: AppSnackKind.warning,
         );
         setState(() {
           _isLoadingLocation = false;
@@ -579,12 +568,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
         if (permission == LocationPermission.denied) {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!
-                  .onboardingLocationPermissionDenied),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          context.showSnack(
+            AppLocalizations.of(context)!.onboardingLocationPermissionDenied,
+            kind: AppSnackKind.error,
           );
           setState(() {
             _isLoadingLocation = false;
@@ -595,17 +581,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
       if (permission == LocationPermission.deniedForever) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!
-                .onboardingLocationPermissionDeniedForever),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            action: SnackBarAction(
-              label: AppLocalizations.of(context)!.onboardingSettingsAction,
-              onPressed: () {
-                Geolocator.openAppSettings();
-              },
-            ),
+        context.showSnack(
+          AppLocalizations.of(context)!
+              .onboardingLocationPermissionDeniedForever,
+          kind: AppSnackKind.error,
+          action: SnackBarAction(
+            label: AppLocalizations.of(context)!.onboardingSettingsAction,
+            onPressed: () {
+              Geolocator.openAppSettings();
+            },
           ),
         );
         setState(() {
@@ -662,12 +646,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!
-              .onboardingErrorGettingLocation(e.toString())),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
+      context.showSnack(
+        AppLocalizations.of(context)!
+            .onboardingErrorGettingLocation(e.toString()),
+        kind: AppSnackKind.error,
       );
     } finally {
       if (mounted) {
@@ -697,12 +679,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            duration: const Duration(seconds: 3),
-          ),
+        context.showSnack(
+          e.toString().replaceAll('Exception: ', ''),
+          kind: AppSnackKind.error,
+          duration: const Duration(seconds: 3),
         );
       }
     }
