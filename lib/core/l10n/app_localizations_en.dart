@@ -127,6 +127,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengeCompleteRestartButton => 'Start New Challenge';
 
   @override
+  String get challengeCompleteHeadline => 'Challenge Complete';
+
+  @override
+  String challengeCompleteSubtitle(int days) {
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'You finished $daysString days of Fajr';
+  }
+
+  @override
+  String get challengeStatDaysCompleted => 'Days Completed';
+
+  @override
+  String get challengeStatBestStreak => 'Best Streak';
+
+  @override
+  String get challengeStatTotalMinutes => 'Total Minutes';
+
+  @override
+  String get challengeStatMasjidDays => 'Masjid Days';
+
+  @override
+  String get challengeCompleteShareButton => 'Share my streak';
+
+  @override
+  String weeklyProgressWeekAbbrev(int week) {
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'W$weekString';
+  }
+
+  @override
   String get todayStatusTitle => 'Today\'s Status';
 
   @override

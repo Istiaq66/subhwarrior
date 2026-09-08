@@ -61,6 +61,26 @@
     }
   },
   "challengeCompleteRestartButton": "Start New Challenge",
+  "challengeCompleteHeadline": "Challenge Complete",
+  "challengeCompleteSubtitle": "You finished {days} days of Fajr",
+  "@challengeCompleteSubtitle": {
+    "description": "Subtitle under the challenge-complete headline",
+    "placeholders": {
+      "days": { "type": "int", "format": "decimalPattern" }
+    }
+  },
+  "challengeStatDaysCompleted": "Days Completed",
+  "challengeStatBestStreak": "Best Streak",
+  "challengeStatTotalMinutes": "Total Minutes",
+  "challengeStatMasjidDays": "Masjid Days",
+  "challengeCompleteShareButton": "Share my streak",
+  "weeklyProgressWeekAbbrev": "W{week}",
+  "@weeklyProgressWeekAbbrev": {
+    "description": "Short week label on the completion screen's weekly bars",
+    "placeholders": {
+      "week": { "type": "int", "format": "decimalPattern" }
+    }
+  },
   "todayStatusTitle": "Today's Status",
   "todayStatusChipQualifying": "Qualifying ✓",
   "@todayStatusChipQualifying": {

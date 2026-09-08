@@ -255,11 +255,20 @@ class PrayerTimeCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          time,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
-            fontWeight: FontWeight.bold,
+        // The "Next Fajr In" column carries the longest string in this row
+        // ("18h 11m 43s"), which overran its third of the width and collided
+        // with its own glyphs. Scale down rather than wrap: these three
+        // columns must stay on one baseline.
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            time,
+            maxLines: 1,
+            softWrap: false,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],

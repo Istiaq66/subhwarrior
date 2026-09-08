@@ -56,12 +56,21 @@ class WeeklyProgressCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  l10n.weeklyProgressTitle,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: scheme.primary,
+                // The title and the percent chip together overran the row on
+                // a 320dp screen, where this card only gets 272dp inside its
+                // padding. The chip is fixed-width content, so the title is
+                // the part that gives.
+                Flexible(
+                  child: Text(
+                    l10n.weeklyProgressTitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: scheme.primary,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 12),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -84,17 +93,32 @@ class WeeklyProgressCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                for (final day in days)
-                  _DayChip(
-                    label: narrowDay.format(day),
-                    isToday: day == today,
-                    isFuture: day.isAfter(today),
-                    isQualifying: qualifyingDates.contains(day),
-                  ),
-              ],
+            // Seven fixed 40dp circles exactly filled the row on a 360dp
+            // phone and overflowed below that, so the chips sat edge to edge
+            // with no breathing room. Size them from the width this card
+            // actually gets instead, keeping a real gap between them.
+            LayoutBuilder(
+              builder: (context, constraints) {
+                const gap = 8.0;
+                final diameter =
+                    ((constraints.maxWidth - gap * (_daysPerWeek - 1)) /
+                            _daysPerWeek)
+                        .clamp(24.0, 40.0);
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    for (final day in days)
+                      _DayChip(
+                        label: narrowDay.format(day),
+                        diameter: diameter,
+                        isToday: day == today,
+                        isFuture: day.isAfter(today),
+                        isQualifying: qualifyingDates.contains(day),
+                      ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 24),
             ClipRRect(
@@ -115,12 +139,14 @@ class WeeklyProgressCard extends StatelessWidget {
 
 class _DayChip extends StatelessWidget {
   final String label;
+  final double diameter;
   final bool isToday;
   final bool isFuture;
   final bool isQualifying;
 
   const _DayChip({
     required this.label,
+    required this.diameter,
     required this.isToday,
     required this.isFuture,
     required this.isQualifying,
@@ -131,19 +157,26 @@ class _DayChip extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
+    // Glyph and dot scale with the circle so a shrunken chip keeps its
+    // proportions instead of a full-size icon crowding a smaller disc.
+    final glyphSize = diameter * 0.4;
+    final dotSize = diameter * 0.2;
+
     late final Widget circle;
     if (isQualifying) {
       circle = _Circle(
+        diameter: diameter,
         color: scheme.primary,
-        child: Icon(Icons.check, size: 16, color: scheme.onPrimary),
+        child: Icon(Icons.check, size: glyphSize, color: scheme.onPrimary),
       );
     } else if (isToday) {
       circle = _Circle(
+        diameter: diameter,
         color: scheme.surface,
         border: Border.all(color: scheme.primary, width: 2),
         child: Container(
-          width: 8,
-          height: 8,
+          width: dotSize,
+          height: dotSize,
           decoration: BoxDecoration(
             color: scheme.primary,
             shape: BoxShape.circle,
@@ -151,11 +184,19 @@ class _DayChip extends StatelessWidget {
         ),
       );
     } else if (isFuture) {
-      circle = _Circle(color: scheme.outlineVariant.withValues(alpha: 0.5));
+      circle = _Circle(
+        diameter: diameter,
+        color: scheme.outlineVariant.withValues(alpha: 0.5),
+      );
     } else {
       circle = _Circle(
+        diameter: diameter,
         color: scheme.outlineVariant.withValues(alpha: 0.5),
-        child: Icon(Icons.close, size: 14, color: scheme.onSurfaceVariant),
+        child: Icon(
+          Icons.close,
+          size: glyphSize * 0.875,
+          color: scheme.onSurfaceVariant,
+        ),
       );
     }
 
@@ -176,17 +217,23 @@ class _DayChip extends StatelessWidget {
 }
 
 class _Circle extends StatelessWidget {
+  final double diameter;
   final Color color;
   final BoxBorder? border;
   final Widget? child;
 
-  const _Circle({required this.color, this.border, this.child});
+  const _Circle({
+    required this.diameter,
+    required this.color,
+    this.border,
+    this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 40,
-      height: 40,
+      width: diameter,
+      height: diameter,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: color,

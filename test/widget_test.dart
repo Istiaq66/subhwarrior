@@ -23,6 +23,20 @@ void main() {
       expect(find.text('Subh Warrior'), findsOneWidget);
     });
 
+    // The mark is the launcher icon itself, not a stand-in glyph — this used
+    // to be `Icon(Icons.mosque)`. The splash only shows while Firebase boots,
+    // so it is easy to miss by eye on a fast device.
+    testWidgets('shows the app mark, not an icon glyph', (tester) async {
+      await tester.pumpWidget(buildApp());
+
+      final image = tester.widget<Image>(find.byType(Image));
+      expect(
+        (image.image as AssetImage).assetName,
+        'assets/icons/app_logo.png',
+      );
+      expect(find.byIcon(Icons.mosque), findsNothing);
+    });
+
     // Regression for A1: the splash used to self-navigate on a 2s timer, which
     // could fire after disposal and throw "Navigator in disposed context". It
     // is now a passive screen that `main.dart`'s boot gate swaps out, so

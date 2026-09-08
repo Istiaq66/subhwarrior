@@ -127,6 +127,42 @@ class AppLocalizationsUr extends AppLocalizations {
   String get challengeCompleteRestartButton => 'نیا چیلنج شروع کریں';
 
   @override
+  String get challengeCompleteHeadline => 'چیلنج مکمل';
+
+  @override
+  String challengeCompleteSubtitle(int days) {
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'آپ نے $daysString دن فجر مکمل کی';
+  }
+
+  @override
+  String get challengeStatDaysCompleted => 'مکمل دن';
+
+  @override
+  String get challengeStatBestStreak => 'بہترین تسلسل';
+
+  @override
+  String get challengeStatTotalMinutes => 'کل منٹ';
+
+  @override
+  String get challengeStatMasjidDays => 'مسجد کے دن';
+
+  @override
+  String get challengeCompleteShareButton => 'میرا تسلسل شیئر کریں';
+
+  @override
+  String weeklyProgressWeekAbbrev(int week) {
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'ہ$weekString';
+  }
+
+  @override
   String get todayStatusTitle => 'آج کی صورتحال';
 
   @override

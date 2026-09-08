@@ -88,10 +88,10 @@ class _SplashScreenState extends State<SplashScreen>
                             color: onGradient.withValues(alpha: 0.12),
                           ),
                           alignment: Alignment.center,
-                          child: Icon(
-                            Icons.mosque,
-                            size: 72,
-                            color: onGradient,
+                          child: Image.asset(
+                            'assets/icons/app_logo.png',
+                            width: 72,
+                            height: 72,
                           ),
                         ),
                         AppSpacing.vGapXl,

@@ -3,22 +3,31 @@ import 'package:flutter/material.dart';
 /// App text theme, matching the design system: Plus Jakarta Sans for display,
 /// headline and title levels, Noto Sans for body and label levels.
 ///
-/// Sizes come from the comps, which are built on Tailwind's type scale
+/// Sizes started from the comps, which are built on Tailwind's type scale
 /// (`text-xs` 12 → `text-6xl` 60) at a 390pt viewport, so those values map
 /// 1:1 onto Flutter logical pixels. The Material 3 defaults are noticeably
 /// larger than that scale, so each role is pinned here rather than inherited —
 /// this is what keeps every screen on one type system instead of each widget
 /// hard-coding its own `fontSize`.
 ///
-/// | role          | comp token   | px |
-/// |---------------|--------------|----|
-/// | displayLarge  | `text-6xl`   | 60 |
-/// | displayMedium | `text-5xl`   | 48 |
-/// | displaySmall  | `text-4xl`   | 36 |
-/// | headline*     | `text-3xl/2xl` | 30/24 |
-/// | titleLarge    | `text-xl`    | 20 |
-/// | titleMedium   | `text-lg`    | 18 |
-/// | body/label    | `text-base/sm/xs` | 16/14/12 |
+/// The display and headline tiers now sit one step below the comp tokens.
+/// Checked on device, the comp values read oversized: the Fajr hero at 60
+/// nearly spanned the card with its meridiem, and the greeting at 30 wrapped
+/// onto two lines for an ordinary name. Body, label and title tiers are
+/// untouched — only the top of the ramp was compressed, so the hierarchy
+/// between levels is unchanged.
+///
+/// | role          | comp token   | comp px | here |
+/// |---------------|--------------|---------|------|
+/// | displayLarge  | `text-6xl`   | 60      | 48   |
+/// | displayMedium | `text-5xl`   | 48      | 40   |
+/// | displaySmall  | `text-4xl`   | 36      | 32   |
+/// | headlineLarge | `text-4xl`   | 36      | 30   |
+/// | headlineMedium| `text-3xl`   | 30      | 26   |
+/// | headlineSmall | `text-2xl`   | 24      | 24   |
+/// | titleLarge    | `text-xl`    | 20      | 20   |
+/// | titleMedium   | `text-lg`    | 18      | 18   |
+/// | body/label    | `text-base/sm/xs` | 16/14/12 | same |
 ///
 /// Both families are bundled as variable fonts (see `pubspec.yaml`), so each
 /// style sets `fontVariations` alongside `fontWeight`. `fontWeight` alone is
@@ -73,13 +82,13 @@ abstract final class AppTypography {
 
   static TextTheme apply(TextTheme base) {
     return base.copyWith(
-      // Display — the big numerals: Fajr time (6xl) and streak count (5xl).
-      displayLarge: _display(base.displayLarge, 60, FontWeight.bold),
-      displayMedium: _display(base.displayMedium, 48, FontWeight.bold),
-      displaySmall: _display(base.displaySmall, 36, FontWeight.bold),
+      // Display — the big numerals: Fajr time and streak count.
+      displayLarge: _display(base.displayLarge, 48, FontWeight.bold),
+      displayMedium: _display(base.displayMedium, 40, FontWeight.bold),
+      displaySmall: _display(base.displaySmall, 32, FontWeight.bold),
       // Headline — screen titles and greetings.
-      headlineLarge: _display(base.headlineLarge, 36, FontWeight.bold),
-      headlineMedium: _display(base.headlineMedium, 30, FontWeight.bold),
+      headlineLarge: _display(base.headlineLarge, 30, FontWeight.bold),
+      headlineMedium: _display(base.headlineMedium, 26, FontWeight.bold),
       headlineSmall: _display(base.headlineSmall, 24, FontWeight.bold),
       // Title — card and section headers, semibold in the comps.
       titleLarge: _display(base.titleLarge, 20, FontWeight.w600,

@@ -128,6 +128,42 @@ class AppLocalizationsBn extends AppLocalizations {
   String get challengeCompleteRestartButton => 'নতুন চ্যালেঞ্জ শুরু করুন';
 
   @override
+  String get challengeCompleteHeadline => 'চ্যালেঞ্জ সম্পন্ন';
+
+  @override
+  String challengeCompleteSubtitle(int days) {
+    final intl.NumberFormat daysNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'আপনি $daysString দিন ফজর সম্পন্ন করেছেন';
+  }
+
+  @override
+  String get challengeStatDaysCompleted => 'সম্পন্ন দিন';
+
+  @override
+  String get challengeStatBestStreak => 'সর্বোচ্চ ধারা';
+
+  @override
+  String get challengeStatTotalMinutes => 'মোট মিনিট';
+
+  @override
+  String get challengeStatMasjidDays => 'মসজিদের দিন';
+
+  @override
+  String get challengeCompleteShareButton => 'আমার ধারা শেয়ার করুন';
+
+  @override
+  String weeklyProgressWeekAbbrev(int week) {
+    final intl.NumberFormat weekNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String weekString = weekNumberFormat.format(week);
+
+    return 'স$weekString';
+  }
+
+  @override
   String get todayStatusTitle => 'আজকের অবস্থা';
 
   @override

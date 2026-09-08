@@ -289,6 +289,54 @@ abstract class AppLocalizations {
   /// **'Start New Challenge'**
   String get challengeCompleteRestartButton;
 
+  /// No description provided for @challengeCompleteHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge Complete'**
+  String get challengeCompleteHeadline;
+
+  /// Subtitle under the challenge-complete headline
+  ///
+  /// In en, this message translates to:
+  /// **'You finished {days} days of Fajr'**
+  String challengeCompleteSubtitle(int days);
+
+  /// No description provided for @challengeStatDaysCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Days Completed'**
+  String get challengeStatDaysCompleted;
+
+  /// No description provided for @challengeStatBestStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Best Streak'**
+  String get challengeStatBestStreak;
+
+  /// No description provided for @challengeStatTotalMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Minutes'**
+  String get challengeStatTotalMinutes;
+
+  /// No description provided for @challengeStatMasjidDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Masjid Days'**
+  String get challengeStatMasjidDays;
+
+  /// No description provided for @challengeCompleteShareButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Share my streak'**
+  String get challengeCompleteShareButton;
+
+  /// Short week label on the completion screen's weekly bars
+  ///
+  /// In en, this message translates to:
+  /// **'W{week}'**
+  String weeklyProgressWeekAbbrev(int week);
+
   /// No description provided for @todayStatusTitle.
   ///
   /// In en, this message translates to:

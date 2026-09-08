@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
+import 'package:subh_warrior/features/challenge/domain/challenge_stats.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/leaderboard/presentation/leaderboard_screen.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
@@ -150,9 +151,10 @@ class _HomeScreenState extends State<HomeScreen> {
             if (provider.hasUnseenCompletion) {
               return ChallengeCompletionView(
                 goalMet: provider.challengeGoalMet,
-                finalStreak: provider.currentStreak,
-                totalQualifyingDays: provider.totalQualifyingDays,
-                currentWeek: provider.currentWeek,
+                stats: ChallengeStats.fromLogs(
+                  provider.dayLogs,
+                  challengeStartDate: provider.challengeStartDate,
+                ),
                 onShare: () => showShareSheet(
                   context,
                   currentStreak: provider.currentStreak,
