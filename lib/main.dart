@@ -52,8 +52,16 @@ void main() async {
   runApp(SubhWarriorApp(prefs: prefs));
 }
 
+/// How long boot will wait on the prayer-times refresh before handing over to
+/// Home regardless. The fetch itself carries on in the background — this only
+/// bounds how much of it the splash is allowed to cover.
+const Duration _prayerRefreshBootBudget = Duration(seconds: 2);
+
 /// Firebase-dependent initialization, run after the first frame.
-Future<_Services> _bootstrap(SharedPreferences prefs) async {
+Future<_Services> _bootstrap(
+  SharedPreferences prefs,
+  PrayerTimeProvider prayerProvider,
+) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -75,7 +83,45 @@ Future<_Services> _bootstrap(SharedPreferences prefs) async {
   NotificationService().initBackground();
   unawaited(_configureFajrWidgetBackgroundFetch());
 
+  await _refreshPrayerTimesWithinBudget(prefs, uid, prayerProvider);
+
   return _Services(authService: authService, analytics: analytics);
+}
+
+/// Starts the prayer-times refresh while the splash is still up, then stops
+/// waiting after [_prayerRefreshBootBudget].
+///
+/// Startup must not depend on the network, so this is capped rather than
+/// awaited: `timeout` gives up on *waiting*, not on the request, so a slow
+/// fetch keeps going and lands in the provider once Home is already up. A
+/// returning user usually has today's cache hydrated by then anyway; this
+/// mainly buys a first-launch user a populated Home when the network is quick.
+///
+/// The profile is read straight from prefs — the same uid-namespaced read
+/// `FajrWidgetService` does — because `ChallengeProvider` does not exist yet
+/// this early. Device location is deliberately not consulted: no permission
+/// dialog belongs over a splash screen.
+Future<void> _refreshPrayerTimesWithinBudget(
+  SharedPreferences prefs,
+  String uid,
+  PrayerTimeProvider prayerProvider,
+) async {
+  try {
+    final challengeData = ChallengeLocalDataSource(prefs, uid: uid).load();
+    final refresh = prayerProvider.loadForProfile(
+      hasLocation: challengeData.hasLocation,
+      hasUsableCoordinates: challengeData.hasUsableCoordinates,
+      latitude: challengeData.userLatitude,
+      longitude: challengeData.userLongitude,
+      cityCountry: challengeData.cityCountry,
+      allowDeviceLocation: false,
+    );
+    await refresh.timeout(_prayerRefreshBootBudget, onTimeout: () {});
+  } catch (e) {
+    // Boot must survive a failed prayer-times refresh: Home renders from
+    // cache (or its own loading state) and retries there.
+    debugPrint('Boot prayer-times refresh skipped: $e');
+  }
 }
 
 /// Keeps the Android Fajr home-screen widget refreshed even when the app
@@ -137,9 +183,21 @@ class SubhWarriorApp extends StatefulWidget {
 class _SubhWarriorAppState extends State<SubhWarriorApp> {
   /// Kicked off once so a rebuild never restarts boot; replaced only by an
   /// explicit retry from the splash screen.
-  late Future<_Services> _services = _bootstrap(widget.prefs);
+  /// Built here rather than inside the provider tree so [_bootstrap] can start
+  /// its prayer-times refresh against the very instance the UI will read.
+  late final PrayerTimeProvider _prayerProvider =
+      PrayerTimeProvider.fromPrefs(widget.prefs);
 
-  void _retry() => setState(() => _services = _bootstrap(widget.prefs));
+  late Future<_Services> _services = _bootstrap(widget.prefs, _prayerProvider);
+
+  void _retry() =>
+      setState(() => _services = _bootstrap(widget.prefs, _prayerProvider));
+
+  @override
+  void dispose() {
+    _prayerProvider.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,8 +208,10 @@ class _SubhWarriorAppState extends State<SubhWarriorApp> {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
-        ChangeNotifierProvider(
-            create: (_) => PrayerTimeProvider.fromPrefs(widget.prefs)),
+        // `.value`: this state owns the instance (and disposes it) so boot can
+        // warm it before the tree mounts.
+        ChangeNotifierProvider<PrayerTimeProvider>.value(
+            value: _prayerProvider),
       ],
       child: Consumer2<ThemeProvider, LocaleProvider>(
         builder: (context, themeProvider, localeProvider, _) {

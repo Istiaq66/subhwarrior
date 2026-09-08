@@ -43,34 +43,25 @@ class _HomeScreenState extends State<HomeScreen> {
     _setupNotifications();
   }
 
+  /// Revalidates prayer times for the stored profile.
+  ///
+  /// The resolution ladder itself lives on [PrayerTimeProvider.loadForProfile]
+  /// because app startup runs the same one; this is the path that may fall
+  /// through to a device-location request, since Home is where the user has
+  /// the context for a permission prompt. If the provider already hydrated
+  /// today's times from its cache, this refreshes them underneath what is
+  /// already on screen.
   Future<void> _loadPrayerTimes() async {
     final challengeProvider = context.read<ChallengeProvider>();
     final prayerProvider = context.read<PrayerTimeProvider>();
 
-    if (!challengeProvider.hasLocation) return;
-
-    if (challengeProvider.hasUsableCoordinates) {
-      await prayerProvider.fetchPrayerTimes(
-        challengeProvider.userLatitude,
-        challengeProvider.userLongitude,
-      );
-      return;
-    }
-
-    // Profile has a location name but no coordinates (sign-up writes 0,0, and
-    // remote profiles saved without coordinates restore as 0,0). Looking the
-    // city up by name is far better than fetching 0,0, which the API rejects
-    // with HTTP 400 and which surfaced as a permanent "unable to load prayer
-    // times" card.
-    final cityCountry = challengeProvider.cityCountry;
-    if (cityCountry != null) {
-      await prayerProvider.fetchPrayerTimesByCity(
-          cityCountry.city, cityCountry.country);
-      return;
-    }
-
-    // Only a bare name (or nothing usable) — ask the device instead.
-    await prayerProvider.fetchPrayerTimesForCurrentLocation();
+    await prayerProvider.loadForProfile(
+      hasLocation: challengeProvider.hasLocation,
+      hasUsableCoordinates: challengeProvider.hasUsableCoordinates,
+      latitude: challengeProvider.userLatitude,
+      longitude: challengeProvider.userLongitude,
+      cityCountry: challengeProvider.cityCountry,
+    );
   }
 
   Future<void> _setupNotifications() async {

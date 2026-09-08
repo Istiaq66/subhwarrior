@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../domain/cached_prayer_times.dart';
 import '../domain/prayer_settings.dart';
 import '../domain/prayer_times.dart';
 import 'location_data_source.dart';
@@ -28,6 +29,12 @@ abstract class PrayerTimesRepository {
 
   PrayerSettings loadSettings();
   Future<void> saveSettings(PrayerSettings settings);
+
+  /// Last successfully fetched times, or null when none are stored. Read
+  /// synchronously so the controller can hydrate in its constructor, the same
+  /// way [loadSettings] does.
+  CachedPrayerTimes? loadCachedTimes();
+  Future<void> saveCachedTimes(CachedPrayerTimes cache);
 }
 
 class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
@@ -82,4 +89,11 @@ class PrayerTimesRepositoryImpl implements PrayerTimesRepository {
 
   @override
   Future<void> saveSettings(PrayerSettings settings) => _local.save(settings);
+
+  @override
+  CachedPrayerTimes? loadCachedTimes() => _local.loadCache();
+
+  @override
+  Future<void> saveCachedTimes(CachedPrayerTimes cache) =>
+      _local.saveCache(cache);
 }

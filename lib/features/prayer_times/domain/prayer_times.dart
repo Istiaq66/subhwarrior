@@ -39,4 +39,31 @@ class PrayerTimes {
       midnight: cleanTime(json['Midnight'] ?? '00:00'),
     );
   }
+
+  /// Round-trip form for the local cache. Deliberately separate from
+  /// [PrayerTimes.fromJson], which parses the Aladhan payload (capitalised
+  /// keys, timezone suffixes) — cached values are already cleaned.
+  Map<String, dynamic> toCacheMap() => {
+        'fajr': fajr,
+        'sunrise': sunrise,
+        'dhuhr': dhuhr,
+        'asr': asr,
+        'sunset': sunset,
+        'maghrib': maghrib,
+        'isha': isha,
+        'imsak': imsak,
+        'midnight': midnight,
+      };
+
+  factory PrayerTimes.fromCacheMap(Map<String, dynamic> map) => PrayerTimes(
+        fajr: map['fajr'] as String? ?? '00:00',
+        sunrise: map['sunrise'] as String? ?? '00:00',
+        dhuhr: map['dhuhr'] as String? ?? '00:00',
+        asr: map['asr'] as String? ?? '00:00',
+        sunset: map['sunset'] as String? ?? '00:00',
+        maghrib: map['maghrib'] as String? ?? '00:00',
+        isha: map['isha'] as String? ?? '00:00',
+        imsak: map['imsak'] as String? ?? '00:00',
+        midnight: map['midnight'] as String? ?? '00:00',
+      );
 }
