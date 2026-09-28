@@ -91,12 +91,10 @@ abstract final class AppTypography {
       headlineMedium: _display(base.headlineMedium, 26, FontWeight.bold),
       headlineSmall: _display(base.headlineSmall, 24, FontWeight.bold),
       // Title — card and section headers, semibold in the comps.
-      titleLarge: _display(base.titleLarge, 20, FontWeight.w600,
-          height: _snug),
-      titleMedium: _display(base.titleMedium, 18, FontWeight.w600,
-          height: _snug),
-      titleSmall: _display(base.titleSmall, 16, FontWeight.w600,
-          height: _snug),
+      titleLarge: _display(base.titleLarge, 20, FontWeight.w600, height: _snug),
+      titleMedium:
+          _display(base.titleMedium, 18, FontWeight.w600, height: _snug),
+      titleSmall: _display(base.titleSmall, 16, FontWeight.w600, height: _snug),
       // Body — Noto Sans, regular.
       bodyLarge: _body(base.bodyLarge, 16, FontWeight.w400),
       bodyMedium: _body(base.bodyMedium, 14, FontWeight.w400),

@@ -643,9 +643,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
-  String get settingsSaveTooltip => 'Save Settings';
-
-  @override
   String get settingsDoneAction => 'Done';
 
   @override
@@ -680,6 +677,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsLocationTitle => 'Location';
+
+  @override
+  String get settingsLocationServicesOff =>
+      'Location is turned off. Turn it on to detect your city.';
+
+  @override
+  String get settingsLocationTurnOnAction => 'Turn on';
+
+  @override
+  String get settingsLocationPermissionDenied =>
+      'Location access is needed to detect your city and prayer times.';
+
+  @override
+  String get settingsLocationPermissionBlockedAndroid =>
+      'Location access is blocked. In app settings tap Permissions › Location, then Allow.';
+
+  @override
+  String get settingsLocationPermissionBlockedIos =>
+      'Location access is blocked. In app settings tap Location, then While Using the App.';
+
+  @override
+  String get settingsLocationOpenSettingsAction => 'Open settings';
+
+  @override
+  String get settingsLocationFailed =>
+      'Couldn\'t detect your location. Try again, or type your city above.';
 
   @override
   String settingsCoordinates(String latitude, String longitude) {

@@ -640,9 +640,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsTitle => 'الإعدادات';
 
   @override
-  String get settingsSaveTooltip => 'حفظ الإعدادات';
-
-  @override
   String get settingsDoneAction => 'تم';
 
   @override
@@ -677,6 +674,32 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsLocationTitle => 'الموقع';
+
+  @override
+  String get settingsLocationServicesOff =>
+      'خدمة الموقع متوقفة. فعّلها لتحديد مدينتك.';
+
+  @override
+  String get settingsLocationTurnOnAction => 'تفعيل';
+
+  @override
+  String get settingsLocationPermissionDenied =>
+      'نحتاج إذن الموقع لتحديد مدينتك وأوقات الصلاة.';
+
+  @override
+  String get settingsLocationPermissionBlockedAndroid =>
+      'إذن الموقع محظور. في إعدادات التطبيق افتح الأذونات ثم الموقع واختر السماح.';
+
+  @override
+  String get settingsLocationPermissionBlockedIos =>
+      'إذن الموقع محظور. في إعدادات التطبيق افتح الموقع واختر أثناء استخدام التطبيق.';
+
+  @override
+  String get settingsLocationOpenSettingsAction => 'فتح الإعدادات';
+
+  @override
+  String get settingsLocationFailed =>
+      'تعذّر تحديد موقعك. أعد المحاولة أو اكتب اسم مدينتك بالأعلى.';
 
   @override
   String settingsCoordinates(String latitude, String longitude) {

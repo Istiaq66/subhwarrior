@@ -1088,12 +1088,6 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settingsTitle;
 
-  /// No description provided for @settingsSaveTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Save Settings'**
-  String get settingsSaveTooltip;
-
   /// No description provided for @settingsDoneAction.
   ///
   /// In en, this message translates to:
@@ -1147,6 +1141,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location'**
   String get settingsLocationTitle;
+
+  /// No description provided for @settingsLocationServicesOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is turned off. Turn it on to detect your city.'**
+  String get settingsLocationServicesOff;
+
+  /// No description provided for @settingsLocationTurnOnAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on'**
+  String get settingsLocationTurnOnAction;
+
+  /// No description provided for @settingsLocationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is needed to detect your city and prayer times.'**
+  String get settingsLocationPermissionDenied;
+
+  /// No description provided for @settingsLocationPermissionBlockedAndroid.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is blocked. In app settings tap Permissions › Location, then Allow.'**
+  String get settingsLocationPermissionBlockedAndroid;
+
+  /// No description provided for @settingsLocationPermissionBlockedIos.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is blocked. In app settings tap Location, then While Using the App.'**
+  String get settingsLocationPermissionBlockedIos;
+
+  /// No description provided for @settingsLocationOpenSettingsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get settingsLocationOpenSettingsAction;
+
+  /// No description provided for @settingsLocationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t detect your location. Try again, or type your city above.'**
+  String get settingsLocationFailed;
 
   /// Saved coordinates shown below the location field; latitude/longitude are formatted decimal strings
   ///

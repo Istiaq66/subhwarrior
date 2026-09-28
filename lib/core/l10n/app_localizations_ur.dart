@@ -642,9 +642,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get settingsTitle => 'سیٹنگز';
 
   @override
-  String get settingsSaveTooltip => 'سیٹنگز محفوظ کریں';
-
-  @override
   String get settingsDoneAction => 'مکمل';
 
   @override
@@ -679,6 +676,32 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get settingsLocationTitle => 'مقام';
+
+  @override
+  String get settingsLocationServicesOff =>
+      'لوکیشن بند ہے۔ اپنا شہر معلوم کرنے کے لیے اسے آن کریں۔';
+
+  @override
+  String get settingsLocationTurnOnAction => 'آن کریں';
+
+  @override
+  String get settingsLocationPermissionDenied =>
+      'آپ کا شہر اور نماز کے اوقات معلوم کرنے کے لیے لوکیشن کی اجازت درکار ہے۔';
+
+  @override
+  String get settingsLocationPermissionBlockedAndroid =>
+      'لوکیشن کی اجازت بلاک ہے۔ ایپ سیٹنگز میں Permissions پھر Location کھول کر Allow منتخب کریں۔';
+
+  @override
+  String get settingsLocationPermissionBlockedIos =>
+      'لوکیشن کی اجازت بلاک ہے۔ ایپ سیٹنگز میں Location کھول کر While Using the App منتخب کریں۔';
+
+  @override
+  String get settingsLocationOpenSettingsAction => 'سیٹنگز کھولیں';
+
+  @override
+  String get settingsLocationFailed =>
+      'آپ کی لوکیشن معلوم نہیں ہو سکی۔ دوبارہ کوشش کریں یا اوپر اپنا شہر لکھیں۔';
 
   @override
   String settingsCoordinates(String latitude, String longitude) {

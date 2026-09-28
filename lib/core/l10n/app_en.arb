@@ -396,7 +396,6 @@
     }
   },
   "settingsTitle": "Settings",
-  "settingsSaveTooltip": "Save Settings",
   "settingsDoneAction": "Done",
   "settingsProfileTitle": "Profile",
   "settingsNameLabel": "Your Name",
@@ -419,6 +418,13 @@
     }
   },
   "settingsLocationTitle": "Location",
+  "settingsLocationServicesOff": "Location is turned off. Turn it on to detect your city.",
+  "settingsLocationTurnOnAction": "Turn on",
+  "settingsLocationPermissionDenied": "Location access is needed to detect your city and prayer times.",
+  "settingsLocationPermissionBlockedAndroid": "Location access is blocked. In app settings tap Permissions › Location, then Allow.",
+  "settingsLocationPermissionBlockedIos": "Location access is blocked. In app settings tap Location, then While Using the App.",
+  "settingsLocationOpenSettingsAction": "Open settings",
+  "settingsLocationFailed": "Couldn't detect your location. Try again, or type your city above.",
   "settingsCoordinates": "Coordinates: {latitude}, {longitude}",
   "@settingsCoordinates": {
     "description": "Saved coordinates shown below the location field; latitude/longitude are formatted decimal strings",

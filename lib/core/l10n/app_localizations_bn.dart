@@ -646,9 +646,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get settingsTitle => 'সেটিংস';
 
   @override
-  String get settingsSaveTooltip => 'সেটিংস সংরক্ষণ করুন';
-
-  @override
   String get settingsDoneAction => 'সম্পন্ন';
 
   @override
@@ -683,6 +680,32 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get settingsLocationTitle => 'অবস্থান';
+
+  @override
+  String get settingsLocationServicesOff =>
+      'লোকেশন বন্ধ আছে। আপনার শহর শনাক্ত করতে এটি চালু করুন।';
+
+  @override
+  String get settingsLocationTurnOnAction => 'চালু করুন';
+
+  @override
+  String get settingsLocationPermissionDenied =>
+      'আপনার শহর ও নামাযের সময় শনাক্ত করতে লোকেশন অনুমতি প্রয়োজন।';
+
+  @override
+  String get settingsLocationPermissionBlockedAndroid =>
+      'লোকেশন অনুমতি বন্ধ করা আছে। অ্যাপ সেটিংসে Permissions › Location খুলে Allow দিন।';
+
+  @override
+  String get settingsLocationPermissionBlockedIos =>
+      'লোকেশন অনুমতি বন্ধ করা আছে। অ্যাপ সেটিংসে Location খুলে While Using the App বেছে নিন।';
+
+  @override
+  String get settingsLocationOpenSettingsAction => 'সেটিংস খুলুন';
+
+  @override
+  String get settingsLocationFailed =>
+      'লোকেশন শনাক্ত করা যায়নি। আবার চেষ্টা করুন, অথবা উপরে আপনার শহর লিখুন।';
 
   @override
   String settingsCoordinates(String latitude, String longitude) {
