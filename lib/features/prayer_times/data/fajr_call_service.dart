@@ -106,6 +106,51 @@ class FajrCallService {
     );
   }
 
+  /// Books the next day's call from the background isolate.
+  ///
+  /// The stored instant is the one that just rang, so the next is a day later;
+  /// the app corrects it to the real Fajr time on its next launch, when actual
+  /// prayer times are available. Drifting by the minute-or-two Fajr moves in a
+  /// day beats not ringing at all.
+  static Future<void> rescheduleNextFromAlarm(SharedPreferences prefs) async {
+    if (!_isSupported) return;
+
+    final lastMs = prefs.getInt(_prefsNextFajrKey);
+    if (lastMs == null) return;
+
+    final next = nextOccurrence(
+      fajrTime: DateTime.fromMillisecondsSinceEpoch(lastMs),
+    );
+    await schedule(enabled: true, fajrTime: next);
+  }
+
+  /// Whether the OS will let the call take over the screen.
+  ///
+  /// Android 14 put full-screen intents behind a second gate: the manifest
+  /// permission is granted, but `canUseFullScreenIntent` is false by default
+  /// for anything the platform does not consider a calling or alarm app.
+  /// Without it the call posts a plain notification instead of the call
+  /// screen, with the generic notification sound rather than the ringtone.
+  static Future<bool> canShowFullScreen() async {
+    if (!_isSupported) return false;
+    try {
+      return await FlutterCallkitIncoming.canUseFullScreenIntent();
+    } catch (e) {
+      debugPrint('FajrCallService: full-screen check failed: $e');
+      return false;
+    }
+  }
+
+  /// Opens the system page where full-screen notifications are allowed.
+  static Future<void> requestFullScreenAccess() async {
+    if (!_isSupported) return;
+    try {
+      await FlutterCallkitIncoming.requestFullIntentPermission();
+    } catch (e) {
+      debugPrint('FajrCallService: full-screen request failed: $e');
+    }
+  }
+
   /// Drops any pending call alarm.
   static Future<void> cancel() async {
     if (!_isSupported) return;
@@ -136,11 +181,16 @@ class FajrCallService {
       android: AndroidParams(
         isCustomNotification: true,
         isShowLogo: false,
-        // The point of a call over a notification: it takes the whole locked
-        // screen and rings past Do Not Disturb's notification tier.
         isShowFullLockedScreen: true,
         isImportant: true,
-        isFullScreen: true,
+        // Deliberately false. `isFullScreen: true` makes the plugin launch its
+        // call activity directly (CallkitIncomingBroadcastReceiver), a path
+        // that never starts the ringtone — the activity only keeps an already
+        // playing one alive — and that Android blocks outright when the app
+        // process is dead. False takes the notification path instead, which
+        // plays [ringtonePath] and carries a full-screen intent, so the call
+        // still owns the lock screen wherever the OS permits it.
+        isFullScreen: false,
         textAccept: l10n.fajrCallAccept,
         textDecline: l10n.fajrCallDecline,
         ringtonePath: 'bird_sound',
@@ -159,8 +209,22 @@ class FajrCallService {
   /// Ends the ringing call, if one is up.
   static Future<void> endCall() async {
     if (!_isSupported) return;
-    await FlutterCallkitIncoming.endAllCalls();
+    try {
+      await FlutterCallkitIncoming.endAllCalls();
+    } catch (e) {
+      debugPrint('FajrCallService: could not end the call: $e');
+    }
   }
+
+  /// Clears a call left hanging from a previous launch.
+  ///
+  /// Answering from a dead app starts the process fresh, and [listenForAnswers]
+  /// is only registered once boot reaches its first frame — too late to catch
+  /// that accept. The plugin meanwhile promotes the call to "ongoing", with a
+  /// foreground service and a Hang Up notification that nothing ever
+  /// dismisses. The app being open means the alarm did its job, so any call
+  /// still standing at startup is stale by definition.
+  static Future<void> clearLingeringCalls() => endCall();
 
   /// Clears the call screen once the user has answered or dismissed it.
   ///
@@ -192,6 +256,8 @@ class FajrCallService {
 /// looks it up by handle after spinning up a fresh Dart VM.
 @pragma('vm:entry-point')
 Future<void> onFajrAlarm() async {
+  debugPrint('FajrCallService: alarm fired');
+
   // The isolate has its own copy of the preference cache.
   final prefs = await SharedPreferences.getInstance();
   await prefs.reload();
@@ -201,5 +267,17 @@ Future<void> onFajrAlarm() async {
     return;
   }
 
-  await FajrCallService.ring();
+  try {
+    await FajrCallService.ring();
+    debugPrint('FajrCallService: call screen requested');
+  } catch (e) {
+    // A failure here is invisible otherwise — the isolate has no UI.
+    debugPrint('FajrCallService: could not show the call: $e');
+  }
+
+  // `oneShotAt` fires once. Nothing else re-arms it while the app stays
+  // closed, so tomorrow's call has to be booked from here — otherwise the
+  // alarm rings exactly once and then only ever comes back if the user opens
+  // the app.
+  await FajrCallService.rescheduleNextFromAlarm(prefs);
 }

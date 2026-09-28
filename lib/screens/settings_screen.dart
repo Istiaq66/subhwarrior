@@ -15,8 +15,10 @@ import 'package:subh_warrior/core/theme/app_snack_bars.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
+import 'package:subh_warrior/features/prayer_times/data/fajr_call_service.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/helpers/location_access.dart';
+import 'package:subh_warrior/helpers/notification_permission.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/providers/locale_provider.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
@@ -29,7 +31,8 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen>
+    with WidgetsBindingObserver {
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
 
@@ -52,6 +55,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _notificationsEnabled = true;
   bool _fajrReminder = true;
   bool _fajrCall = false;
+
+  bool _notificationsAllowed = true;
+
+  /// Whether the OS lets the call take over the screen (Android 14+ gates
+  /// this separately). Without it the call is a notification, not an alarm.
+  bool _fullScreenAllowed = true;
   bool _loggingReminder = true;
   int _fajrReminderMinutes = 15;
   String _appVersion = '';
@@ -79,8 +88,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadCurrentSettings();
     _loadAppVersion();
+    _loadCallPermissions();
+  }
+
+  /// Both gates are granted on system settings pages the user leaves the app
+  /// for, so they are re-read whenever the app comes back.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _loadCallPermissions();
+  }
+
+  Future<void> _loadCallPermissions() async {
+    final allowed = await hasNotificationPermission();
+    final fullScreen = await FajrCallService.canShowFullScreen();
+    if (!mounted) return;
+    setState(() {
+      _notificationsAllowed = allowed;
+      _fullScreenAllowed = fullScreen;
+    });
   }
 
   Future<void> _loadAppVersion() async {
@@ -119,6 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void dispose() {
     // Leaving mid-edit must not lose the edit: the debounce is dropped, but
     // whatever it was about to write is written now, straight to the provider.
+    WidgetsBinding.instance.removeObserver(this);
     final hadPendingEdit = _profileSaveTimer?.isActive ?? false;
     _profileSaveTimer?.cancel();
     // A queued notification save still has to land: it is written straight to
@@ -434,13 +463,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (_fajrReminder) _buildFajrReminderPicker(l10n),
               SwitchListTile(
                 title: Text(l10n.settingsFajrCallTitle),
-                subtitle: Text(l10n.settingsFajrCallSubtitle),
+                subtitle: Text(_fajrCallSubtitle(l10n)),
                 value: _fajrCall,
-                onChanged: (value) {
+                onChanged: (value) async {
+                  if (value && !await _ensureCallCanRing()) return;
                   setState(() {
                     _fajrCall = value;
                   });
                   _persistNotificationSettingsSoon();
+                  if (value) await _promptForFullScreenAccess();
                 },
               ),
               const Divider(),
@@ -1005,14 +1036,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  /// Queues a save of the notification settings.
+  /// Says what is missing, so an enabled switch never implies a working alarm.
+  String _fajrCallSubtitle(AppLocalizations l10n) {
+    if (!_fajrCall) return l10n.settingsFajrCallSubtitle;
+    if (!_notificationsAllowed) return l10n.settingsFajrCallNeedsNotifications;
+    if (!_fullScreenAllowed) return l10n.settingsFajrCallNeedsFullScreen;
+    return l10n.settingsFajrCallSubtitle;
+  }
+
+  /// Nudges the user towards the full-screen-notification page.
   ///
-  /// Every control on this screen applies on change — there is no save button
-  /// to forget, which is what used to make a toggled switch look like it had
-  /// taken effect when it had not. The write itself is coalesced and never
-  /// awaited from a tap handler: cancelling and rescheduling notifications is
-  /// platform work, and running it per tap deadlocked input long enough for
-  /// Android to raise an ANR.
+  /// Unlike the notification permission there is no dialog for this one — it
+  /// is a system settings page — so the call stays armed and the subtitle
+  /// keeps saying what is missing until it is granted.
+  Future<void> _promptForFullScreenAccess() async {
+    if (await FajrCallService.canShowFullScreen()) return;
+    if (!mounted) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    context.showSnack(
+      l10n.settingsFajrCallNeedsFullScreen,
+      kind: AppSnackKind.warning,
+      action: SnackBarAction(
+        label: l10n.locationOpenSettingsAction,
+        onPressed: FajrCallService.requestFullScreenAccess,
+      ),
+    );
+  }
+
+  Future<bool> _ensureCallCanRing() async {
+    if (await hasNotificationPermission()) {
+      if (mounted) setState(() => _notificationsAllowed = true);
+      return true;
+    }
+
+    if (!mounted) return false;
+    final granted = await getNotificationPermission(context);
+    if (!mounted) return false;
+    setState(() => _notificationsAllowed = granted);
+    if (granted) return true;
+
+    context.showSnack(
+      AppLocalizations.of(context)!.settingsFajrCallNeedsNotifications,
+      kind: AppSnackKind.warning,
+      action: SnackBarAction(
+        label: AppLocalizations.of(context)!.locationOpenSettingsAction,
+        onPressed: openNotificationSettings,
+      ),
+    );
+    return false;
+  }
+
   void _persistNotificationSettingsSoon() {
     _notificationSaveTimer?.cancel();
     _notificationSaveTimer = Timer(

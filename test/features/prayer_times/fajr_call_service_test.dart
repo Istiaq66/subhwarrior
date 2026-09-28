@@ -43,6 +43,18 @@ void main() {
     });
   });
 
+  test('the next occurrence is a day on from the one that just rang', () {
+    // What the background isolate books after ringing: one-shot alarms do not
+    // repeat, so without this the call rings once and never again unless the
+    // user opens the app.
+    final rang = DateTime(2026, 9, 28, 5, 50);
+
+    expect(
+      FajrCallService.nextOccurrence(fajrTime: rang, now: rang),
+      DateTime(2026, 9, 29, 5, 50),
+    );
+  });
+
   test('the caller is named Namaz', () {
     expect(FajrCallService.callerName, 'Namaz');
   });

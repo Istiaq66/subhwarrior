@@ -120,6 +120,10 @@ Future<_Services> _bootstrap(
     // screen once it has been answered or dismissed.
     unawaited(FajrCallService.initialize());
     FajrCallService.listenForAnswers();
+    // Ends a call answered while the app was dead: the listener above misses
+    // that event, and the plugin's ongoing-call notification would otherwise
+    // sit in the shade until the next reboot.
+    unawaited(FajrCallService.clearLingeringCalls());
   });
 
   await _refreshPrayerTimesWithinBudget(prefs, uid, prayerProvider);

@@ -22,6 +22,10 @@ Future<void> ensureNotificationPermission(BuildContext context) async {
   }
 }
 
+Future<bool> hasNotificationPermission() => Permission.notification.isGranted;
+
+Future<bool> openNotificationSettings() => openAppSettings();
+
 Future<bool> getNotificationPermission(BuildContext context) async {
   // Already granted
   if (await Permission.notification.isGranted) {
