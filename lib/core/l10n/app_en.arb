@@ -380,7 +380,6 @@
     }
   },
   "settingsTitle": "Settings",
-  "settingsDoneAction": "Done",
   "settingsProfileTitle": "Profile",
   "settingsNameLabel": "Your Name",
   "settingsNameHint": "Enter your name",
@@ -432,6 +431,8 @@
   "settingsEnableNotificationsSubtitle": "Get reminders and updates",
   "settingsFajrReminderTitle": "Fajr Prayer Reminder",
   "settingsFajrReminderSubtitle": "Notify {minutes} min before Fajr",
+  "settingsFajrCallTitle": "Call me for Fajr",
+  "settingsFajrCallSubtitle": "Rings like a call at Fajr, so it is harder to sleep through",
   "@settingsFajrReminderSubtitle": {
     "description": "Subtitle for the Fajr reminder switch showing the configured lead time in minutes",
     "placeholders": {
@@ -516,7 +517,6 @@
     "description": "Invite message shared via the system share sheet"
   },
   "settingsEnterNamePrompt": "Please enter your name",
-  "settingsSavedSuccess": "Settings saved successfully",
   "settingsEndChallengeDialogTitle": "End Challenge?",
   "settingsEndChallengeDialogContent": "Are you sure you want to end the challenge? Your progress will be saved but the challenge will be marked as incomplete.",
   "settingsCancel": "Cancel",
@@ -729,6 +729,11 @@
   "dayDetailNoDetails": "No details logged for this day.",
   "dayDetailReflection": "Reflection",
   "notifFajrTitle": "🕌 Fajr in {minutes} minutes",
+  "fajrCallAccept": "Wake up",
+  "fajrCallDecline": "Dismiss",
+  "fajrCallMissed": "Missed Fajr call",
+  "fajrCallChannelName": "Fajr call",
+  "fajrCallMissedChannelName": "Missed Fajr call",
   "@notifFajrTitle": {
     "description": "Title of the scheduled Fajr reminder notification",
     "placeholders": {

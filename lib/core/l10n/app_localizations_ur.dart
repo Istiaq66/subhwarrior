@@ -622,9 +622,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get settingsTitle => 'سیٹنگز';
 
   @override
-  String get settingsDoneAction => 'مکمل';
-
-  @override
   String get settingsProfileTitle => 'پروفائل';
 
   @override
@@ -728,6 +725,13 @@ class AppLocalizationsUr extends AppLocalizations {
 
     return 'فجر سے $minutesString منٹ پہلے اطلاع دیں';
   }
+
+  @override
+  String get settingsFajrCallTitle => 'فجر کے لیے کال کریں';
+
+  @override
+  String get settingsFajrCallSubtitle =>
+      'فجر کے وقت کال کی طرح بجے گا، تاکہ آپ سوتے نہ رہ جائیں';
 
   @override
   String get settingsRemindMeBeforeFajr => 'فجر سے پہلے یاد دہانی';
@@ -855,9 +859,6 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get settingsEnterNamePrompt => 'براہ کرم اپنا نام درج کریں';
-
-  @override
-  String get settingsSavedSuccess => 'سیٹنگز کامیابی سے محفوظ ہو گئیں';
 
   @override
   String get settingsEndChallengeDialogTitle => 'چیلنج ختم کریں؟';
@@ -1232,6 +1233,21 @@ class AppLocalizationsUr extends AppLocalizations {
 
     return '🕌 فجر $minutesString منٹ میں';
   }
+
+  @override
+  String get fajrCallAccept => 'جاگ جائیں';
+
+  @override
+  String get fajrCallDecline => 'نظرانداز کریں';
+
+  @override
+  String get fajrCallMissed => 'فجر کی کال مس ہو گئی';
+
+  @override
+  String get fajrCallChannelName => 'فجر کی کال';
+
+  @override
+  String get fajrCallMissedChannelName => 'مس شدہ فجر کال';
 
   @override
   String get notifFajrBody => 'فجر کی نماز کے لیے جاگنے کا وقت ہو گیا!';

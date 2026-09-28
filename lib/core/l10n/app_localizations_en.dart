@@ -623,9 +623,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
-  String get settingsDoneAction => 'Done';
-
-  @override
   String get settingsProfileTitle => 'Profile';
 
   @override
@@ -728,6 +725,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
     return 'Notify $minutesString min before Fajr';
   }
+
+  @override
+  String get settingsFajrCallTitle => 'Call me for Fajr';
+
+  @override
+  String get settingsFajrCallSubtitle =>
+      'Rings like a call at Fajr, so it is harder to sleep through';
 
   @override
   String get settingsRemindMeBeforeFajr => 'Remind me before Fajr';
@@ -854,9 +858,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsEnterNamePrompt => 'Please enter your name';
-
-  @override
-  String get settingsSavedSuccess => 'Settings saved successfully';
 
   @override
   String get settingsEndChallengeDialogTitle => 'End Challenge?';
@@ -1230,6 +1231,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
     return '🕌 Fajr in $minutesString minutes';
   }
+
+  @override
+  String get fajrCallAccept => 'Wake up';
+
+  @override
+  String get fajrCallDecline => 'Dismiss';
+
+  @override
+  String get fajrCallMissed => 'Missed Fajr call';
+
+  @override
+  String get fajrCallChannelName => 'Fajr call';
+
+  @override
+  String get fajrCallMissedChannelName => 'Missed Fajr call';
 
   @override
   String get notifFajrBody => 'Time to wake up for Fajr prayer!';

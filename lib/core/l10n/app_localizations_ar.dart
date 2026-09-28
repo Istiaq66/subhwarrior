@@ -621,9 +621,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsTitle => 'الإعدادات';
 
   @override
-  String get settingsDoneAction => 'تم';
-
-  @override
   String get settingsProfileTitle => 'الملف الشخصي';
 
   @override
@@ -725,6 +722,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
     return 'تنبيه قبل الفجر بـ $minutesString دقيقة';
   }
+
+  @override
+  String get settingsFajrCallTitle => 'اتصل بي لصلاة الفجر';
+
+  @override
+  String get settingsFajrCallSubtitle =>
+      'يرن كمكالمة عند الفجر حتى لا تفوتك وأنت نائم';
 
   @override
   String get settingsRemindMeBeforeFajr => 'ذكّرني قبل الفجر';
@@ -850,9 +854,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsEnterNamePrompt => 'يرجى إدخال اسمك';
-
-  @override
-  String get settingsSavedSuccess => 'تم حفظ الإعدادات بنجاح';
 
   @override
   String get settingsEndChallengeDialogTitle => 'إنهاء التحدي؟';
@@ -1220,6 +1221,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
     return '🕌 الفجر بعد $minutesString دقيقة';
   }
+
+  @override
+  String get fajrCallAccept => 'استيقظ';
+
+  @override
+  String get fajrCallDecline => 'تجاهل';
+
+  @override
+  String get fajrCallMissed => 'مكالمة فجر فائتة';
+
+  @override
+  String get fajrCallChannelName => 'مكالمة الفجر';
+
+  @override
+  String get fajrCallMissedChannelName => 'مكالمات الفجر الفائتة';
 
   @override
   String get notifFajrBody => 'حان وقت الاستيقاظ لصلاة الفجر!';

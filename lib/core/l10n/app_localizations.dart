@@ -1058,12 +1058,6 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settingsTitle;
 
-  /// No description provided for @settingsDoneAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Done'**
-  String get settingsDoneAction;
-
   /// No description provided for @settingsProfileTitle.
   ///
   /// In en, this message translates to:
@@ -1225,6 +1219,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notify {minutes} min before Fajr'**
   String settingsFajrReminderSubtitle(int minutes);
+
+  /// No description provided for @settingsFajrCallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call me for Fajr'**
+  String get settingsFajrCallTitle;
+
+  /// No description provided for @settingsFajrCallSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rings like a call at Fajr, so it is harder to sleep through'**
+  String get settingsFajrCallSubtitle;
 
   /// No description provided for @settingsRemindMeBeforeFajr.
   ///
@@ -1459,12 +1465,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter your name'**
   String get settingsEnterNamePrompt;
-
-  /// No description provided for @settingsSavedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings saved successfully'**
-  String get settingsSavedSuccess;
 
   /// No description provided for @settingsEndChallengeDialogTitle.
   ///
@@ -2053,6 +2053,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'🕌 Fajr in {minutes} minutes'**
   String notifFajrTitle(int minutes);
+
+  /// No description provided for @fajrCallAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Wake up'**
+  String get fajrCallAccept;
+
+  /// No description provided for @fajrCallDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get fajrCallDecline;
+
+  /// No description provided for @fajrCallMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed Fajr call'**
+  String get fajrCallMissed;
+
+  /// No description provided for @fajrCallChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Fajr call'**
+  String get fajrCallChannelName;
+
+  /// No description provided for @fajrCallMissedChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed Fajr call'**
+  String get fajrCallMissedChannelName;
 
   /// Body of the scheduled Fajr reminder notification
   ///

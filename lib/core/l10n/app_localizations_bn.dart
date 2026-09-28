@@ -626,9 +626,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get settingsTitle => 'সেটিংস';
 
   @override
-  String get settingsDoneAction => 'সম্পন্ন';
-
-  @override
   String get settingsProfileTitle => 'প্রোফাইল';
 
   @override
@@ -732,6 +729,13 @@ class AppLocalizationsBn extends AppLocalizations {
 
     return 'ফজরের $minutesString মিনিট আগে জানান';
   }
+
+  @override
+  String get settingsFajrCallTitle => 'ফজরে কল করুন';
+
+  @override
+  String get settingsFajrCallSubtitle =>
+      'ফজরের সময় কলের মতো বাজবে, যাতে ঘুমিয়ে না থাকেন';
 
   @override
   String get settingsRemindMeBeforeFajr => 'ফজরের আগে মনে করিয়ে দিন';
@@ -859,9 +863,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get settingsEnterNamePrompt => 'অনুগ্রহ করে আপনার নাম লিখুন';
-
-  @override
-  String get settingsSavedSuccess => 'সেটিংস সফলভাবে সংরক্ষিত হয়েছে';
 
   @override
   String get settingsEndChallengeDialogTitle => 'চ্যালেঞ্জ শেষ করবেন?';
@@ -1237,6 +1238,21 @@ class AppLocalizationsBn extends AppLocalizations {
 
     return '🕌 ফজর $minutesString মিনিট পরে';
   }
+
+  @override
+  String get fajrCallAccept => 'জেগে উঠুন';
+
+  @override
+  String get fajrCallDecline => 'বাতিল';
+
+  @override
+  String get fajrCallMissed => 'ফজরের কল মিস হয়েছে';
+
+  @override
+  String get fajrCallChannelName => 'ফজরের কল';
+
+  @override
+  String get fajrCallMissedChannelName => 'মিস হওয়া ফজরের কল';
 
   @override
   String get notifFajrBody => 'ফজরের নামাযের জন্য জেগে ওঠার সময় হয়েছে!';
