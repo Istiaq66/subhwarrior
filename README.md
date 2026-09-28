@@ -113,6 +113,41 @@ A signed release APK is built and published on pushes to `master`.
 
 ---
 
+## Startup Performance
+
+Boot is instrumented by `StartupTrace` (`lib/core/perf/startup_trace.dart`). Every
+launch records milestones — `prefs_loaded`, `first_frame`, `firebase_ready`,
+`auth_ready`, `prayer_times_settled`, `boot_complete` — as milliseconds since
+`main`.
+
+Where the numbers show up:
+
+- **Console** (debug and profile builds): `[startup] first_frame: 118ms` lines.
+- **DevTools / `--trace-startup`**: one `app_startup` timeline slice with each
+  milestone as an instant event.
+- **Analytics**: a single `app_startup` event per launch carrying every
+  milestone plus `total_ms`, so regressions surface from real devices.
+- **Firebase Performance**: the same milestones as metrics on an `app_startup`
+  custom trace, alongside the SDK's automatic app-start and screen-rendering
+  traces. Collection is enabled explicitly at boot, debug builds included.
+  The `firebase-perf` Gradle
+  plugin is deliberately not applied — it instruments Android HTTP clients by
+  bytecode rewriting, which never sees Dart's network calls.
+
+To measure a cold start on a device:
+
+```bash
+flutter run --profile --trace-startup -d <device>
+# writes build/start_up_info.json
+```
+
+`timeToFirstFrameMicros` is when the splash appears; `timeToFirstFrameRasterizedMicros`
+is when it is actually on screen. A large gap between the two means startup work is
+competing with the first frame — keep plugin registration and other platform-channel
+work behind `SchedulerBinding.instance.endOfFrame`.
+
+---
+
 ## Version
 
 - **Current:** 1.0.0+1 (shown in-app from `package_info_plus`, not hardcoded)

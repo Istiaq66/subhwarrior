@@ -14,6 +14,9 @@ abstract final class AnalyticsEvents {
   static const inviteAccepted = 'invite_accepted';
   static const friendAdded = 'friend_added';
   static const notificationOpened = 'notification_opened';
+
+  /// Startup timings, one per launch — see `StartupTrace`.
+  static const appStartup = 'app_startup';
 }
 
 /// Analytics abstraction so widgets/controllers never import Firebase

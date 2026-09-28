@@ -4,4 +4,13 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application>
+        <!-- Prints every Performance Monitoring trace to logcat so a local run
+             can be verified with `adb logcat -s FirebasePerformance`. Debug and
+             profile only — never in the shipped manifest. -->
+        <meta-data
+            android:name="firebase_performance_logcat_enabled"
+            android:value="true" />
+    </application>
 </manifest>

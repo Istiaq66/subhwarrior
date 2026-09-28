@@ -4,12 +4,16 @@ import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/analytics/analytics_service.dart';
 import 'package:subh_warrior/core/analytics/firebase_analytics_service.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
+import 'package:subh_warrior/core/perf/firebase_performance_service.dart';
+import 'package:subh_warrior/core/perf/performance_service.dart';
+import 'package:subh_warrior/core/perf/startup_trace.dart';
 import 'package:subh_warrior/core/theme/app_theme.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_local_data_source.dart';
@@ -29,14 +33,20 @@ import 'firebase_options.dart';
 
 /// Everything the provider tree needs that depends on Firebase.
 class _Services {
-  const _Services({required this.authService, required this.analytics});
+  const _Services({
+    required this.authService,
+    required this.analytics,
+    required this.performance,
+  });
 
   final AuthService authService;
   final AnalyticsService analytics;
+  final PerformanceService performance;
 }
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+  StartupTrace.start();
 
   // Only SharedPreferences is awaited before the first frame — it costs a few
   // milliseconds and the theme, locale and prayer-times providers need it.
@@ -48,6 +58,16 @@ void main() async {
   // launch window for all of it. Now that work runs behind the splash screen
   // instead — see [_AppShell].
   final prefs = await SharedPreferences.getInstance();
+  StartupTrace.mark(StartupMarks.prefsLoaded);
+
+  // The first entry lands once the splash has actually been rasterized, so
+  // this is the moment the user stops looking at the bare launch window.
+  late final TimingsCallback onTimings;
+  onTimings = (_) {
+    StartupTrace.mark(StartupMarks.firstFrame);
+    binding.removeTimingsCallback(onTimings);
+  };
+  binding.addTimingsCallback(onTimings);
 
   runApp(SubhWarriorApp(prefs: prefs));
 }
@@ -62,30 +82,55 @@ Future<_Services> _bootstrap(
   SharedPreferences prefs,
   PrayerTimeProvider prayerProvider,
 ) async {
+  // Let the splash frame reach the screen first. Boot is kicked off from the
+  // first build, so without this every plugin registration below lands while
+  // that frame is still rasterizing — measured as a 642ms gap between first
+  // frame and first frame rasterized, and 36 skipped frames.
+  await SchedulerBinding.instance.endOfFrame;
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  StartupTrace.mark(StartupMarks.firebaseReady);
 
   // Ensure a signed-in user (anonymous at minimum) before any Firestore I/O.
   // The auth StreamBuilder in the app derives the live uid from here on.
   final authService = AuthService();
   final uid = await authService.ensureSignedIn();
+  StartupTrace.mark(StartupMarks.authReady);
 
   final analytics = FirebaseAnalyticsService();
   AnalyticsService.maybeInstance = analytics;
 
+  final performance = FirebasePerformanceService();
+  PerformanceService.maybeInstance = performance;
+  unawaited(FirebasePerformanceService.enableCollection());
+
   await ChallengeLocalDataSource.migrateLegacyIfNeeded(prefs, uid);
 
-  // Deliberately not awaited: notification channels and the widget's
-  // background-fetch registration are not needed to render, and the widget
-  // refresh does network I/O. Letting these settle in the background keeps
-  // them off the path to the first interactive frame.
-  NotificationService().initBackground();
-  unawaited(_configureFajrWidgetBackgroundFetch());
+  // Neither is needed to render, and both are platform-channel heavy —
+  // notification channel creation and an AlarmManager registration. Deferred
+  // to after boot hands over so they compete with nothing the user is
+  // waiting on; the widget refresh they trigger also does network I/O.
+  SchedulerBinding.instance.addPostFrameCallback((_) {
+    NotificationService().initBackground();
+    unawaited(_configureFajrWidgetBackgroundFetch());
+  });
 
   await _refreshPrayerTimesWithinBudget(prefs, uid, prayerProvider);
+  StartupTrace.mark(StartupMarks.prayerTimesSettled);
 
-  return _Services(authService: authService, analytics: analytics);
+  // Fire and forget: the report is one analytics event, and boot should hand
+  // over to Home without waiting on it.
+  unawaited(
+    StartupTrace.finish(analytics: analytics, performance: performance),
+  );
+
+  return _Services(
+    authService: authService,
+    analytics: analytics,
+    performance: performance,
+  );
 }
 
 /// Starts the prayer-times refresh while the splash is still up, then stops
@@ -206,8 +251,8 @@ class _SubhWarriorAppState extends State<SubhWarriorApp> {
     // the rest of the app.
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider(widget.prefs)),
+        ChangeNotifierProvider(create: (_) => LocaleProvider(widget.prefs)),
         // `.value`: this state owns the instance (and disposes it) so boot can
         // warm it before the tree mounts.
         ChangeNotifierProvider<PrayerTimeProvider>.value(
@@ -300,6 +345,7 @@ class _AppShell extends StatelessWidget {
       providers: [
         Provider<AuthService>.value(value: ready.authService),
         Provider<AnalyticsService>.value(value: ready.analytics),
+        Provider<PerformanceService>.value(value: ready.performance),
       ],
       child: StreamBuilder<User?>(
         stream: ready.authService.authStateChanges(),
