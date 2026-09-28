@@ -742,6 +742,14 @@ class AppLocalizationsBn extends AppLocalizations {
       'ফজরের সময় কলের মতো বাজবে, যাতে ঘুমিয়ে না থাকেন';
 
   @override
+  String get settingsFajrCallNeedsNotifications =>
+      'নোটিফিকেশন বন্ধ, তাই কল বাজবে না। ব্যবহার করতে অনুমতি দিন।';
+
+  @override
+  String get settingsFajrCallNeedsFullScreen =>
+      'কল যেন পুরো স্ক্রিন জুড়ে আসে, সে জন্য ফুল স্ক্রিন নোটিফিকেশন চালু করুন।';
+
+  @override
   String get settingsRemindMeBeforeFajr => 'ফজরের আগে মনে করিয়ে দিন';
 
   @override

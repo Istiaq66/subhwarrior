@@ -189,6 +189,8 @@
   "settingsFajrReminderSubtitle": "تنبيه قبل الفجر بـ {minutes} دقيقة",
   "settingsFajrCallTitle": "اتصل بي لصلاة الفجر",
   "settingsFajrCallSubtitle": "يرن كمكالمة عند الفجر حتى لا تفوتك وأنت نائم",
+  "settingsFajrCallNeedsNotifications": "الإشعارات معطّلة، لذا لن ترنّ المكالمة. فعّلها لاستخدامها.",
+  "settingsFajrCallNeedsFullScreen": "اسمح بإشعارات ملء الشاشة حتى تظهر المكالمة على الشاشة كاملة.",
   "settingsRemindMeBeforeFajr": "ذكّرني قبل الفجر",
   "settingsCustomMinutes": "مخصص",
   "settingsCustomReminderTitle": "تذكير مخصص",

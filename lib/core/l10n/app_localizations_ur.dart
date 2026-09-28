@@ -738,6 +738,14 @@ class AppLocalizationsUr extends AppLocalizations {
       'فجر کے وقت کال کی طرح بجے گا، تاکہ آپ سوتے نہ رہ جائیں';
 
   @override
+  String get settingsFajrCallNeedsNotifications =>
+      'نوٹیفیکیشنز بند ہیں، اس لیے کال نہیں بجے گی۔ استعمال کے لیے اجازت دیں۔';
+
+  @override
+  String get settingsFajrCallNeedsFullScreen =>
+      'کال پوری اسکرین پر آنے کے لیے فل اسکرین نوٹیفیکیشنز کی اجازت دیں۔';
+
+  @override
   String get settingsRemindMeBeforeFajr => 'فجر سے پہلے یاد دہانی';
 
   @override

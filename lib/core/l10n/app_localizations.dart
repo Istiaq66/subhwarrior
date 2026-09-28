@@ -1238,6 +1238,18 @@ abstract class AppLocalizations {
   /// **'Rings like a call at Fajr, so it is harder to sleep through'**
   String get settingsFajrCallSubtitle;
 
+  /// No description provided for @settingsFajrCallNeedsNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off, so the call cannot ring. Allow them to use it.'**
+  String get settingsFajrCallNeedsNotifications;
+
+  /// No description provided for @settingsFajrCallNeedsFullScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow full screen notifications so the call can take over the screen.'**
+  String get settingsFajrCallNeedsFullScreen;
+
   /// No description provided for @settingsRemindMeBeforeFajr.
   ///
   /// In en, this message translates to:

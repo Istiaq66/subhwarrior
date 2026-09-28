@@ -189,6 +189,8 @@
   "settingsFajrReminderSubtitle": "ফজরের {minutes} মিনিট আগে জানান",
   "settingsFajrCallTitle": "ফজরে কল করুন",
   "settingsFajrCallSubtitle": "ফজরের সময় কলের মতো বাজবে, যাতে ঘুমিয়ে না থাকেন",
+  "settingsFajrCallNeedsNotifications": "নোটিফিকেশন বন্ধ, তাই কল বাজবে না। ব্যবহার করতে অনুমতি দিন।",
+  "settingsFajrCallNeedsFullScreen": "কল যেন পুরো স্ক্রিন জুড়ে আসে, সে জন্য ফুল স্ক্রিন নোটিফিকেশন চালু করুন।",
   "settingsRemindMeBeforeFajr": "ফজরের আগে মনে করিয়ে দিন",
   "settingsCustomMinutes": "কাস্টম",
   "settingsCustomReminderTitle": "কাস্টম রিমাইন্ডার",

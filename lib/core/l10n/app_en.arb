@@ -434,6 +434,8 @@
   "settingsFajrReminderSubtitle": "Notify {minutes} min before Fajr",
   "settingsFajrCallTitle": "Call me for Fajr",
   "settingsFajrCallSubtitle": "Rings like a call at Fajr, so it is harder to sleep through",
+  "settingsFajrCallNeedsNotifications": "Notifications are off, so the call cannot ring. Allow them to use it.",
+  "settingsFajrCallNeedsFullScreen": "Allow full screen notifications so the call can take over the screen.",
   "@settingsFajrReminderSubtitle": {
     "description": "Subtitle for the Fajr reminder switch showing the configured lead time in minutes",
     "placeholders": {

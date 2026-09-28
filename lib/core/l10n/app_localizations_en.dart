@@ -738,6 +738,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Rings like a call at Fajr, so it is harder to sleep through';
 
   @override
+  String get settingsFajrCallNeedsNotifications =>
+      'Notifications are off, so the call cannot ring. Allow them to use it.';
+
+  @override
+  String get settingsFajrCallNeedsFullScreen =>
+      'Allow full screen notifications so the call can take over the screen.';
+
+  @override
   String get settingsRemindMeBeforeFajr => 'Remind me before Fajr';
 
   @override
