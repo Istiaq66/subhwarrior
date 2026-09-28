@@ -513,31 +513,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Unable to find coordinates for that location.';
 
   @override
-  String get onboardingLocationServicesDisabled =>
-      'Location services are disabled. Please enable them in settings.';
+  String get locationUnknownLocality => 'Unknown';
 
   @override
-  String get onboardingLocationPermissionDenied =>
-      'Location permissions are denied';
-
-  @override
-  String get onboardingLocationPermissionDeniedForever =>
-      'Location permissions are permanently denied. Please enable them in app settings.';
-
-  @override
-  String get onboardingSettingsAction => 'Settings';
-
-  @override
-  String get onboardingUnknownLocality => 'Unknown';
-
-  @override
-  String onboardingLocationSetCoords(String latitude, String longitude) {
+  String locationSetCoords(String latitude, String longitude) {
     return 'Location set ($latitude, $longitude)';
-  }
-
-  @override
-  String onboardingErrorGettingLocation(String error) {
-    return 'Error getting location: $error';
   }
 
   @override
@@ -679,29 +659,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLocationTitle => 'Location';
 
   @override
-  String get settingsLocationServicesOff =>
+  String get locationServicesOff =>
       'Location is turned off. Turn it on to detect your city.';
 
   @override
-  String get settingsLocationTurnOnAction => 'Turn on';
+  String get locationTurnOnAction => 'Turn on';
 
   @override
-  String get settingsLocationPermissionDenied =>
+  String get locationPermissionDenied =>
       'Location access is needed to detect your city and prayer times.';
 
   @override
-  String get settingsLocationPermissionBlockedAndroid =>
+  String get locationPermissionBlockedAndroid =>
       'Location access is blocked. In app settings tap Permissions › Location, then Allow.';
 
   @override
-  String get settingsLocationPermissionBlockedIos =>
+  String get locationPermissionBlockedIos =>
       'Location access is blocked. In app settings tap Location, then While Using the App.';
 
   @override
-  String get settingsLocationOpenSettingsAction => 'Open settings';
+  String get locationOpenSettingsAction => 'Open settings';
 
   @override
-  String get settingsLocationFailed =>
+  String get locationDetectFailed =>
       'Couldn\'t detect your location. Try again, or type your city above.';
 
   @override

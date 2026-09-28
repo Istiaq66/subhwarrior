@@ -514,31 +514,11 @@ class AppLocalizationsBn extends AppLocalizations {
       'ওই অবস্থানের স্থানাঙ্ক খুঁজে পাওয়া যায়নি।';
 
   @override
-  String get onboardingLocationServicesDisabled =>
-      'লোকেশন সার্ভিস বন্ধ আছে। অনুগ্রহ করে সেটিংসে গিয়ে চালু করুন।';
+  String get locationUnknownLocality => 'অজানা';
 
   @override
-  String get onboardingLocationPermissionDenied =>
-      'লোকেশন অনুমতি প্রত্যাখ্যান করা হয়েছে';
-
-  @override
-  String get onboardingLocationPermissionDeniedForever =>
-      'লোকেশন অনুমতি স্থায়ীভাবে প্রত্যাখ্যান করা হয়েছে। অনুগ্রহ করে অ্যাপ সেটিংসে গিয়ে চালু করুন।';
-
-  @override
-  String get onboardingSettingsAction => 'সেটিংস';
-
-  @override
-  String get onboardingUnknownLocality => 'অজানা';
-
-  @override
-  String onboardingLocationSetCoords(String latitude, String longitude) {
+  String locationSetCoords(String latitude, String longitude) {
     return 'অবস্থান নির্ধারিত ($latitude, $longitude)';
-  }
-
-  @override
-  String onboardingErrorGettingLocation(String error) {
-    return 'অবস্থান নিতে সমস্যা হয়েছে: $error';
   }
 
   @override
@@ -682,29 +662,29 @@ class AppLocalizationsBn extends AppLocalizations {
   String get settingsLocationTitle => 'অবস্থান';
 
   @override
-  String get settingsLocationServicesOff =>
+  String get locationServicesOff =>
       'লোকেশন বন্ধ আছে। আপনার শহর শনাক্ত করতে এটি চালু করুন।';
 
   @override
-  String get settingsLocationTurnOnAction => 'চালু করুন';
+  String get locationTurnOnAction => 'চালু করুন';
 
   @override
-  String get settingsLocationPermissionDenied =>
+  String get locationPermissionDenied =>
       'আপনার শহর ও নামাযের সময় শনাক্ত করতে লোকেশন অনুমতি প্রয়োজন।';
 
   @override
-  String get settingsLocationPermissionBlockedAndroid =>
+  String get locationPermissionBlockedAndroid =>
       'লোকেশন অনুমতি বন্ধ করা আছে। অ্যাপ সেটিংসে Permissions › Location খুলে Allow দিন।';
 
   @override
-  String get settingsLocationPermissionBlockedIos =>
+  String get locationPermissionBlockedIos =>
       'লোকেশন অনুমতি বন্ধ করা আছে। অ্যাপ সেটিংসে Location খুলে While Using the App বেছে নিন।';
 
   @override
-  String get settingsLocationOpenSettingsAction => 'সেটিংস খুলুন';
+  String get locationOpenSettingsAction => 'সেটিংস খুলুন';
 
   @override
-  String get settingsLocationFailed =>
+  String get locationDetectFailed =>
       'লোকেশন শনাক্ত করা যায়নি। আবার চেষ্টা করুন, অথবা উপরে আপনার শহর লিখুন।';
 
   @override

@@ -131,9 +131,8 @@ class ChallengeRemoteDataSource {
         userLocation: location,
         userLatitude: latitude ?? 0.0,
         userLongitude: longitude ?? 0.0,
-        hasLocation: location.trim().isNotEmpty &&
-            latitude != null &&
-            longitude != null,
+        hasLocation:
+            location.trim().isNotEmpty && latitude != null && longitude != null,
         challengeStartDate:
             startDateStr != null ? DateTime.tryParse(startDateStr) : null,
         isChallengeActive:

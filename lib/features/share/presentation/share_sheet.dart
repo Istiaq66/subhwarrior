@@ -99,8 +99,7 @@ Future<void> showShareSheet(
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child:
-                                  CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.share),
                       label: Text(l10n.shareCardButton),
@@ -111,9 +110,8 @@ Future<void> showShareSheet(
                   SizedBox(
                     width: double.infinity,
                     child: TextButton(
-                      onPressed: busy
-                          ? null
-                          : () => Navigator.of(sheetContext).pop(),
+                      onPressed:
+                          busy ? null : () => Navigator.of(sheetContext).pop(),
                       style: TextButton.styleFrom(
                         foregroundColor: theme.colorScheme.onSurfaceVariant,
                       ),

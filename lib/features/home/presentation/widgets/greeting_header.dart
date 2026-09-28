@@ -20,8 +20,7 @@ class GreetingHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final name =
-        userName.isNotEmpty ? userName : l10n.homeGreetingFallbackName;
+    final name = userName.isNotEmpty ? userName : l10n.homeGreetingFallbackName;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final now = DateTime.now();
     final gregorian = DateFormat.MMMMEEEEd(locale).format(now);

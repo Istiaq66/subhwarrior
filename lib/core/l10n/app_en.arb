@@ -315,34 +315,18 @@
     }
   },
   "onboardingCoordinatesNotFound": "Unable to find coordinates for that location.",
-  "onboardingLocationServicesDisabled": "Location services are disabled. Please enable them in settings.",
-  "onboardingLocationPermissionDenied": "Location permissions are denied",
-  "onboardingLocationPermissionDeniedForever": "Location permissions are permanently denied. Please enable them in app settings.",
-  "onboardingSettingsAction": "Settings",
-  "@onboardingSettingsAction": {
-    "description": "Snackbar action button that opens the app settings"
-  },
-  "onboardingUnknownLocality": "Unknown",
-  "@onboardingUnknownLocality": {
+  "locationUnknownLocality": "Unknown",
+  "@locationUnknownLocality": {
     "description": "Fallback city name when reverse geocoding returns no locality"
   },
-  "onboardingLocationSetCoords": "Location set ({latitude}, {longitude})",
-  "@onboardingLocationSetCoords": {
+  "locationSetCoords": "Location set ({latitude}, {longitude})",
+  "@locationSetCoords": {
     "description": "Location field text when only raw coordinates are available; latitude/longitude are formatted decimal strings",
     "placeholders": {
       "latitude": {
         "type": "String"
       },
       "longitude": {
-        "type": "String"
-      }
-    }
-  },
-  "onboardingErrorGettingLocation": "Error getting location: {error}",
-  "@onboardingErrorGettingLocation": {
-    "description": "Snackbar shown when fetching the device location throws; error is the exception text",
-    "placeholders": {
-      "error": {
         "type": "String"
       }
     }
@@ -418,13 +402,13 @@
     }
   },
   "settingsLocationTitle": "Location",
-  "settingsLocationServicesOff": "Location is turned off. Turn it on to detect your city.",
-  "settingsLocationTurnOnAction": "Turn on",
-  "settingsLocationPermissionDenied": "Location access is needed to detect your city and prayer times.",
-  "settingsLocationPermissionBlockedAndroid": "Location access is blocked. In app settings tap Permissions › Location, then Allow.",
-  "settingsLocationPermissionBlockedIos": "Location access is blocked. In app settings tap Location, then While Using the App.",
-  "settingsLocationOpenSettingsAction": "Open settings",
-  "settingsLocationFailed": "Couldn't detect your location. Try again, or type your city above.",
+  "locationServicesOff": "Location is turned off. Turn it on to detect your city.",
+  "locationTurnOnAction": "Turn on",
+  "locationPermissionDenied": "Location access is needed to detect your city and prayer times.",
+  "locationPermissionBlockedAndroid": "Location access is blocked. In app settings tap Permissions › Location, then Allow.",
+  "locationPermissionBlockedIos": "Location access is blocked. In app settings tap Location, then While Using the App.",
+  "locationOpenSettingsAction": "Open settings",
+  "locationDetectFailed": "Couldn't detect your location. Try again, or type your city above.",
   "settingsCoordinates": "Coordinates: {latitude}, {longitude}",
   "@settingsCoordinates": {
     "description": "Saved coordinates shown below the location field; latitude/longitude are formatted decimal strings",

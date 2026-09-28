@@ -14,6 +14,7 @@ import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
+import 'package:subh_warrior/helpers/location_access.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/providers/locale_provider.dart';
 import 'package:subh_warrior/providers/theme_provider.dart';
@@ -130,8 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: _buildLocationSection(),
             ),
             _SettingsSection(
-              label:
-                  AppLocalizations.of(context)!.settingsPrayerSettingsTitle,
+              label: AppLocalizations.of(context)!.settingsPrayerSettingsTitle,
               child: _buildPrayerSettingsSection(),
             ),
             _SettingsSection(
@@ -630,7 +630,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         final l10n = AppLocalizations.of(context)!;
         return Card(
-              child: Padding(
+          child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -853,48 +853,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isLoadingLocation = true;
     });
 
     try {
+      final access = await requestLocationAccess();
+      if (!mounted) return;
+      if (access != LocationAccess.granted) {
+        showLocationAccessSnack(context, access);
+        return;
+      }
+
       final position = await Geolocator.getCurrentPosition(
         locationSettings:
             const LocationSettings(accuracy: LocationAccuracy.high),
       );
 
-      // Reverse geocoding to get city name
-      final placemarks = await placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
+      // Reverse geocoding is best-effort: the coordinates alone already drive
+      // prayer times, so a failed or empty lookup falls back to showing them.
+      var location = l10n.locationSetCoords(
+        position.latitude.toStringAsFixed(2),
+        position.longitude.toStringAsFixed(2),
       );
-
-      if (!mounted) return;
-
-      if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        final location = '${place.locality}, ${place.country}';
-
-        setState(() {
-          _locationController.text = location;
-        });
-
-        // Update provider with coordinates
-        final provider = context.read<ChallengeProvider>();
-        await provider.updateUserSettings(
-          name: _nameController.text,
-          location: location,
-          latitude: position.latitude,
-          longitude: position.longitude,
+      try {
+        final placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
         );
-
-        // Update prayer times
-        await _refreshPrayerTimes();
+        if (placemarks.isNotEmpty) {
+          final place = placemarks.first;
+          final locality = place.locality?.isNotEmpty ?? false
+              ? place.locality!
+              : (place.administrativeArea?.isNotEmpty ?? false
+                  ? place.administrativeArea!
+                  : l10n.locationUnknownLocality);
+          final country = place.country ?? '';
+          location = country.isEmpty ? locality : '$locality, $country';
+        }
+      } catch (_) {
+        // Keep the coordinate fallback.
       }
-    } catch (e) {
+
       if (!mounted) return;
-      context.showSnack(
-        AppLocalizations.of(context)!.onboardingErrorGettingLocation('$e'),
+      setState(() {
+        _locationController.text = location;
+      });
+
+      await context.read<ChallengeProvider>().updateUserSettings(
+            name: _nameController.text,
+            location: location,
+            latitude: position.latitude,
+            longitude: position.longitude,
+          );
+
+      if (!mounted) return;
+      await _refreshPrayerTimes();
+    } catch (_) {
+      // Platform channel, timeout or GPS failure — the user gets one plain
+      // sentence instead of the raw exception.
+      if (!mounted) return;
+      showLocationSnack(
+        context,
+        l10n.locationDetectFailed,
         kind: AppSnackKind.error,
       );
     } finally {
@@ -1066,7 +1088,6 @@ class _SettingsSection extends StatelessWidget {
   }
 }
 
-
 /// Bottom sheet for a Fajr reminder lead time outside the presets. Returns the
 /// chosen minute count via [Navigator.pop], or null when dismissed.
 class _CustomReminderSheet extends StatefulWidget {
@@ -1112,55 +1133,57 @@ class _CustomReminderSheetState extends State<_CustomReminderSheet> {
       ),
       child: Form(
         key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              l10n.settingsCustomReminderTitle,
-              style: theme.textTheme.titleMedium,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            TextFormField(
-              controller: _controller,
-              autofocus: true,
-              keyboardType: TextInputType.number,
-              textInputAction: TextInputAction.done,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(3),
-              ],
-              decoration: InputDecoration(
-                labelText: l10n.settingsCustomReminderFieldLabel,
-                helperText: l10n.settingsCustomReminderHelper,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                l10n.settingsCustomReminderTitle,
+                style: theme.textTheme.titleMedium,
               ),
-              validator: (value) {
-                final minutes = int.tryParse((value ?? '').trim());
-                if (minutes == null ||
-                    minutes < AppConstants.minFajrReminderMinutes ||
-                    minutes > AppConstants.maxFajrReminderMinutes) {
-                  return l10n.settingsCustomReminderInvalid;
-                }
-                return null;
-              },
-              onFieldSubmitted: (_) => _submit(),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.settingsCancel),
+              const SizedBox(height: AppSpacing.md),
+              TextFormField(
+                controller: _controller,
+                autofocus: true,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.done,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3),
+                ],
+                decoration: InputDecoration(
+                  labelText: l10n.settingsCustomReminderFieldLabel,
+                  helperText: l10n.settingsCustomReminderHelper,
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                FilledButton(
-                  onPressed: _submit,
-                  child: Text(l10n.settingsCustomReminderSave),
-                ),
-              ],
-            ),
-          ],
+                validator: (value) {
+                  final minutes = int.tryParse((value ?? '').trim());
+                  if (minutes == null ||
+                      minutes < AppConstants.minFajrReminderMinutes ||
+                      minutes > AppConstants.maxFajrReminderMinutes) {
+                    return l10n.settingsCustomReminderInvalid;
+                  }
+                  return null;
+                },
+                onFieldSubmitted: (_) => _submit(),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(l10n.settingsCancel),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  FilledButton(
+                    onPressed: _submit,
+                    child: Text(l10n.settingsCustomReminderSave),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

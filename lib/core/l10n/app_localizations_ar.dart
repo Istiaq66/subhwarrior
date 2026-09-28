@@ -510,30 +510,11 @@ class AppLocalizationsAr extends AppLocalizations {
       'تعذّر العثور على إحداثيات هذا الموقع.';
 
   @override
-  String get onboardingLocationServicesDisabled =>
-      'خدمات الموقع معطّلة. يرجى تفعيلها من الإعدادات.';
+  String get locationUnknownLocality => 'غير معروف';
 
   @override
-  String get onboardingLocationPermissionDenied => 'تم رفض أذونات الموقع';
-
-  @override
-  String get onboardingLocationPermissionDeniedForever =>
-      'تم رفض أذونات الموقع نهائيًا. يرجى تفعيلها من إعدادات التطبيق.';
-
-  @override
-  String get onboardingSettingsAction => 'الإعدادات';
-
-  @override
-  String get onboardingUnknownLocality => 'غير معروف';
-
-  @override
-  String onboardingLocationSetCoords(String latitude, String longitude) {
+  String locationSetCoords(String latitude, String longitude) {
     return 'تم تحديد الموقع ($latitude، $longitude)';
-  }
-
-  @override
-  String onboardingErrorGettingLocation(String error) {
-    return 'خطأ في الحصول على الموقع: $error';
   }
 
   @override
@@ -676,29 +657,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsLocationTitle => 'الموقع';
 
   @override
-  String get settingsLocationServicesOff =>
-      'خدمة الموقع متوقفة. فعّلها لتحديد مدينتك.';
+  String get locationServicesOff => 'خدمة الموقع متوقفة. فعّلها لتحديد مدينتك.';
 
   @override
-  String get settingsLocationTurnOnAction => 'تفعيل';
+  String get locationTurnOnAction => 'تفعيل';
 
   @override
-  String get settingsLocationPermissionDenied =>
+  String get locationPermissionDenied =>
       'نحتاج إذن الموقع لتحديد مدينتك وأوقات الصلاة.';
 
   @override
-  String get settingsLocationPermissionBlockedAndroid =>
+  String get locationPermissionBlockedAndroid =>
       'إذن الموقع محظور. في إعدادات التطبيق افتح الأذونات ثم الموقع واختر السماح.';
 
   @override
-  String get settingsLocationPermissionBlockedIos =>
+  String get locationPermissionBlockedIos =>
       'إذن الموقع محظور. في إعدادات التطبيق افتح الموقع واختر أثناء استخدام التطبيق.';
 
   @override
-  String get settingsLocationOpenSettingsAction => 'فتح الإعدادات';
+  String get locationOpenSettingsAction => 'فتح الإعدادات';
 
   @override
-  String get settingsLocationFailed =>
+  String get locationDetectFailed =>
       'تعذّر تحديد موقعك. أعد المحاولة أو اكتب اسم مدينتك بالأعلى.';
 
   @override

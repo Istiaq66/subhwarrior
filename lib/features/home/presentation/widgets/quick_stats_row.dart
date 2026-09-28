@@ -96,42 +96,42 @@ class _StreakTile extends StatelessWidget {
               // button pinned in the corner.
               padding: const EdgeInsetsDirectional.fromSTEB(48, 20, 48, 20),
               child: Column(
-              children: [
-                Text(
-                  currentStreak == 1
-                      ? l10n.streakCardDayStreak
-                      : l10n.streakCardDaysStreak,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                // The gradient paints the glyphs themselves; ShaderMask needs a
-                // solid source colour to multiply against, hence white here.
-                ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  // `createShader` resolves the directional begin/end itself,
-                  // so it needs the ambient TextDirection handed to it — the
-                  // gradient has no BuildContext of its own. Without it this
-                  // throws "No TextDirection found" during paint and the
-                  // shader comes back null, leaving the numeral unpainted.
-                  shaderCallback: (bounds) => LinearGradient(
-                    colors: appColors.streakGradient,
-                    begin: AlignmentDirectional.topStart,
-                    end: AlignmentDirectional.bottomEnd,
-                  ).createShader(
-                    bounds,
-                    textDirection: Directionality.of(context),
-                  ),
-                  child: Text(
-                    context.localizeNumber(currentStreak),
-                    style: theme.textTheme.displayMedium?.copyWith(
-                      color: Colors.white,
-                      fontFeatures: const [FontFeature.tabularFigures()],
+                children: [
+                  Text(
+                    currentStreak == 1
+                        ? l10n.streakCardDayStreak
+                        : l10n.streakCardDaysStreak,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 4),
+                  // The gradient paints the glyphs themselves; ShaderMask needs a
+                  // solid source colour to multiply against, hence white here.
+                  ShaderMask(
+                    blendMode: BlendMode.srcIn,
+                    // `createShader` resolves the directional begin/end itself,
+                    // so it needs the ambient TextDirection handed to it — the
+                    // gradient has no BuildContext of its own. Without it this
+                    // throws "No TextDirection found" during paint and the
+                    // shader comes back null, leaving the numeral unpainted.
+                    shaderCallback: (bounds) => LinearGradient(
+                      colors: appColors.streakGradient,
+                      begin: AlignmentDirectional.topStart,
+                      end: AlignmentDirectional.bottomEnd,
+                    ).createShader(
+                      bounds,
+                      textDirection: Directionality.of(context),
+                    ),
+                    child: Text(
+                      context.localizeNumber(currentStreak),
+                      style: theme.textTheme.displayMedium?.copyWith(
+                        color: Colors.white,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

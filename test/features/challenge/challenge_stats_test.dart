@@ -52,8 +52,7 @@ void main() {
     test('sums minutes across every log, qualifying or not', () {
       final stats = ChallengeStats.fromLogs([
         log(start, minutes: 90),
-        log(start.add(const Duration(days: 1)),
-            qualifying: false, minutes: 30),
+        log(start.add(const Duration(days: 1)), qualifying: false, minutes: 30),
       ], challengeStartDate: start);
 
       expect(stats.totalMinutes, 120);

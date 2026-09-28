@@ -53,10 +53,12 @@ void main() {
       // The check glyph marks the one qualifying day, so its enclosing circle
       // is the chip we can measure.
       final circle = tester.getSize(
-        find.ancestor(
-          of: find.byIcon(Icons.check),
-          matching: find.byType(Container),
-        ).first,
+        find
+            .ancestor(
+              of: find.byIcon(Icons.check),
+              matching: find.byType(Container),
+            )
+            .first,
       );
 
       expect(circle.width, lessThan(40));
@@ -69,10 +71,12 @@ void main() {
       await pumpAtWidth(tester, 480);
 
       final circle = tester.getSize(
-        find.ancestor(
-          of: find.byIcon(Icons.check),
-          matching: find.byType(Container),
-        ).first,
+        find
+            .ancestor(
+              of: find.byIcon(Icons.check),
+              matching: find.byType(Container),
+            )
+            .first,
       );
 
       expect(circle.width, 40);

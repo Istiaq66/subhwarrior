@@ -9,6 +9,7 @@ import 'package:subh_warrior/core/theme/app_snack_bars.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
+import 'package:subh_warrior/helpers/location_access.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -512,9 +513,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Text(
                 number,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
               ),
             ),
           ),
@@ -541,114 +542,65 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isLoadingLocation = true;
     });
 
     try {
-      // Check if location services are enabled
-      final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        if (!mounted) return;
-        context.showSnack(
-          AppLocalizations.of(context)!.onboardingLocationServicesDisabled,
-          kind: AppSnackKind.warning,
-        );
-        setState(() {
-          _isLoadingLocation = false;
-        });
+      final access = await requestLocationAccess();
+      if (!mounted) return;
+      if (access != LocationAccess.granted) {
+        showLocationAccessSnack(context, access);
         return;
       }
 
-      // Check location permissions
-      LocationPermission permission = await Geolocator.checkPermission();
-
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-
-        if (permission == LocationPermission.denied) {
-          if (!mounted) return;
-          context.showSnack(
-            AppLocalizations.of(context)!.onboardingLocationPermissionDenied,
-            kind: AppSnackKind.error,
-          );
-          setState(() {
-            _isLoadingLocation = false;
-          });
-          return;
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        if (!mounted) return;
-        context.showSnack(
-          AppLocalizations.of(context)!
-              .onboardingLocationPermissionDeniedForever,
-          kind: AppSnackKind.error,
-          action: SnackBarAction(
-            label: AppLocalizations.of(context)!.onboardingSettingsAction,
-            onPressed: () {
-              Geolocator.openAppSettings();
-            },
-          ),
-        );
-        setState(() {
-          _isLoadingLocation = false;
-        });
-        return;
-      }
-
-      // If we have permission, get the position
       final position = await Geolocator.getCurrentPosition(
-        locationSettings:
-            const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
       _latitude = position.latitude;
       _longitude = position.longitude;
       _hasCoordinates = true;
 
-      // Reverse geocoding to get city name
+      // Reverse geocoding is best-effort: the coordinates alone already drive
+      // prayer times, so a failed or empty lookup falls back to showing them.
+      var location = l10n.locationSetCoords(
+        position.latitude.toStringAsFixed(2),
+        position.longitude.toStringAsFixed(2),
+      );
       try {
         final placemarks = await placemarkFromCoordinates(
           position.latitude,
           position.longitude,
         );
-        if (!mounted) return;
-
         if (placemarks.isNotEmpty) {
           final place = placemarks.first;
-          final location =
-              '${place.locality ?? place.administrativeArea ?? AppLocalizations.of(context)!.onboardingUnknownLocality}, ${place.country ?? ''}';
-
-          setState(() {
-            _locationController.text = location;
-          });
-        } else {
-          setState(() {
-            _locationController.text =
-                AppLocalizations.of(context)!.onboardingLocationSetCoords(
-              position.latitude.toStringAsFixed(2),
-              position.longitude.toStringAsFixed(2),
-            );
-          });
+          final locality = place.locality?.isNotEmpty ?? false
+              ? place.locality!
+              : (place.administrativeArea?.isNotEmpty ?? false
+                  ? place.administrativeArea!
+                  : l10n.locationUnknownLocality);
+          final country = place.country ?? '';
+          location = country.isEmpty ? locality : '$locality, $country';
         }
-      } catch (e) {
-        // If geocoding fails, just show coordinates
-        if (!mounted) return;
-        setState(() {
-          _locationController.text =
-              AppLocalizations.of(context)!.onboardingLocationSetCoords(
-            position.latitude.toStringAsFixed(2),
-            position.longitude.toStringAsFixed(2),
-          );
-        });
+      } catch (_) {
+        // Keep the coordinate fallback.
       }
-    } catch (e) {
+
       if (!mounted) return;
-      context.showSnack(
-        AppLocalizations.of(context)!
-            .onboardingErrorGettingLocation(e.toString()),
+      setState(() {
+        _locationController.text = location;
+      });
+    } catch (_) {
+      // Platform channel, timeout or GPS failure — the user gets one plain
+      // sentence instead of the raw exception.
+      if (!mounted) return;
+      showLocationSnack(
+        context,
+        l10n.locationDetectFailed,
         kind: AppSnackKind.error,
       );
     } finally {

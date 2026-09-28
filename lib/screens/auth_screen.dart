@@ -282,8 +282,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
                               minimumSize: Size.zero,
-                              tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: Text(l10n.authForgotPassword),
                           ),

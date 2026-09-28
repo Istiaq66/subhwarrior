@@ -225,7 +225,6 @@ class _CelebrationBadge extends StatelessWidget {
   }
 }
 
-
 /// One summary row: filled icon and label leading, figure trailing, with a
 /// hairline under every row but the last (`border-b border-divider/50`).
 class _StatRow extends StatelessWidget {

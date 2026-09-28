@@ -235,7 +235,8 @@ class _ScopeSelector extends StatelessWidget {
                   borderRadius: AppRadius.brFull,
                   onTap: () => onChanged(i),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                     decoration: BoxDecoration(
                       color: i == selected ? scheme.primary : null,
                       borderRadius: AppRadius.brFull,
@@ -323,49 +324,49 @@ class _PodiumColumn extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(top: avatarSize / 2),
           child: Card(
-          shape: isCurrentUser
-              ? RoundedRectangleBorder(
-                  borderRadius: AppRadius.brLg,
-                  side: BorderSide(color: scheme.secondary),
-                )
-              : null,
-          color: isCurrentUser ? scheme.primaryContainer : null,
-          child: SizedBox(
-            width: double.infinity,
-            height: height,
-            child: Padding(
-              // Top inset clears the avatar overlapping the pedestal — the
-              // comp's `pt-8` serves the same purpose.
-              padding: EdgeInsets.only(
-                top: avatarSize / 2 + AppSpacing.md,
-                left: AppSpacing.sm,
-                right: AppSpacing.sm,
-                bottom: AppSpacing.sm,
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    entry.userName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(color: scheme.primary),
-                  ),
-                  const Spacer(),
-                  _StreakCount(value: entry.currentStreak, large: rank == 1),
-                  AppSpacing.vGapXs,
-                  Text(
-                    l10n.leaderboardDaysCount(entry.qualifyingDays),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(color: scheme.onSurfaceVariant),
-                  ),
-                ],
+            shape: isCurrentUser
+                ? RoundedRectangleBorder(
+                    borderRadius: AppRadius.brLg,
+                    side: BorderSide(color: scheme.secondary),
+                  )
+                : null,
+            color: isCurrentUser ? scheme.primaryContainer : null,
+            child: SizedBox(
+              width: double.infinity,
+              height: height,
+              child: Padding(
+                // Top inset clears the avatar overlapping the pedestal — the
+                // comp's `pt-8` serves the same purpose.
+                padding: EdgeInsets.only(
+                  top: avatarSize / 2 + AppSpacing.md,
+                  left: AppSpacing.sm,
+                  right: AppSpacing.sm,
+                  bottom: AppSpacing.sm,
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      entry.userName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleSmall
+                          ?.copyWith(color: scheme.primary),
+                    ),
+                    const Spacer(),
+                    _StreakCount(value: entry.currentStreak, large: rank == 1),
+                    AppSpacing.vGapXs,
+                    Text(
+                      l10n.leaderboardDaysCount(entry.qualifyingDays),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall
+                          ?.copyWith(color: scheme.onSurfaceVariant),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
           ),
         ),
         Semantics(
@@ -451,8 +452,8 @@ class _RankRow extends StatelessWidget {
               bottom: 0,
               child: Container(width: 6, color: scheme.primary),
             ),
-          Padding
-              (padding: const EdgeInsets.all(AppSpacing.sm + 4),
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.sm + 4),
             child: Row(
               children: [
                 SizedBox(
@@ -629,7 +630,8 @@ class _YouBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 1),
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 1),
       decoration: BoxDecoration(
         color: theme.colorScheme.primary,
         borderRadius: AppRadius.brFull,

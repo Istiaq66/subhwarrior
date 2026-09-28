@@ -511,31 +511,11 @@ class AppLocalizationsUr extends AppLocalizations {
       'اس مقام کے متناسقات (کوآرڈینیٹس) نہیں مل سکے۔';
 
   @override
-  String get onboardingLocationServicesDisabled =>
-      'لوکیشن سروسز بند ہیں۔ براہ کرم انہیں سیٹنگز میں فعال کریں۔';
+  String get locationUnknownLocality => 'نامعلوم';
 
   @override
-  String get onboardingLocationPermissionDenied =>
-      'لوکیشن کی اجازت نہیں دی گئی';
-
-  @override
-  String get onboardingLocationPermissionDeniedForever =>
-      'لوکیشن کی اجازت مستقل طور پر مسترد کر دی گئی ہے۔ براہ کرم ایپ سیٹنگز میں اسے فعال کریں۔';
-
-  @override
-  String get onboardingSettingsAction => 'سیٹنگز';
-
-  @override
-  String get onboardingUnknownLocality => 'نامعلوم';
-
-  @override
-  String onboardingLocationSetCoords(String latitude, String longitude) {
+  String locationSetCoords(String latitude, String longitude) {
     return 'مقام سیٹ ہو گیا ($latitude, $longitude)';
-  }
-
-  @override
-  String onboardingErrorGettingLocation(String error) {
-    return 'مقام حاصل کرنے میں خرابی: $error';
   }
 
   @override
@@ -678,29 +658,29 @@ class AppLocalizationsUr extends AppLocalizations {
   String get settingsLocationTitle => 'مقام';
 
   @override
-  String get settingsLocationServicesOff =>
+  String get locationServicesOff =>
       'لوکیشن بند ہے۔ اپنا شہر معلوم کرنے کے لیے اسے آن کریں۔';
 
   @override
-  String get settingsLocationTurnOnAction => 'آن کریں';
+  String get locationTurnOnAction => 'آن کریں';
 
   @override
-  String get settingsLocationPermissionDenied =>
+  String get locationPermissionDenied =>
       'آپ کا شہر اور نماز کے اوقات معلوم کرنے کے لیے لوکیشن کی اجازت درکار ہے۔';
 
   @override
-  String get settingsLocationPermissionBlockedAndroid =>
+  String get locationPermissionBlockedAndroid =>
       'لوکیشن کی اجازت بلاک ہے۔ ایپ سیٹنگز میں Permissions پھر Location کھول کر Allow منتخب کریں۔';
 
   @override
-  String get settingsLocationPermissionBlockedIos =>
+  String get locationPermissionBlockedIos =>
       'لوکیشن کی اجازت بلاک ہے۔ ایپ سیٹنگز میں Location کھول کر While Using the App منتخب کریں۔';
 
   @override
-  String get settingsLocationOpenSettingsAction => 'سیٹنگز کھولیں';
+  String get locationOpenSettingsAction => 'سیٹنگز کھولیں';
 
   @override
-  String get settingsLocationFailed =>
+  String get locationDetectFailed =>
       'آپ کی لوکیشن معلوم نہیں ہو سکی۔ دوبارہ کوشش کریں یا اوپر اپنا شہر لکھیں۔';
 
   @override

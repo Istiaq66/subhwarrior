@@ -872,47 +872,17 @@ abstract class AppLocalizations {
   /// **'Unable to find coordinates for that location.'**
   String get onboardingCoordinatesNotFound;
 
-  /// No description provided for @onboardingLocationServicesDisabled.
-  ///
-  /// In en, this message translates to:
-  /// **'Location services are disabled. Please enable them in settings.'**
-  String get onboardingLocationServicesDisabled;
-
-  /// No description provided for @onboardingLocationPermissionDenied.
-  ///
-  /// In en, this message translates to:
-  /// **'Location permissions are denied'**
-  String get onboardingLocationPermissionDenied;
-
-  /// No description provided for @onboardingLocationPermissionDeniedForever.
-  ///
-  /// In en, this message translates to:
-  /// **'Location permissions are permanently denied. Please enable them in app settings.'**
-  String get onboardingLocationPermissionDeniedForever;
-
-  /// Snackbar action button that opens the app settings
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get onboardingSettingsAction;
-
   /// Fallback city name when reverse geocoding returns no locality
   ///
   /// In en, this message translates to:
   /// **'Unknown'**
-  String get onboardingUnknownLocality;
+  String get locationUnknownLocality;
 
   /// Location field text when only raw coordinates are available; latitude/longitude are formatted decimal strings
   ///
   /// In en, this message translates to:
   /// **'Location set ({latitude}, {longitude})'**
-  String onboardingLocationSetCoords(String latitude, String longitude);
-
-  /// Snackbar shown when fetching the device location throws; error is the exception text
-  ///
-  /// In en, this message translates to:
-  /// **'Error getting location: {error}'**
-  String onboardingErrorGettingLocation(String error);
+  String locationSetCoords(String latitude, String longitude);
 
   /// No description provided for @authCreateAccountTitle.
   ///
@@ -1142,47 +1112,47 @@ abstract class AppLocalizations {
   /// **'Location'**
   String get settingsLocationTitle;
 
-  /// No description provided for @settingsLocationServicesOff.
+  /// No description provided for @locationServicesOff.
   ///
   /// In en, this message translates to:
   /// **'Location is turned off. Turn it on to detect your city.'**
-  String get settingsLocationServicesOff;
+  String get locationServicesOff;
 
-  /// No description provided for @settingsLocationTurnOnAction.
+  /// No description provided for @locationTurnOnAction.
   ///
   /// In en, this message translates to:
   /// **'Turn on'**
-  String get settingsLocationTurnOnAction;
+  String get locationTurnOnAction;
 
-  /// No description provided for @settingsLocationPermissionDenied.
+  /// No description provided for @locationPermissionDenied.
   ///
   /// In en, this message translates to:
   /// **'Location access is needed to detect your city and prayer times.'**
-  String get settingsLocationPermissionDenied;
+  String get locationPermissionDenied;
 
-  /// No description provided for @settingsLocationPermissionBlockedAndroid.
+  /// No description provided for @locationPermissionBlockedAndroid.
   ///
   /// In en, this message translates to:
   /// **'Location access is blocked. In app settings tap Permissions › Location, then Allow.'**
-  String get settingsLocationPermissionBlockedAndroid;
+  String get locationPermissionBlockedAndroid;
 
-  /// No description provided for @settingsLocationPermissionBlockedIos.
+  /// No description provided for @locationPermissionBlockedIos.
   ///
   /// In en, this message translates to:
   /// **'Location access is blocked. In app settings tap Location, then While Using the App.'**
-  String get settingsLocationPermissionBlockedIos;
+  String get locationPermissionBlockedIos;
 
-  /// No description provided for @settingsLocationOpenSettingsAction.
+  /// No description provided for @locationOpenSettingsAction.
   ///
   /// In en, this message translates to:
   /// **'Open settings'**
-  String get settingsLocationOpenSettingsAction;
+  String get locationOpenSettingsAction;
 
-  /// No description provided for @settingsLocationFailed.
+  /// No description provided for @locationDetectFailed.
   ///
   /// In en, this message translates to:
   /// **'Couldn\'t detect your location. Try again, or type your city above.'**
-  String get settingsLocationFailed;
+  String get locationDetectFailed;
 
   /// Saved coordinates shown below the location field; latitude/longitude are formatted decimal strings
   ///

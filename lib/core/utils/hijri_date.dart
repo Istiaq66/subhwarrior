@@ -47,8 +47,7 @@ class HijriDate {
     remainder = remainder -
         (((30 - yearInCycle) / 15).floor()) *
             (((17719 * yearInCycle) / 50).floor()) -
-        ((yearInCycle / 16).floor()) *
-            (((15238 * yearInCycle) / 43).floor()) +
+        ((yearInCycle / 16).floor()) * (((15238 * yearInCycle) / 43).floor()) +
         29;
     final month = ((24 * remainder) / 709).floor();
     final day = remainder - ((709 * month) / 24).floor();

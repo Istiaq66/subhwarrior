@@ -249,10 +249,12 @@ class PrayerTimeCard extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color:
-                Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
-            fontWeight: FontWeight.w500,
-          ),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onPrimary
+                    .withValues(alpha: 0.8),
+                fontWeight: FontWeight.w500,
+              ),
         ),
         const SizedBox(height: 4),
         // The "Next Fajr In" column carries the longest string in this row
@@ -266,9 +268,9 @@ class PrayerTimeCard extends StatelessWidget {
             maxLines: 1,
             softWrap: false,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
         ),
       ],
@@ -362,20 +364,20 @@ class _LiveFajrCountdownState extends State<_LiveFajrCountdown> {
       now: DateTime.now(),
     );
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(
-      color: Theme.of(context).colorScheme.onPrimary,
-      fontWeight: FontWeight.bold,
-    );
+          color: Theme.of(context).colorScheme.onPrimary,
+          fontWeight: FontWeight.bold,
+        );
 
     return Column(
       children: [
         Text(
           l10n.prayerCardNextFajrIn,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary.withValues(
-                  alpha: 0.8,
-                ),
-            fontWeight: FontWeight.w500,
-          ),
+                color: Theme.of(context).colorScheme.onPrimary.withValues(
+                      alpha: 0.8,
+                    ),
+                fontWeight: FontWeight.w500,
+              ),
         ),
         const SizedBox(height: 4),
         remaining == null

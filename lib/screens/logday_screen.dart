@@ -460,8 +460,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
                       child: Text(
                         l10n.logDayWorkNotQualify,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
+                              color: Theme.of(context).colorScheme.error,
+                            ),
                       ),
                     ),
                   ],
@@ -492,8 +492,8 @@ class _LogDayScreenState extends State<LogDayScreen> {
               Text(
                 l10n.logDayMinimumMinutes(AppConstants.minDeepWorkMinutes),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                      color: Theme.of(context).colorScheme.error,
+                    ),
               ),
             const SizedBox(height: 16),
             TextFormField(

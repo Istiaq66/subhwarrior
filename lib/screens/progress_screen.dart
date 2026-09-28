@@ -151,8 +151,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
             });
             _showDayDetails(provider, selectedDay);
           },
-          onFormatChanged: (format) =>
-              setState(() => _calendarFormat = format),
+          onFormatChanged: (format) => setState(() => _calendarFormat = format),
           onPageChanged: (focusedDay) =>
               setState(() => _focusedDay = focusedDay),
           calendarBuilders: CalendarBuilders(
@@ -233,7 +232,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
               maxY: weeklyTarget.toDouble(),
               barTouchData: BarTouchData(enabled: true),
               gridData: FlGridData(
-
                 drawVerticalLine: false,
                 getDrawingHorizontalLine: (_) => FlLine(
                   color: theme.colorScheme.outlineVariant,

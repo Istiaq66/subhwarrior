@@ -47,10 +47,10 @@ class DayDetailSheet extends StatelessWidget {
                           ? l10n.dayDetailQualifying
                           : l10n.dayDetailNonQualifying,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: log.isQualifying
-                            ? context.appColors.success
-                            : context.appColors.warning,
-                      ),
+                            color: log.isQualifying
+                                ? context.appColors.success
+                                : context.appColors.warning,
+                          ),
                     ),
                   ],
                 ),
@@ -122,15 +122,15 @@ class _DetailRow extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
           ),
           const Spacer(),
           Text(
             value,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: success ? context.appColors.success : null,
-            ),
+                  color: success ? context.appColors.success : null,
+                ),
           ),
         ],
       ),

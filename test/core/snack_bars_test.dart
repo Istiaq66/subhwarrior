@@ -72,8 +72,8 @@ void main() {
     });
 
     testWidgets('neutral snackbar defers to the theme', (tester) async {
-      final snackBar = await showAndCapture(
-          tester, AppTheme.light(), AppSnackKind.neutral);
+      final snackBar =
+          await showAndCapture(tester, AppTheme.light(), AppSnackKind.neutral);
 
       expect(snackBar.backgroundColor, isNull);
       expect(labelColor(snackBar), isNull);

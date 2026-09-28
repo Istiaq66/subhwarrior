@@ -73,25 +73,25 @@ class TodayStatusCard extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  l10n.prayerCardTitle.toUpperCase(),
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.6,
+                children: [
+                  Text(
+                    l10n.prayerCardTitle.toUpperCase(),
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.6,
+                    ),
                   ),
-                ),
-                AppSpacing.vGapSm,
-                _FajrTime(clock: clock, meridiem: meridiem),
-                AppSpacing.vGapMd,
-                _Countdown(
-                  todayFajrTime: prayer.todayFajrTime,
-                  tomorrowFajrTime: prayer.tomorrowFajrTime,
-                ),
-                AppSpacing.vGapXl,
-                ..._buildAction(context),
+                  AppSpacing.vGapSm,
+                  _FajrTime(clock: clock, meridiem: meridiem),
+                  AppSpacing.vGapMd,
+                  _Countdown(
+                    todayFajrTime: prayer.todayFajrTime,
+                    tomorrowFajrTime: prayer.tomorrowFajrTime,
+                  ),
+                  AppSpacing.vGapXl,
+                  ..._buildAction(context),
                 ],
               ),
             ),
@@ -249,7 +249,8 @@ class _Countdown extends StatefulWidget {
   final DateTime? todayFajrTime;
   final DateTime? tomorrowFajrTime;
 
-  const _Countdown({required this.todayFajrTime, required this.tomorrowFajrTime});
+  const _Countdown(
+      {required this.todayFajrTime, required this.tomorrowFajrTime});
 
   @override
   State<_Countdown> createState() => _CountdownState();
