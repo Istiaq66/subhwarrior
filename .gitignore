@@ -53,3 +53,6 @@ android/key.properties
 # Kept out of the repo: it is design input, not source, and the design system
 # it describes now lives in lib/core/theme.
 stitch_subh_warrior_forest_green_redesign/
+
+# FVM Version Cache
+.fvm/
