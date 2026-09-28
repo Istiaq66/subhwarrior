@@ -643,6 +643,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsSaveTooltip => 'حفظ الإعدادات';
 
   @override
+  String get settingsDoneAction => 'تم';
+
+  @override
   String get settingsProfileTitle => 'الملف الشخصي';
 
   @override
@@ -721,10 +724,25 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get settingsRemindMe => 'ذكّرني';
+  String get settingsRemindMeBeforeFajr => 'ذكّرني قبل الفجر';
 
   @override
-  String get settingsBeforeFajr => 'قبل الفجر';
+  String get settingsCustomMinutes => 'مخصص';
+
+  @override
+  String get settingsCustomReminderTitle => 'تذكير مخصص';
+
+  @override
+  String get settingsCustomReminderFieldLabel => 'عدد الدقائق قبل الفجر';
+
+  @override
+  String get settingsCustomReminderHelper => 'اختر بين 1 و120 دقيقة';
+
+  @override
+  String get settingsCustomReminderInvalid => 'أدخل رقمًا صحيحًا بين 1 و120';
+
+  @override
+  String get settingsCustomReminderSave => 'ضبط التذكير';
 
   @override
   String get settingsLoggingReminderTitle => 'تذكير التسجيل اليومي';

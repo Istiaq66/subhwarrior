@@ -397,6 +397,7 @@
   },
   "settingsTitle": "Settings",
   "settingsSaveTooltip": "Save Settings",
+  "settingsDoneAction": "Done",
   "settingsProfileTitle": "Profile",
   "settingsNameLabel": "Your Name",
   "settingsNameHint": "Enter your name",
@@ -450,11 +451,13 @@
       }
     }
   },
-  "settingsRemindMe": "Remind me",
-  "settingsBeforeFajr": "before Fajr",
-  "@settingsBeforeFajr": {
-    "description": "Trailing part of the sentence 'Remind me [X min] before Fajr' around the minutes dropdown"
-  },
+  "settingsRemindMeBeforeFajr": "Remind me before Fajr",
+  "settingsCustomMinutes": "Custom",
+  "settingsCustomReminderTitle": "Custom reminder",
+  "settingsCustomReminderFieldLabel": "Minutes before Fajr",
+  "settingsCustomReminderHelper": "Choose between 1 and 120 minutes",
+  "settingsCustomReminderInvalid": "Enter a whole number from 1 to 120",
+  "settingsCustomReminderSave": "Set reminder",
   "settingsLoggingReminderTitle": "Daily Logging Reminder",
   "settingsLoggingReminderSubtitle": "Remind at {time} to log day",
   "@settingsLoggingReminderSubtitle": {

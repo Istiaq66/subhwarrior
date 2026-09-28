@@ -1094,6 +1094,12 @@ abstract class AppLocalizations {
   /// **'Save Settings'**
   String get settingsSaveTooltip;
 
+  /// No description provided for @settingsDoneAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get settingsDoneAction;
+
   /// No description provided for @settingsProfileTitle.
   ///
   /// In en, this message translates to:
@@ -1214,17 +1220,47 @@ abstract class AppLocalizations {
   /// **'Notify {minutes} min before Fajr'**
   String settingsFajrReminderSubtitle(int minutes);
 
-  /// No description provided for @settingsRemindMe.
+  /// No description provided for @settingsRemindMeBeforeFajr.
   ///
   /// In en, this message translates to:
-  /// **'Remind me'**
-  String get settingsRemindMe;
+  /// **'Remind me before Fajr'**
+  String get settingsRemindMeBeforeFajr;
 
-  /// Trailing part of the sentence 'Remind me [X min] before Fajr' around the minutes dropdown
+  /// No description provided for @settingsCustomMinutes.
   ///
   /// In en, this message translates to:
-  /// **'before Fajr'**
-  String get settingsBeforeFajr;
+  /// **'Custom'**
+  String get settingsCustomMinutes;
+
+  /// No description provided for @settingsCustomReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom reminder'**
+  String get settingsCustomReminderTitle;
+
+  /// No description provided for @settingsCustomReminderFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes before Fajr'**
+  String get settingsCustomReminderFieldLabel;
+
+  /// No description provided for @settingsCustomReminderHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose between 1 and 120 minutes'**
+  String get settingsCustomReminderHelper;
+
+  /// No description provided for @settingsCustomReminderInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number from 1 to 120'**
+  String get settingsCustomReminderInvalid;
+
+  /// No description provided for @settingsCustomReminderSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Set reminder'**
+  String get settingsCustomReminderSave;
 
   /// No description provided for @settingsLoggingReminderTitle.
   ///

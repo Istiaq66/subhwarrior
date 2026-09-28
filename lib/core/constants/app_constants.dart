@@ -27,6 +27,10 @@ class AppConstants {
   /// Default lead time (minutes) for the Fajr reminder.
   static const int defaultFajrReminderMinutes = 15;
 
+  /// Bounds (inclusive) for a custom Fajr reminder lead time, in minutes.
+  static const int minFajrReminderMinutes = 1;
+  static const int maxFajrReminderMinutes = 120;
+
   // --- Input limits (IMPROVEMENT_PLAN D5) ---
 
   /// Username length bounds (inclusive). Charset enforced separately.

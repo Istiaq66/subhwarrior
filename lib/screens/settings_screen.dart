@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart' hide TextDirection;
@@ -99,10 +100,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text(AppLocalizations.of(context)!.settingsTitle),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: _saveSettings,
-            tooltip: AppLocalizations.of(context)!.settingsSaveTooltip,
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
+            child: TextButton(
+              onPressed: _saveSettings,
+              child: Text(AppLocalizations.of(context)!.settingsDoneAction),
+            ),
           ),
         ],
       ),
@@ -379,42 +382,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   });
                 },
               ),
-              if (_fajrReminder) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  // The two labels flex around the dropdown: with three
-                  // fixed-width children this row overflowed by 17px on the
-                  // app's type scale, and the Arabic, Bengali and Urdu strings
-                  // are longer still.
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(l10n.settingsRemindMe, maxLines: 2),
-                      ),
-                      const SizedBox(width: 8),
-                      DropdownButton<int>(
-                        value: _fajrReminderMinutes,
-                        isDense: true,
-                        items: [5, 10, 15, 20, 30].map((minutes) {
-                          return DropdownMenuItem(
-                            value: minutes,
-                            child: Text(l10n.commonMinutesShort(minutes)),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _fajrReminderMinutes = value!;
-                          });
-                        },
-                      ),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(l10n.settingsBeforeFajr, maxLines: 2),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              if (_fajrReminder) _buildFajrReminderPicker(l10n),
               const Divider(),
               SwitchListTile(
                 title: Text(l10n.settingsLoggingReminderTitle),
@@ -434,6 +402,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  // Presets cover the common lead times; anything else goes through the
+  // custom sheet so the value is still a plain minute count.
+  static const List<int> _fajrReminderPresets = [5, 10, 15];
+
+  Widget _buildFajrReminderPicker(AppLocalizations l10n) {
+    final isCustom = !_fajrReminderPresets.contains(_fajrReminderMinutes);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        0,
+        AppSpacing.md,
+        AppSpacing.sm,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.settingsRemindMeBeforeFajr,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.xs,
+            children: [
+              for (final minutes in _fajrReminderPresets)
+                ChoiceChip(
+                  label: Text(l10n.commonMinutesShort(minutes)),
+                  selected: !isCustom && _fajrReminderMinutes == minutes,
+                  onSelected: (selected) {
+                    if (!selected) return;
+                    setState(() {
+                      _fajrReminderMinutes = minutes;
+                    });
+                  },
+                ),
+              ChoiceChip(
+                label: Text(
+                  isCustom
+                      ? l10n.commonMinutesShort(_fajrReminderMinutes)
+                      : l10n.settingsCustomMinutes,
+                ),
+                selected: isCustom,
+                onSelected: (_) => _openCustomFajrReminderSheet(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openCustomFajrReminderSheet() async {
+    final minutes = await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => _CustomReminderSheet(
+        initialMinutes: _fajrReminderMinutes,
+      ),
+    );
+    if (minutes == null || !mounted) return;
+    setState(() {
+      _fajrReminderMinutes = minutes;
+    });
   }
 
   Widget _buildAppearanceSection() {
@@ -1026,6 +1061,107 @@ class _SettingsSection extends StatelessWidget {
           ),
           child,
         ],
+      ),
+    );
+  }
+}
+
+
+/// Bottom sheet for a Fajr reminder lead time outside the presets. Returns the
+/// chosen minute count via [Navigator.pop], or null when dismissed.
+class _CustomReminderSheet extends StatefulWidget {
+  final int initialMinutes;
+
+  const _CustomReminderSheet({required this.initialMinutes});
+
+  @override
+  State<_CustomReminderSheet> createState() => _CustomReminderSheetState();
+}
+
+class _CustomReminderSheetState extends State<_CustomReminderSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: '${widget.initialMinutes}');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    Navigator.pop(context, int.parse(_controller.text.trim()));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    return Padding(
+      // Lift the sheet above the keyboard so the field and actions stay visible.
+      padding: EdgeInsets.only(
+        left: AppSpacing.lg,
+        right: AppSpacing.lg,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.lg,
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.settingsCustomReminderTitle,
+              style: theme.textTheme.titleMedium,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            TextFormField(
+              controller: _controller,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(3),
+              ],
+              decoration: InputDecoration(
+                labelText: l10n.settingsCustomReminderFieldLabel,
+                helperText: l10n.settingsCustomReminderHelper,
+              ),
+              validator: (value) {
+                final minutes = int.tryParse((value ?? '').trim());
+                if (minutes == null ||
+                    minutes < AppConstants.minFajrReminderMinutes ||
+                    minutes > AppConstants.maxFajrReminderMinutes) {
+                  return l10n.settingsCustomReminderInvalid;
+                }
+                return null;
+              },
+              onFieldSubmitted: (_) => _submit(),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(l10n.settingsCancel),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                FilledButton(
+                  onPressed: _submit,
+                  child: Text(l10n.settingsCustomReminderSave),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

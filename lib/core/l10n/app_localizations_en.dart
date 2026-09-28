@@ -646,6 +646,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsSaveTooltip => 'Save Settings';
 
   @override
+  String get settingsDoneAction => 'Done';
+
+  @override
   String get settingsProfileTitle => 'Profile';
 
   @override
@@ -724,10 +727,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get settingsRemindMe => 'Remind me';
+  String get settingsRemindMeBeforeFajr => 'Remind me before Fajr';
 
   @override
-  String get settingsBeforeFajr => 'before Fajr';
+  String get settingsCustomMinutes => 'Custom';
+
+  @override
+  String get settingsCustomReminderTitle => 'Custom reminder';
+
+  @override
+  String get settingsCustomReminderFieldLabel => 'Minutes before Fajr';
+
+  @override
+  String get settingsCustomReminderHelper => 'Choose between 1 and 120 minutes';
+
+  @override
+  String get settingsCustomReminderInvalid =>
+      'Enter a whole number from 1 to 120';
+
+  @override
+  String get settingsCustomReminderSave => 'Set reminder';
 
   @override
   String get settingsLoggingReminderTitle => 'Daily Logging Reminder';

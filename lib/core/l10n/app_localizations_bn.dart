@@ -649,6 +649,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get settingsSaveTooltip => 'সেটিংস সংরক্ষণ করুন';
 
   @override
+  String get settingsDoneAction => 'সম্পন্ন';
+
+  @override
   String get settingsProfileTitle => 'প্রোফাইল';
 
   @override
@@ -728,10 +731,27 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
-  String get settingsRemindMe => 'আমাকে মনে করিয়ে দিন';
+  String get settingsRemindMeBeforeFajr => 'ফজরের আগে মনে করিয়ে দিন';
 
   @override
-  String get settingsBeforeFajr => 'ফজরের আগে';
+  String get settingsCustomMinutes => 'কাস্টম';
+
+  @override
+  String get settingsCustomReminderTitle => 'কাস্টম রিমাইন্ডার';
+
+  @override
+  String get settingsCustomReminderFieldLabel => 'ফজরের কত মিনিট আগে';
+
+  @override
+  String get settingsCustomReminderHelper =>
+      '১ থেকে ১২০ মিনিটের মধ্যে বেছে নিন';
+
+  @override
+  String get settingsCustomReminderInvalid =>
+      '১ থেকে ১২০ এর মধ্যে একটি পূর্ণসংখ্যা লিখুন';
+
+  @override
+  String get settingsCustomReminderSave => 'রিমাইন্ডার সেট করুন';
 
   @override
   String get settingsLoggingReminderTitle => 'দৈনিক লগ রিমাইন্ডার';

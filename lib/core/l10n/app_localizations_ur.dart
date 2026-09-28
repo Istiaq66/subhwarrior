@@ -645,6 +645,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get settingsSaveTooltip => 'سیٹنگز محفوظ کریں';
 
   @override
+  String get settingsDoneAction => 'مکمل';
+
+  @override
   String get settingsProfileTitle => 'پروفائل';
 
   @override
@@ -724,10 +727,27 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get settingsRemindMe => 'مجھے یاد دلائیں';
+  String get settingsRemindMeBeforeFajr => 'فجر سے پہلے یاد دہانی';
 
   @override
-  String get settingsBeforeFajr => 'فجر سے پہلے';
+  String get settingsCustomMinutes => 'حسبِ ضرورت';
+
+  @override
+  String get settingsCustomReminderTitle => 'حسبِ ضرورت یاد دہانی';
+
+  @override
+  String get settingsCustomReminderFieldLabel => 'فجر سے کتنے منٹ پہلے';
+
+  @override
+  String get settingsCustomReminderHelper =>
+      '1 سے 120 منٹ کے درمیان منتخب کریں';
+
+  @override
+  String get settingsCustomReminderInvalid =>
+      '1 سے 120 کے درمیان مکمل عدد درج کریں';
+
+  @override
+  String get settingsCustomReminderSave => 'یاد دہانی مقرر کریں';
 
   @override
   String get settingsLoggingReminderTitle => 'روزانہ لاگ کی یاد دہانی';
