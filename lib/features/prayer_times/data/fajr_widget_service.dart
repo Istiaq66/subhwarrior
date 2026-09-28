@@ -93,8 +93,25 @@ class FajrWidgetService {
               );
 
     try {
-      final todayTimes = await fetchFor(today);
-      final tomorrowTimes = await fetchFor(tomorrow);
+      // The widget is refreshed in the background, often right at Fajr and
+      // often with no network — a failed lookup used to abort the whole
+      // update, leaving the countdown aimed at a Fajr that had already passed
+      // and ticking into negative numbers until the app was next opened.
+      // Today's cache answers the same question when the network cannot.
+      final cached = repository.loadCachedTimes();
+      final canUseCache = cached != null && cached.isSameDayAs(today);
+
+      late final PrayerTimes todayTimes;
+      late final PrayerTimes tomorrowTimes;
+      try {
+        todayTimes = await fetchFor(today);
+        tomorrowTimes = await fetchFor(tomorrow);
+      } catch (e) {
+        if (!canUseCache) rethrow;
+        debugPrint('FajrWidgetService: fetch failed ($e) — using cache.');
+        todayTimes = cached.today;
+        tomorrowTimes = cached.tomorrow;
+      }
 
       final todayFajr = _onDay(today, todayTimes.fajr);
       final tomorrowFajr = _onDay(tomorrow, tomorrowTimes.fajr);
@@ -117,6 +134,14 @@ class FajrWidgetService {
           ) ??
           0.0;
       final nextFajr = now.isBefore(todayFajr) ? todayFajr : tomorrowFajr;
+      // The Fajr after [nextFajr], so the widget can roll its own countdown
+      // over at the boundary instead of freezing on a target that has passed.
+      // Nothing refreshes it while the app stays closed, and a day's offset is
+      // within a minute or two of the real time — corrected by the next
+      // successful refresh.
+      final followingFajr = now.isBefore(todayFajr)
+          ? tomorrowFajr
+          : tomorrowFajr?.add(const Duration(days: 1));
 
       final l10n = await _loadL10n();
       final clockPattern = settings.use24HourFormat ? 'HH:mm' : 'hh:mm a';
@@ -154,6 +179,15 @@ class FajrWidgetService {
       await HomeWidget.saveWidgetData<String>('fajr_widget_next_fajr_epoch_ms',
           nextFajr == null ? '' : nextFajr.millisecondsSinceEpoch.toString());
       await HomeWidget.saveWidgetData<String>(
+          'fajr_widget_following_fajr_epoch_ms',
+          followingFajr == null
+              ? ''
+              : followingFajr.millisecondsSinceEpoch.toString());
+      // What to show when both targets are stale: a placeholder, never the
+      // last countdown value — a frozen number reads as a live one.
+      await HomeWidget.saveWidgetData<String>(
+          'fajr_widget_countdown_unknown', l10n.prayerCardCountdownUnknown);
+      await HomeWidget.saveWidgetData<String>(
           'fajr_widget_progress', (progress * 100).round().toString());
       await HomeWidget.saveWidgetData<String>('fajr_widget_sunrise',
           _formatCompact(todayTimes.sunrise, clockPatternCompact));
@@ -166,6 +200,9 @@ class FajrWidgetService {
       await HomeWidget.saveWidgetData<String>('fajr_widget_isha',
           _formatCompact(todayTimes.isha, clockPatternCompact));
       await HomeWidget.updateWidget(androidName: _androidProviderName);
+      // The success path used to be silent, which made a widget stuck on a
+      // stale target indistinguishable from one that never refreshed.
+      debugPrint('FajrWidgetService: widget updated, next Fajr $nextFajr');
 
       if (nextFajr != null) {
         await _scheduleNextBoundary(nextFajr);

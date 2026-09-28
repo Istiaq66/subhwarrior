@@ -1,7 +1,11 @@
 package com.subhwarrior.app
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.SystemClock
 import android.view.View
@@ -44,7 +48,7 @@ class FajrWidgetProvider : HomeWidgetProvider() {
                     R.id.fajr_widget_countdown,
                     widgetData.getString("fajr_widget_countdown", "")
                 )
-                bindLiveCountdown(views, widgetData)
+                bindLiveCountdown(context, views, widgetData)
                 views.setTextViewText(
                     R.id.fajr_widget_sunrise_value,
                     widgetData.getString("fajr_widget_sunrise", "")
@@ -135,15 +139,100 @@ class FajrWidgetProvider : HomeWidgetProvider() {
      * that shrinks toward zero and then flips positive once the target
      * passes, instead of a positive countdown that reaches zero.
      */
-    private fun bindLiveCountdown(views: RemoteViews, widgetData: SharedPreferences) {
-        val targetEpochMs =
-            widgetData.getString("fajr_widget_next_fajr_epoch_ms", null)?.toLongOrNull()
-                ?: return
-        val msUntilTarget = targetEpochMs - System.currentTimeMillis()
-        if (msUntilTarget <= 0) return
+    /**
+     * Wakes the widget up the moment its countdown target passes.
+     *
+     * The Chronometer ticks entirely inside the launcher, so nothing tells us
+     * when it reaches zero. Until something re-binds the widget it keeps
+     * counting straight past zero into negative numbers — and the only thing
+     * that re-binds it is a Dart-side refresh, which needs the app process,
+     * a background-fetch delivery and (until recently) the network. Any of
+     * those missing left a permanently negative countdown on the home screen.
+     *
+     * This asks AlarmManager for a single broadcast a second after the
+     * target, so [onUpdate] runs and the branch above swaps the stale
+     * countdown for its placeholder. Inexact on purpose: this only tidies the
+     * display, and an exact alarm here would compete with the Fajr call's.
+     */
+    /**
+     * Shows the "unknown" placeholder in place of the countdown.
+     *
+     * The Chronometer is stopped first: a running one rewrites its own text
+     * every second, so setting text on a live Chronometer does nothing. The
+     * last *countdown value* is deliberately not reused here — a frozen number
+     * looks like a live one, which is how a stale widget went unnoticed.
+     */
+    private fun bindCountdownPlaceholder(
+        views: RemoteViews,
+        widgetData: SharedPreferences
+    ) {
+        views.setChronometer(
+            R.id.fajr_widget_countdown,
+            SystemClock.elapsedRealtime(),
+            null,
+            false
+        )
+        views.setTextViewText(
+            R.id.fajr_widget_countdown,
+            widgetData.getString("fajr_widget_countdown_unknown", "--:--")
+        )
+    }
 
+    private fun scheduleBoundaryRebind(context: Context, targetEpochMs: Long) {
+        val alarmManager =
+            context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
+
+        val intent = Intent(context, FajrWidgetProvider::class.java).apply {
+            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            val ids = AppWidgetManager.getInstance(context)
+                .getAppWidgetIds(ComponentName(context, FajrWidgetProvider::class.java))
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            REBIND_REQUEST_CODE,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        alarmManager.set(
+            AlarmManager.RTC,
+            targetEpochMs + 1_000L,
+            pendingIntent
+        )
+    }
+
+    private fun bindLiveCountdown(
+        context: Context,
+        views: RemoteViews,
+        widgetData: SharedPreferences
+    ) {
+        // Two targets are stored: the next Fajr, and the one after it. Once
+        // the first has passed the widget rolls on to the second by itself,
+        // rather than waiting for a Dart refresh that may not come while the
+        // app stays closed — which is what left the countdown negative, and
+        // then frozen on its last value.
+        val targetEpochMs = listOfNotNull(
+            widgetData.getString("fajr_widget_next_fajr_epoch_ms", null)?.toLongOrNull(),
+            widgetData.getString("fajr_widget_following_fajr_epoch_ms", null)
+                ?.toLongOrNull()
+        ).firstOrNull { it - System.currentTimeMillis() > 0 }
+            ?: run {
+                bindCountdownPlaceholder(views, widgetData)
+                return
+            }
+
+        val msUntilTarget = targetEpochMs - System.currentTimeMillis()
         val base = SystemClock.elapsedRealtime() + msUntilTarget
         views.setChronometer(R.id.fajr_widget_countdown, base, null, true)
         views.setChronometerCountDown(R.id.fajr_widget_countdown, true)
+
+        // Come back when it hits zero, so a missed refresh cannot leave the
+        // countdown ticking into negative numbers.
+        scheduleBoundaryRebind(context, targetEpochMs)
+    }
+
+    private companion object {
+        const val REBIND_REQUEST_CODE = 20260929
     }
 }
