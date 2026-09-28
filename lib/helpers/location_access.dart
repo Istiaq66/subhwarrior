@@ -77,9 +77,10 @@ void showLocationAccessSnack(BuildContext context, LocationAccess access) {
 /// Shows a location snack, replacing any still on screen.
 ///
 /// Every failed attempt used to queue one more snack, and the messenger plays
-/// its queue one entry at a time — six seconds each — so a user who tapped the
-/// button a few times watched the same message reappear long after they had
-/// read it. Clearing first keeps at most one on screen.
+/// its queue one entry at a time, so a user who tapped the button a few times
+/// watched the same message reappear long after they had read it. Clearing
+/// first keeps at most one on screen; [appSnackBar] handles the timeout, which
+/// `SnackBar` would otherwise disable for a snackbar carrying an action.
 void showLocationSnack(
   BuildContext context,
   String message, {

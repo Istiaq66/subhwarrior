@@ -22,6 +22,7 @@ SnackBar appSnackBar(
   AppSnackKind kind = AppSnackKind.neutral,
   SnackBarAction? action,
   Duration? duration,
+  bool persist = false,
 }) {
   final theme = Theme.of(context);
   final appColors = context.appColors;
@@ -37,6 +38,10 @@ SnackBar appSnackBar(
   };
 
   return SnackBar(
+    // `SnackBar` defaults `persist` to `action != null`, so any snackbar with
+    // an action would sit there until it is tapped, swiped or replaced. Every
+    // snackbar in this app is informational — it times out like the rest.
+    persist: persist,
     // `SnackBar` has no `contentTextStyle`, so the semantic ink rides on the
     // label itself; the neutral flavour keeps `snackBarTheme`'s style.
     content: Text(
@@ -67,6 +72,7 @@ extension AppSnackBarContext on BuildContext {
     AppSnackKind kind = AppSnackKind.neutral,
     SnackBarAction? action,
     Duration? duration,
+    bool persist = false,
   }) {
     ScaffoldMessenger.of(this).showSnackBar(appSnackBar(
       this,
@@ -74,6 +80,7 @@ extension AppSnackBarContext on BuildContext {
       kind: kind,
       action: action,
       duration: duration,
+      persist: persist,
     ));
   }
 }

@@ -106,4 +106,35 @@ void main() {
       );
     });
   });
+
+  // Regression: `SnackBar` defaults `persist` to `action != null`, so an
+  // actionable snackbar sat on screen until it was tapped, swiped or replaced.
+  testWidgets('a snackbar with an action still times out', (tester) async {
+    late BuildContext capturedContext;
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: Scaffold(
+        body: Builder(builder: (context) {
+          capturedContext = context;
+          return const SizedBox();
+        }),
+      ),
+    ));
+
+    final snackBar = appSnackBar(
+      capturedContext,
+      'message',
+      action: SnackBarAction(label: 'Open settings', onPressed: () {}),
+    );
+
+    expect(snackBar.persist, isFalse);
+
+    ScaffoldMessenger.of(capturedContext).showSnackBar(snackBar);
+    await tester.pumpAndSettle();
+    expect(find.text('message'), findsOneWidget);
+
+    await tester.pump(snackBar.duration);
+    await tester.pumpAndSettle();
+    expect(find.text('message'), findsNothing);
+  });
 }
