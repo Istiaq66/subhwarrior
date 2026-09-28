@@ -600,6 +600,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'اسم المستخدم هذا مستخدم بالفعل. يرجى اختيار اسم آخر.';
 
   @override
+  String get profileSaveFailed =>
+      'تعذّر حفظ ملفك الشخصي. تحقّق من الاتصال وحاول مرة أخرى.';
+
+  @override
   String get authForgotPasswordEnterEmail =>
       'أدخل بريدك الإلكتروني أعلاه أولًا، ثم اضغط على \"هل نسيت كلمة المرور\".';
 

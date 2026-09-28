@@ -359,6 +359,7 @@
     "description": "Fallback error when a Firebase auth error has no specific mapping"
   },
   "authUsernameTaken": "That username is already taken. Please choose another.",
+  "profileSaveFailed": "Couldn't save your profile. Check your connection and try again.",
   "authForgotPasswordEnterEmail": "Enter your email above first, then tap \"Forgot password\".",
   "authPasswordResetSent": "Password reset email sent to {email}.",
   "@authPasswordResetSent": {

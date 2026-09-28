@@ -25,8 +25,9 @@ abstract class ChallengeRepository {
   Future<bool> usernameExists(String username, String currentUserName);
 
   /// Atomically reserves [desired] for the current user, releasing [previous]
-  /// on rename. Returns `true` on success, `false` if already taken.
-  Future<bool> reserveUsername(String desired, String previous);
+  /// on rename. The result says whether it was reserved, already held by
+  /// someone else, or could not be written at all.
+  Future<UsernameReservation> reserveUsername(String desired, String previous);
 }
 
 class ChallengeRepositoryImpl implements ChallengeRepository {
@@ -70,6 +71,7 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
       _remote.usernameExists(username, currentUserName);
 
   @override
-  Future<bool> reserveUsername(String desired, String previous) =>
+  Future<UsernameReservation> reserveUsername(
+          String desired, String previous) =>
       _remote.reserveUsername(desired, previous);
 }

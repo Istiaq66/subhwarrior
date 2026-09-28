@@ -44,6 +44,11 @@ class _AuthScreenState extends State<AuthScreen> {
 
   /// Maps Firebase/Google auth errors to friendly text.
   String _authErrorMessage(AppLocalizations l10n, Object e) {
+    // A reservation that could not be written is not a name clash — saying so
+    // sent users renaming themselves while Firestore was refusing the write.
+    if (e is UsernameTakenException) return l10n.authUsernameTaken;
+    if (e is ProfileSaveFailedException) return l10n.profileSaveFailed;
+
     if (e is FirebaseAuthException) {
       switch (e.code) {
         case 'email-already-in-use':

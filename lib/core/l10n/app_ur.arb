@@ -155,6 +155,7 @@
   "authErrorTooManyRequests": "بہت زیادہ کوششیں۔ براہ کرم بعد میں دوبارہ کوشش کریں۔",
   "authErrorGeneric": "تصدیق ناکام ہو گئی۔ براہ کرم دوبارہ کوشش کریں۔",
   "authUsernameTaken": "یہ صارف نام پہلے سے لیا جا چکا ہے۔ براہ کرم کوئی اور منتخب کریں۔",
+  "profileSaveFailed": "آپ کی پروفائل محفوظ نہیں ہو سکی۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔",
   "authForgotPasswordEnterEmail": "پہلے اوپر اپنا ای میل درج کریں، پھر \"پاس ورڈ بھول گئے\" پر ٹیپ کریں۔",
   "authPasswordResetSent": "پاس ورڈ ری سیٹ کرنے کی ای میل {email} پر بھیج دی گئی ہے۔",
   "commonMinutesShort": "{minutes} منٹ",

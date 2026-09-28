@@ -605,6 +605,10 @@ class AppLocalizationsBn extends AppLocalizations {
       'এই ইউজারনেমটি ইতিমধ্যে নেওয়া হয়েছে। অনুগ্রহ করে অন্যটি বেছে নিন।';
 
   @override
+  String get profileSaveFailed =>
+      'আপনার প্রোফাইল সংরক্ষণ করা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।';
+
+  @override
   String get authForgotPasswordEnterEmail =>
       'প্রথমে উপরে আপনার ইমেইল লিখুন, তারপর \"পাসওয়ার্ড ভুলে গেছেন?\"-এ চাপ দিন।';
 

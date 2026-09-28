@@ -602,6 +602,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'That username is already taken. Please choose another.';
 
   @override
+  String get profileSaveFailed =>
+      'Couldn\'t save your profile. Check your connection and try again.';
+
+  @override
   String get authForgotPasswordEnterEmail =>
       'Enter your email above first, then tap \"Forgot password\".';
 

@@ -73,10 +73,11 @@ void main() {
       when(() => remote.usernameExists('taken', 'me'))
           .thenAnswer((_) async => true);
       when(() => remote.reserveUsername('new', 'old'))
-          .thenAnswer((_) async => false);
+          .thenAnswer((_) async => UsernameReservation.taken);
 
       expect(await repository.usernameExists('taken', 'me'), isTrue);
-      expect(await repository.reserveUsername('new', 'old'), isFalse);
+      expect(await repository.reserveUsername('new', 'old'),
+          UsernameReservation.taken);
       verifyZeroInteractions(local);
     });
   });

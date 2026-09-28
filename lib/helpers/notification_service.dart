@@ -1,14 +1,12 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/analytics/analytics_service.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
-import 'package:subh_warrior/providers/locale_provider.dart';
+import 'package:subh_warrior/core/l10n/l10n_standalone.dart';
+import 'package:subh_warrior/features/prayer_times/data/fajr_call_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -77,16 +75,7 @@ class NotificationService {
   /// Resolves localized strings without a BuildContext: honours the user's
   /// in-app language choice, falling back to the device locale (or English
   /// when that locale is unsupported).
-  static Future<AppLocalizations> _loadL10n() async {
-    final prefs = await SharedPreferences.getInstance();
-    final stored = prefs.getString(LocaleProvider.prefsKey);
-    var locale =
-        stored != null ? Locale(stored) : PlatformDispatcher.instance.locale;
-    if (!AppLocalizations.delegate.isSupported(locale)) {
-      locale = const Locale('en');
-    }
-    return lookupAppLocalizations(locale);
-  }
+  static Future<AppLocalizations> _loadL10n() => loadStoredL10n();
 
   static Future<void> showNotification({
     required int id,
@@ -255,6 +244,7 @@ class NotificationService {
   static Future<void> updateNotifications({
     required bool notificationsEnabled,
     required bool fajrReminder,
+    required bool fajrCall,
     required bool loggingReminder,
     required int fajrReminderMinutes,
     DateTime? todayFajrTime,
@@ -263,6 +253,7 @@ class NotificationService {
     debugPrint('🔔 ========== UPDATING NOTIFICATIONS ==========');
     debugPrint('   Notifications Enabled: $notificationsEnabled');
     debugPrint('   Fajr Reminder: $fajrReminder');
+    debugPrint('   Fajr Call: $fajrCall');
     debugPrint('   Logging Reminder: $loggingReminder');
     debugPrint('   Fajr Reminder Minutes: $fajrReminderMinutes');
     debugPrint('   Today Fajr Time: $todayFajrTime');
@@ -271,6 +262,7 @@ class NotificationService {
     if (!notificationsEnabled) {
       debugPrint('🔕 Notifications disabled - cancelling all');
       await cancelAllNotifications();
+      await FajrCallService.schedule(enabled: false, fajrTime: null);
       return;
     }
 
@@ -287,6 +279,17 @@ class NotificationService {
       await cancelNotification(2);
     }
 
+    // The reminder above lands `fajrReminderMinutes` early as a heads-up; the
+    // call rings at Fajr itself, for someone who would sleep through a
+    // notification. Opt-in on its own switch. Android only — see
+    // [FajrCallService].
+    await FajrCallService.schedule(
+      enabled: fajrCall,
+      fajrTime: todayFajrTime == null
+          ? null
+          : FajrCallService.nextOccurrence(fajrTime: todayFajrTime),
+    );
+
     // Handle logging reminder
     if (loggingReminder && isChallengeActive) {
       debugPrint('📝 Setting up logging reminder...');
@@ -302,7 +305,12 @@ class NotificationService {
   }
 
   // Check what notifications are currently scheduled
+  /// Dumps what is scheduled. Debug-only: it costs a platform round-trip and
+  /// a burst of throttled `debugPrint` output, which turned every settings
+  /// change into seconds of work once saves became automatic.
   static Future<void> printPendingNotifications() async {
+    if (!kDebugMode) return;
+
     final pending = await _notifications.pendingNotificationRequests();
     debugPrint('📋 ========== PENDING NOTIFICATIONS ==========');
     if (pending.isEmpty) {

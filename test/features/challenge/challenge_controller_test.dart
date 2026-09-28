@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:subh_warrior/core/utils/date_time_utils.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_data.dart';
+import 'package:subh_warrior/features/challenge/data/challenge_remote_data_source.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_repository.dart';
 import 'package:subh_warrior/features/challenge/domain/log_result.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
@@ -13,6 +14,9 @@ class FakeChallengeRepository implements ChallengeRepository {
   ChallengeData stored;
   int saveCount = 0;
   bool usernameTaken = false;
+
+  /// Forces a specific outcome, whatever [usernameTaken] says.
+  UsernameReservation? reservation;
   int reserveCount = 0;
   String? lastReservePrevious;
 
@@ -44,14 +48,75 @@ class FakeChallengeRepository implements ChallengeRepository {
       usernameTaken;
 
   @override
-  Future<bool> reserveUsername(String desired, String previous) async {
+  Future<UsernameReservation> reserveUsername(
+      String desired, String previous) async {
     reserveCount++;
     lastReservePrevious = previous;
-    return !usernameTaken;
+    return reservation ??
+        (usernameTaken
+            ? UsernameReservation.taken
+            : UsernameReservation.reserved);
   }
 }
 
 void main() {
+  group('updateUserSettings distinguishes why a name was not reserved', () {
+    // Regression: a denied or offline reservation was reported as "username
+    // already taken", so the user renamed themselves while the real failure —
+    // the profile never reaching Firestore — went unmentioned.
+    test('a name held by someone else throws UsernameTakenException', () async {
+      final repo = FakeChallengeRepository()
+        ..reservation = UsernameReservation.taken;
+      final controller = ChallengeProvider(repo);
+
+      expect(
+        () => controller.updateUserSettings(
+            name: 'warrior', location: '', latitude: 0, longitude: 0),
+        throwsA(isA<UsernameTakenException>()),
+      );
+    });
+
+    test('a failed write throws ProfileSaveFailedException', () async {
+      final repo = FakeChallengeRepository()
+        ..reservation = UsernameReservation.failed;
+      final controller = ChallengeProvider(repo);
+
+      expect(
+        () => controller.updateUserSettings(
+            name: 'warrior', location: '', latitude: 0, longitude: 0),
+        throwsA(isA<ProfileSaveFailedException>()),
+      );
+    });
+
+    test('neither failure leaves a half-written profile behind', () async {
+      final repo = FakeChallengeRepository()
+        ..reservation = UsernameReservation.failed;
+      final controller = ChallengeProvider(repo);
+
+      await expectLater(
+        controller.updateUserSettings(
+            name: 'warrior', location: 'Dhaka', latitude: 1, longitude: 2),
+        throwsA(isA<ProfileSaveFailedException>()),
+      );
+
+      expect(controller.userName, isEmpty);
+      expect(controller.hasLocation, isFalse);
+      expect(repo.saveCount, 0);
+    });
+
+    test('a reserved name is saved', () async {
+      final repo = FakeChallengeRepository()
+        ..reservation = UsernameReservation.reserved;
+      final controller = ChallengeProvider(repo);
+
+      await controller.updateUserSettings(
+          name: 'warrior', location: 'Dhaka', latitude: 1, longitude: 2);
+
+      expect(controller.userName, 'warrior');
+      expect(repo.saveCount, 1);
+    });
+  });
+
   group('startChallenge', () {
     test('begins today, not next Sunday', () async {
       final repo = FakeChallengeRepository();

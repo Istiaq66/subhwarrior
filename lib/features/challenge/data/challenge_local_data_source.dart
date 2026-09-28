@@ -29,6 +29,7 @@ class ChallengeLocalDataSource {
   static const _kHasLocation = 'hasLocation';
   static const _kNotifications = 'notifications_enabled';
   static const _kFajrReminder = 'fajr_reminder';
+  static const _kFajrCall = 'fajr_call';
   static const _kLoggingReminder = 'logging_reminder';
   static const _kFajrReminderMinutes = 'fajr_reminder_minutes';
   static const _kDayLogs = 'dayLogs';
@@ -51,6 +52,7 @@ class ChallengeLocalDataSource {
     _kHasLocation,
     _kNotifications,
     _kFajrReminder,
+    _kFajrCall,
     _kLoggingReminder,
     _kFajrReminderMinutes,
     _kDayLogs,
@@ -105,6 +107,7 @@ class ChallengeLocalDataSource {
 
     data.notificationsEnabled = prefs.getBool(_key(_kNotifications)) ?? true;
     data.fajrReminder = prefs.getBool(_key(_kFajrReminder)) ?? true;
+    data.fajrCall = prefs.getBool(_key(_kFajrCall)) ?? false;
     data.loggingReminder = prefs.getBool(_key(_kLoggingReminder)) ?? true;
     data.fajrReminderMinutes = prefs.getInt(_key(_kFajrReminderMinutes)) ??
         AppConstants.defaultFajrReminderMinutes;
@@ -140,6 +143,7 @@ class ChallengeLocalDataSource {
 
     await prefs.setBool(_key(_kNotifications), data.notificationsEnabled);
     await prefs.setBool(_key(_kFajrReminder), data.fajrReminder);
+    await prefs.setBool(_key(_kFajrCall), data.fajrCall);
     await prefs.setBool(_key(_kLoggingReminder), data.loggingReminder);
     await prefs.setInt(_key(_kFajrReminderMinutes), data.fajrReminderMinutes);
 

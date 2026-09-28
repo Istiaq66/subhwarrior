@@ -28,3 +28,6 @@
     public static int d(...);
     public static int i(...);
 }
+
+# flutter_callkit_incoming — keys are read reflectively from the call payload
+-keep class com.hiennv.flutter_callkit_incoming.** { *; }

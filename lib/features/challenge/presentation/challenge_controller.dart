@@ -9,6 +9,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/date_time_utils.dart';
 import '../../../core/utils/input_validators.dart';
 import '../data/challenge_data.dart';
+import '../data/challenge_remote_data_source.dart';
 import '../data/challenge_repository.dart';
 import '../domain/day_log.dart';
 import '../domain/log_result.dart';
@@ -22,6 +23,14 @@ const int kLogCutoffHour = AppConstants.logCutoffHour;
 /// Thin controller over [ChallengeRepository]. Holds no SharedPreferences,
 /// Firestore or HTTP instances directly (IMPROVEMENT_PLAN B3) — all I/O goes
 /// through the repository. Business rules live here; persistence does not.
+/// The chosen name belongs to somebody else — the user picks another.
+class UsernameTakenException implements Exception {}
+
+/// The profile could not be written at all: rules denial, offline, a failed
+/// transaction. Distinct from [UsernameTakenException] because telling the
+/// user to rename themselves does not fix any of those.
+class ProfileSaveFailedException implements Exception {}
+
 class ChallengeProvider extends ChangeNotifier {
   final ChallengeRepository _repository;
   final AnalyticsService? _analytics;
@@ -110,6 +119,7 @@ class ChallengeProvider extends ChangeNotifier {
   ({String city, String country})? get cityCountry => _data.cityCountry;
   bool get notificationsEnabled => _data.notificationsEnabled;
   bool get fajrReminder => _data.fajrReminder;
+  bool get fajrCall => _data.fajrCall;
   bool get loggingReminder => _data.loggingReminder;
   int get fajrReminderMinutes => _data.fajrReminderMinutes;
 
@@ -284,10 +294,15 @@ class ChallengeProvider extends ChangeNotifier {
     // Atomically reserve the name if it changed; closes the claim race and
     // username-keyed overwrite (IMPROVEMENT_PLAN A6/D4).
     if (trimmedName.toLowerCase() != _data.userName.trim().toLowerCase()) {
-      final reserved =
+      final outcome =
           await _repository.reserveUsername(trimmedName, _data.userName);
-      if (!reserved) {
-        throw Exception('Username already taken. Please choose another name.');
+      switch (outcome) {
+        case UsernameReservation.taken:
+          throw UsernameTakenException();
+        case UsernameReservation.failed:
+          throw ProfileSaveFailedException();
+        case UsernameReservation.reserved:
+          break;
       }
     }
 
@@ -322,11 +337,13 @@ class ChallengeProvider extends ChangeNotifier {
   Future<void> updateNotificationSettings({
     required bool notificationsEnabled,
     required bool fajrReminder,
+    required bool fajrCall,
     required bool loggingReminder,
     required int fajrReminderMinutes,
   }) async {
     _data.notificationsEnabled = notificationsEnabled;
     _data.fajrReminder = fajrReminder;
+    _data.fajrCall = fajrCall;
     _data.loggingReminder = loggingReminder;
     _data.fajrReminderMinutes = fajrReminderMinutes;
 

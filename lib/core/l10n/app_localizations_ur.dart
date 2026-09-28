@@ -601,6 +601,10 @@ class AppLocalizationsUr extends AppLocalizations {
       'یہ صارف نام پہلے سے لیا جا چکا ہے۔ براہ کرم کوئی اور منتخب کریں۔';
 
   @override
+  String get profileSaveFailed =>
+      'آپ کی پروفائل محفوظ نہیں ہو سکی۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔';
+
+  @override
   String get authForgotPasswordEnterEmail =>
       'پہلے اوپر اپنا ای میل درج کریں، پھر \"پاس ورڈ بھول گئے\" پر ٹیپ کریں۔';
 

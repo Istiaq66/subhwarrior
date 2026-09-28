@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
@@ -32,8 +34,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _locationController = TextEditingController();
 
   bool _isLoadingLocation = false;
+  bool _nameIsEmpty = false;
+  Timer? _profileSaveTimer;
+  Timer? _notificationSaveTimer;
+  Future<void>? _notificationSaveInFlight;
+  ChallengeProvider? _challengeProvider;
+  PrayerTimeProvider? _prayerTimeProvider;
+
+  /// Long enough to cover normal typing, short enough that leaving the
+  /// screen straight after typing still lands the write.
+  static const _profileSaveDebounce = Duration(milliseconds: 600);
+
+  /// Rescheduling notifications is a string of platform-channel calls that run
+  /// on Android's main thread. Flipping three switches in a row used to queue
+  /// three full cycles and hang the UI, so taps are coalesced into one.
+  static const _notificationSaveDebounce = Duration(milliseconds: 400);
   bool _notificationsEnabled = true;
   bool _fajrReminder = true;
+  bool _fajrCall = false;
   bool _loggingReminder = true;
   int _fajrReminderMinutes = 15;
   String _appVersion = '';
@@ -73,6 +91,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Kept so [dispose] can flush a debounced edit — the provider outlives
+    // this screen, `context` does not.
+    _challengeProvider = context.read<ChallengeProvider>();
+    _prayerTimeProvider = context.read<PrayerTimeProvider>();
+  }
+
   void _loadCurrentSettings() {
     final challengeProvider = context.read<ChallengeProvider>();
 
@@ -83,12 +110,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // Load notification settings from provider
     _notificationsEnabled = challengeProvider.notificationsEnabled;
     _fajrReminder = challengeProvider.fajrReminder;
+    _fajrCall = challengeProvider.fajrCall;
     _loggingReminder = challengeProvider.loggingReminder;
     _fajrReminderMinutes = challengeProvider.fajrReminderMinutes;
   }
 
   @override
   void dispose() {
+    // Leaving mid-edit must not lose the edit: the debounce is dropped, but
+    // whatever it was about to write is written now, straight to the provider.
+    final hadPendingEdit = _profileSaveTimer?.isActive ?? false;
+    _profileSaveTimer?.cancel();
+    // A queued notification save still has to land: it is written straight to
+    // the provider, which outlives this screen.
+    if (_notificationSaveTimer?.isActive ?? false) {
+      _notificationSaveTimer!.cancel();
+      unawaited(_writeNotificationSettings(_challengeProvider));
+    }
+    if (hadPendingEdit) {
+      unawaited(_writeProfile(
+        _challengeProvider,
+        name: _nameController.text.trim(),
+        location: _locationController.text.trim(),
+      ));
+    }
     _nameController.dispose();
     _locationController.dispose();
     super.dispose();
@@ -100,15 +145,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.settingsTitle),
         centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
-            child: TextButton(
-              onPressed: _saveSettings,
-              child: Text(AppLocalizations.of(context)!.settingsDoneAction),
-            ),
-          ),
-        ],
       ),
       // Comp layout: uppercase muted section labels sitting on the canvas
       // above each card, rather than an icon+title header inside every card.
@@ -166,10 +202,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             TextField(
               controller: _nameController,
+              textInputAction: TextInputAction.done,
+              onChanged: (_) => _persistProfileSoon(),
+              onEditingComplete: _persistProfile,
+              onTapOutside: (_) => _persistProfile(),
               decoration: InputDecoration(
                 labelText: l10n.settingsNameLabel,
                 hintText: l10n.settingsNameHint,
                 prefixIcon: const Icon(Icons.badge),
+                errorText: _nameIsEmpty ? l10n.settingsEnterNamePrompt : null,
               ),
             ),
             const SizedBox(height: 16),
@@ -209,6 +250,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             TextField(
               controller: _locationController,
+              textInputAction: TextInputAction.done,
+              onChanged: (_) => _persistProfileSoon(),
+              onEditingComplete: _persistProfile,
+              onTapOutside: (_) => _persistProfile(),
               decoration: InputDecoration(
                 labelText: l10n.onboardingLocationFieldLabel,
                 hintText: l10n.onboardingLocationFieldHint,
@@ -367,6 +412,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 setState(() {
                   _notificationsEnabled = value;
                 });
+                _persistNotificationSettingsSoon();
               },
             ),
             if (_notificationsEnabled) ...[
@@ -380,9 +426,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   setState(() {
                     _fajrReminder = value;
                   });
+                  _persistNotificationSettingsSoon();
                 },
               ),
               if (_fajrReminder) _buildFajrReminderPicker(l10n),
+              SwitchListTile(
+                title: Text(l10n.settingsFajrCallTitle),
+                subtitle: Text(l10n.settingsFajrCallSubtitle),
+                value: _fajrCall,
+                onChanged: (value) {
+                  setState(() {
+                    _fajrCall = value;
+                  });
+                  _persistNotificationSettingsSoon();
+                },
+              ),
               const Divider(),
               SwitchListTile(
                 title: Text(l10n.settingsLoggingReminderTitle),
@@ -395,6 +453,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   setState(() {
                     _loggingReminder = value;
                   });
+                  _persistNotificationSettingsSoon();
                 },
               ),
             ],
@@ -438,6 +497,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     setState(() {
                       _fajrReminderMinutes = minutes;
                     });
+                    _persistNotificationSettingsSoon();
                   },
                 ),
               ChoiceChip(
@@ -469,6 +529,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _fajrReminderMinutes = minutes;
     });
+    _persistNotificationSettingsSoon();
   }
 
   Widget _buildAppearanceSection() {
@@ -614,6 +675,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await NotificationService.updateNotifications(
       notificationsEnabled: challengeProvider.notificationsEnabled,
       fajrReminder: challengeProvider.fajrReminder,
+      fajrCall: challengeProvider.fajrCall,
       loggingReminder: challengeProvider.loggingReminder,
       fajrReminderMinutes: challengeProvider.fajrReminderMinutes,
       todayFajrTime: prayerProvider.todayFajrTime,
@@ -941,62 +1003,129 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _saveSettings() async {
-    final l10n = AppLocalizations.of(context)!;
-    if (_nameController.text.isEmpty) {
-      context.showSnack(
-        l10n.settingsEnterNamePrompt,
-        kind: AppSnackKind.warning,
-      );
-      return;
+  /// Queues a save of the notification settings.
+  ///
+  /// Every control on this screen applies on change — there is no save button
+  /// to forget, which is what used to make a toggled switch look like it had
+  /// taken effect when it had not. The write itself is coalesced and never
+  /// awaited from a tap handler: cancelling and rescheduling notifications is
+  /// platform work, and running it per tap deadlocked input long enough for
+  /// Android to raise an ANR.
+  void _persistNotificationSettingsSoon() {
+    _notificationSaveTimer?.cancel();
+    _notificationSaveTimer = Timer(
+      _notificationSaveDebounce,
+      () => unawaited(_persistNotificationSettings()),
+    );
+  }
+
+  Future<void> _persistNotificationSettings() async {
+    // One cycle at a time: a save started while another is mid-flight waits
+    // for it, so the platform side never has two rescheduling runs queued.
+    final inFlight = _notificationSaveInFlight;
+    if (inFlight != null) await inFlight;
+
+    final save = _writeNotificationSettings(_challengeProvider);
+    _notificationSaveInFlight = save;
+    final error = await save;
+    if (identical(_notificationSaveInFlight, save)) {
+      _notificationSaveInFlight = null;
     }
 
-    final challengeProvider = context.read<ChallengeProvider>();
-    final prayerProvider = context.read<PrayerTimeProvider>();
+    if (error == null || !mounted) return;
+    context.showSnack(error, kind: AppSnackKind.error);
+  }
+
+  /// Writes the notification settings and reschedules against them, returning
+  /// a message when it fails.
+  Future<String?> _writeNotificationSettings(
+    ChallengeProvider? challengeProvider,
+  ) async {
+    if (challengeProvider == null) return null;
 
     try {
-      // Save user profile
-      await challengeProvider.updateUserSettings(
-        name: _nameController.text,
-        location: _locationController.text,
-        latitude: challengeProvider.userLatitude,
-        longitude: challengeProvider.userLongitude,
-      );
-
-      // Save notification settings
       await challengeProvider.updateNotificationSettings(
         notificationsEnabled: _notificationsEnabled,
         fajrReminder: _fajrReminder,
+        fajrCall: _fajrCall,
         loggingReminder: _loggingReminder,
         fajrReminderMinutes: _fajrReminderMinutes,
       );
 
-      // Update notifications
       await NotificationService.updateNotifications(
         notificationsEnabled: _notificationsEnabled,
         fajrReminder: _fajrReminder,
+        fajrCall: _fajrCall,
         loggingReminder: _loggingReminder,
         fajrReminderMinutes: _fajrReminderMinutes,
-        todayFajrTime: prayerProvider.todayFajrTime,
+        todayFajrTime: _prayerTimeProvider?.todayFajrTime,
         isChallengeActive: challengeProvider.isChallengeActive,
       );
-
-      if (mounted) {
-        context.showSnack(
-          l10n.settingsSavedSuccess,
-          kind: AppSnackKind.success,
-        );
-        Navigator.pop(context);
-      }
+      return null;
     } catch (e) {
-      if (mounted) {
-        context.showSnack(
-          e.toString().replaceAll('Exception: ', ''),
-          kind: AppSnackKind.error,
-          duration: const Duration(seconds: 3),
-        );
-      }
+      return e.toString().replaceAll('Exception: ', '');
     }
+  }
+
+  /// Persists the name and location fields once typing has settled.
+  ///
+  /// Debounced rather than written per keystroke: each save is a preferences
+  /// write plus a provider notify, and a half-typed name is not worth either.
+  void _persistProfileSoon() {
+    _profileSaveTimer?.cancel();
+    _profileSaveTimer = Timer(_profileSaveDebounce, _persistProfile);
+  }
+
+  Future<void> _persistProfile() async {
+    _profileSaveTimer?.cancel();
+
+    final name = _nameController.text.trim();
+    // An empty name is refused rather than saved over a good one; the field
+    // says why instead of a snackbar the user has to dismiss.
+    if (mounted) setState(() => _nameIsEmpty = name.isEmpty);
+    if (name.isEmpty) return;
+
+    final error = await _writeProfile(
+      _challengeProvider,
+      name: name,
+      location: _locationController.text.trim(),
+    );
+    if (error == null || !mounted) return;
+    context.showSnack(
+      _profileErrorMessage(AppLocalizations.of(context)!, error),
+      kind: AppSnackKind.error,
+    );
+  }
+
+  /// Writes the profile through [provider], returning the failure when it
+  /// fails so the caller can localize it.
+  ///
+  /// Takes the provider rather than reading it from `context` so [dispose] can
+  /// call it on the way out.
+  static Future<Object?> _writeProfile(
+    ChallengeProvider? provider, {
+    required String name,
+    required String location,
+  }) async {
+    if (provider == null || name.isEmpty) return null;
+    try {
+      await provider.updateUserSettings(
+        name: name,
+        location: location,
+        latitude: provider.userLatitude,
+        longitude: provider.userLongitude,
+      );
+      return null;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  /// Turns a profile-write failure into something the user can act on.
+  String _profileErrorMessage(AppLocalizations l10n, Object error) {
+    if (error is UsernameTakenException) return l10n.authUsernameTaken;
+    if (error is ProfileSaveFailedException) return l10n.profileSaveFailed;
+    return error.toString().replaceAll('Exception: ', '');
   }
 
   void _showEndChallengeDialog(ChallengeProvider provider) {

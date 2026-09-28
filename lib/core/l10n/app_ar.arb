@@ -155,6 +155,7 @@
   "authErrorTooManyRequests": "محاولات كثيرة جدًا. يرجى المحاولة لاحقًا.",
   "authErrorGeneric": "فشلت المصادقة. يرجى المحاولة مرة أخرى.",
   "authUsernameTaken": "اسم المستخدم هذا مستخدم بالفعل. يرجى اختيار اسم آخر.",
+  "profileSaveFailed": "تعذّر حفظ ملفك الشخصي. تحقّق من الاتصال وحاول مرة أخرى.",
   "authForgotPasswordEnterEmail": "أدخل بريدك الإلكتروني أعلاه أولًا، ثم اضغط على \"هل نسيت كلمة المرور\".",
   "authPasswordResetSent": "تم إرسال رسالة إعادة تعيين كلمة المرور إلى {email}.",
   "commonMinutesShort": "{minutes} دقيقة",

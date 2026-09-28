@@ -70,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
     NotificationService.updateNotifications(
       notificationsEnabled: challengeProvider.notificationsEnabled,
       fajrReminder: challengeProvider.fajrReminder,
+      fajrCall: challengeProvider.fajrCall,
       loggingReminder: challengeProvider.loggingReminder,
       fajrReminderMinutes: challengeProvider.fajrReminderMinutes,
       todayFajrTime: prayerProvider.todayFajrTime,

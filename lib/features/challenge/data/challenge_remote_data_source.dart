@@ -6,6 +6,14 @@ import 'challenge_data.dart';
 
 class _UsernameTakenException implements Exception {}
 
+/// Outcome of a username reservation.
+///
+/// [failed] is deliberately separate from [taken]: a denied or offline write
+/// used to be reported to the user as "that name is taken", which sent them
+/// renaming themselves over and over while the real problem was that the
+/// profile write never reached Firestore.
+enum UsernameReservation { reserved, taken, failed }
+
 /// Reads/writes challenge state to Cloud Firestore. The only place that knows
 /// the Firestore collection layout and document shape.
 ///
@@ -43,12 +51,12 @@ class ChallengeRemoteDataSource {
   }
 
   /// Atomically reserves [desired] for this uid (IMPROVEMENT_PLAN D4). Releases
-  /// the [previous] reservation on rename. Returns `true` on success, `false`
-  /// if the name is already held by a different uid. Comparison is
-  /// trimmed + lowercased so casing/whitespace can't create duplicates.
-  Future<bool> reserveUsername(String desired, String previous) async {
+  /// the [previous] reservation on rename. Comparison is trimmed + lowercased
+  /// so casing/whitespace can't create duplicates.
+  Future<UsernameReservation> reserveUsername(
+      String desired, String previous) async {
     final normalized = desired.trim().toLowerCase();
-    if (normalized.isEmpty) return false;
+    if (normalized.isEmpty) return UsernameReservation.failed;
     final ref = _firestore.collection(_usernames).doc(normalized);
     final prevNorm = previous.trim().toLowerCase();
 
@@ -63,12 +71,14 @@ class ChallengeRemoteDataSource {
           txn.delete(_firestore.collection(_usernames).doc(prevNorm));
         }
       });
-      return true;
+      return UsernameReservation.reserved;
     } on _UsernameTakenException {
-      return false;
+      return UsernameReservation.taken;
     } catch (e) {
+      // Rules denial, offline, transaction abort — anything but the name
+      // being held by someone else.
       debugPrint('Error reserving username: $e');
-      return false;
+      return UsernameReservation.failed;
     }
   }
 

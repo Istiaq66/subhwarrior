@@ -19,6 +19,7 @@ import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_local_data_source.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/home/presentation/home_screen.dart';
+import 'package:subh_warrior/features/prayer_times/data/fajr_call_service.dart';
 import 'package:subh_warrior/features/prayer_times/data/fajr_widget_service.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
@@ -115,6 +116,10 @@ Future<_Services> _bootstrap(
   SchedulerBinding.instance.addPostFrameCallback((_) {
     NotificationService().initBackground();
     unawaited(_configureFajrWidgetBackgroundFetch());
+    // The Fajr call: alarm plumbing plus the listener that clears the call
+    // screen once it has been answered or dismissed.
+    unawaited(FajrCallService.initialize());
+    FajrCallService.listenForAnswers();
   });
 
   await _refreshPrayerTimesWithinBudget(prefs, uid, prayerProvider);

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:subh_warrior/core/analytics/analytics_service.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_data.dart';
+import 'package:subh_warrior/features/challenge/data/challenge_remote_data_source.dart';
 import 'package:subh_warrior/features/challenge/data/challenge_repository.dart';
 import 'package:subh_warrior/features/challenge/domain/work_type.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
@@ -13,6 +14,9 @@ class FakeChallengeRepository implements ChallengeRepository {
   ChallengeData stored;
   int saveCount = 0;
   bool usernameTaken = false;
+
+  /// Forces a specific outcome, whatever [usernameTaken] says.
+  UsernameReservation? reservation;
   int reserveCount = 0;
   String? lastReservePrevious;
 
@@ -44,10 +48,14 @@ class FakeChallengeRepository implements ChallengeRepository {
       usernameTaken;
 
   @override
-  Future<bool> reserveUsername(String desired, String previous) async {
+  Future<UsernameReservation> reserveUsername(
+      String desired, String previous) async {
     reserveCount++;
     lastReservePrevious = previous;
-    return !usernameTaken;
+    return reservation ??
+        (usernameTaken
+            ? UsernameReservation.taken
+            : UsernameReservation.reserved);
   }
 }
 

@@ -1034,6 +1034,12 @@ abstract class AppLocalizations {
   /// **'That username is already taken. Please choose another.'**
   String get authUsernameTaken;
 
+  /// No description provided for @profileSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your profile. Check your connection and try again.'**
+  String get profileSaveFailed;
+
   /// No description provided for @authForgotPasswordEnterEmail.
   ///
   /// In en, this message translates to:

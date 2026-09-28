@@ -19,6 +19,7 @@ class ChallengeData {
 
   bool notificationsEnabled;
   bool fajrReminder;
+  bool fajrCall;
   bool loggingReminder;
   int fajrReminderMinutes;
 
@@ -38,6 +39,9 @@ class ChallengeData {
     this.hasLocation = false,
     this.notificationsEnabled = true,
     this.fajrReminder = true,
+    // Opt-in: a ringing call over the lock screen is a bigger intrusion than
+    // the notification, so an upgrading user keeps what they signed up for.
+    this.fajrCall = false,
     this.loggingReminder = true,
     this.fajrReminderMinutes = AppConstants.defaultFajrReminderMinutes,
     List<DayLog>? dayLogs,
