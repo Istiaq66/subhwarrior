@@ -290,11 +290,16 @@ class _CountdownState extends State<_Countdown> {
       now: DateTime.now(),
     );
     final isClock = remaining != null;
+    // `%` rather than `remainder`, matching the Fajr card: the two disagree on
+    // negative input (`%` is euclidean, `remainder` keeps the sign), and the
+    // same duration used to render as `-2h 47m` on one card and `-02:-47` on
+    // this one. `durationUntilNextFajr` no longer returns a negative, so this
+    // is belt and braces — but the two cards now agree by construction.
     final text = remaining == null
         ? l10n.prayerCardCountdownUnknown
         : '${_two(remaining.inHours)}:'
-            '${_two(remaining.inMinutes.remainder(60))}:'
-            '${_two(remaining.inSeconds.remainder(60))}';
+            '${_two(remaining.inMinutes % 60)}:'
+            '${_two(remaining.inSeconds % 60)}';
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

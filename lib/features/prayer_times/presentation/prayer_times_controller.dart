@@ -39,6 +39,14 @@ class PrayerTimeProvider extends ChangeNotifier {
   /// being used. Cleared once fresh data lands.
   CachedPrayerTimes? _hydratedFrom;
 
+  /// The calendar day [_todayPrayerTimes] describes.
+  ///
+  /// Without it, yesterday's times quietly became today's: the getters below
+  /// re-anchor a stored `HH:mm` onto whatever "now" is, so at midnight (or a
+  /// device clock change) the countdown re-armed against the previous day's
+  /// Fajr instead of going stale.
+  DateTime? _timesDay;
+
   PrayerTimeProvider(this._repository)
       : _settings = _repository.loadSettings() {
     _hydrateFromCache();
@@ -59,7 +67,22 @@ class PrayerTimeProvider extends ChangeNotifier {
     _todayPrayerTimes = cached.today;
     _tomorrowPrayerTimes = cached.tomorrow;
     _hydratedFrom = cached;
+    _timesDay = _dayOf(DateTime.now());
     _source = PrayerTimesSource.cache;
+  }
+
+  /// Midnight of [moment] — the day two instants are compared on.
+  static DateTime _dayOf(DateTime moment) =>
+      DateTime(moment.year, moment.month, moment.day);
+
+  /// Whether the times in memory describe a day other than today's.
+  ///
+  /// True after midnight passes with the app still open, and after a device
+  /// clock change. Everything derived from the times is withheld while it
+  /// holds, rather than being re-dated onto the new day.
+  bool get hasStaleTimes {
+    final day = _timesDay;
+    return day != null && day != _dayOf(DateTime.now());
   }
 
   PrayerTimes? get todayPrayerTimes => _todayPrayerTimes;
@@ -77,12 +100,12 @@ class PrayerTimeProvider extends ChangeNotifier {
   bool get use24HourFormat => _settings.use24HourFormat;
 
   DateTime? get todayFajrTime {
-    if (_todayPrayerTimes == null) return null;
+    if (_todayPrayerTimes == null || hasStaleTimes) return null;
     return _onDay(DateTime.now(), _todayPrayerTimes!.fajr);
   }
 
   DateTime? get tomorrowFajrTime {
-    if (_tomorrowPrayerTimes == null) return null;
+    if (_tomorrowPrayerTimes == null || hasStaleTimes) return null;
     final tomorrow = DateTime.now().add(const Duration(days: 1));
     return _onDay(tomorrow, _tomorrowPrayerTimes!.fajr);
   }
@@ -119,6 +142,7 @@ class PrayerTimeProvider extends ChangeNotifier {
           today, latitude, longitude, _settings);
       _tomorrowPrayerTimes = await _repository.fetchByCoordinates(
           tomorrow, latitude, longitude, _settings);
+      _timesDay = _dayOf(today);
       await _cacheCurrent(latitude: latitude, longitude: longitude);
     });
   }
@@ -135,6 +159,7 @@ class PrayerTimeProvider extends ChangeNotifier {
           await _repository.fetchByCity(today, city, country, _settings);
       _tomorrowPrayerTimes =
           await _repository.fetchByCity(tomorrow, city, country, _settings);
+      _timesDay = _dayOf(today);
       await _cacheCurrent(latitude: 0.0, longitude: 0.0);
     });
   }
@@ -186,6 +211,7 @@ class PrayerTimeProvider extends ChangeNotifier {
     _todayPrayerTimes = null;
     _tomorrowPrayerTimes = null;
     _hydratedFrom = null;
+    _timesDay = null;
     _source = PrayerTimesSource.none;
   }
 
@@ -312,6 +338,10 @@ class PrayerTimeProvider extends ChangeNotifier {
     final totalSeconds = cycleEnd.difference(cycleStart).inSeconds;
     if (totalSeconds <= 0) return null;
 
+    // Past the end of the cycle the times are stale, and a bar pinned at 100%
+    // reads as "Fajr is imminent" forever. Say nothing instead.
+    if (now.isAfter(cycleEnd)) return null;
+
     final elapsedSeconds = now.difference(cycleStart).inSeconds;
     return (elapsedSeconds / totalSeconds).clamp(0.0, 1.0);
   }
@@ -340,7 +370,14 @@ class PrayerTimeProvider extends ChangeNotifier {
       nextFajr = tomorrowFajrTime;
     }
 
-    return nextFajr?.difference(now);
+    if (nextFajr == null) return null;
+
+    // A next Fajr in the past means the times are stale, not that Fajr was
+    // minus two hours ago. Callers render null as "unknown"; a negative
+    // `Duration` rendered as a clock, and each card mangled the sign
+    // differently.
+    final remaining = nextFajr.difference(now);
+    return remaining.isNegative ? null : remaining;
   }
 
   /// Shared fetch wrapper: toggles loading/error and defers notifications to

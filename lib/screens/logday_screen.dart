@@ -417,6 +417,7 @@ class _LogDayScreenState extends State<LogDayScreen> {
             const SizedBox(height: 8),
             DropdownButtonFormField<WorkType>(
               initialValue: _selectedWorkType,
+              isExpanded: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 fillColor: isQualifyingWork
@@ -430,7 +431,10 @@ class _LogDayScreenState extends State<LogDayScreen> {
               items: WorkType.values
                   .map((type) => DropdownMenuItem(
                         value: type,
-                        child: Text(_workTypeLabel(l10n, type)),
+                        child: Text(
+                          _workTypeLabel(l10n, type),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ))
                   .toList(),
               onChanged: (value) {

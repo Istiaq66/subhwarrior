@@ -313,6 +313,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               builder: (context, provider, _) {
                 return DropdownButtonFormField<int>(
                   initialValue: provider.calculationMethod,
+                  isExpanded: true,
                   decoration: InputDecoration(
                     labelText: l10n.settingsCalculationMethodLabel,
                   ),
@@ -322,6 +323,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Text(
                         entry.value,
                         style: Theme.of(context).textTheme.bodyMedium,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     );
                   }).toList(),

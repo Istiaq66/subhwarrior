@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,13 +30,33 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _init();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Refetches when the app comes back and the times on screen belong to a
+  /// different day.
+  ///
+  /// Midnight passing with the app open — or a device clock change — left
+  /// yesterday's times in memory, where the getters re-dated them onto today
+  /// and the countdown re-armed against a Fajr that had already happened.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    if (!context.read<PrayerTimeProvider>().hasStaleTimes) return;
+    unawaited(_loadPrayerTimes());
   }
 
   Future<void> _init() async {
