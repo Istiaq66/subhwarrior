@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/l10n/app_localizations.dart';
+import '../../../helpers/notification_service.dart';
 import '../../../providers/locale_provider.dart';
 import '../../challenge/data/challenge_local_data_source.dart';
 import '../domain/prayer_times.dart';
@@ -119,6 +120,24 @@ class FajrWidgetService {
         debugPrint(
             'FajrWidgetService: unparseable Fajr time — skipping update.');
         return;
+      }
+
+      // This refresh is the only thing that runs daily with the app closed, so
+      // it also books the next Fajr / logging reminder (see
+      // NotificationService.rearmFromBackground). Isolated so a notification
+      // failure can never leave the widget stale.
+      try {
+        await NotificationService.rearmFromBackground(
+          notificationsEnabled: challengeData.notificationsEnabled,
+          fajrReminder: challengeData.fajrReminder,
+          loggingReminder: challengeData.loggingReminder,
+          fajrReminderMinutes: challengeData.fajrReminderMinutes,
+          todayFajr: todayFajr,
+          tomorrowFajr: tomorrowFajr,
+          isChallengeActive: challengeData.isChallengeActive,
+        );
+      } catch (e) {
+        debugPrint('FajrWidgetService: reminder re-arm failed: $e');
       }
 
       final now = DateTime.now();

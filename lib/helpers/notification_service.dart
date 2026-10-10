@@ -60,6 +60,60 @@ class NotificationService {
     await _configureLocalTimeZone();
   }
 
+  static bool _headlessReady = false;
+
+  /// Minimal plugin + timezone setup for the background-fetch isolate, which
+  /// never runs `main()` and so has neither. Safe to call repeatedly.
+  static Future<void> _ensureHeadlessReady() async {
+    if (_headlessReady) return;
+    await _notifications.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      ),
+    );
+    await NotificationService()._configureLocalTimeZone();
+    _headlessReady = true;
+  }
+
+  /// Re-arms the one-shot Fajr and logging reminders from the background
+  /// isolate. Both fire once and nothing else books the next day, so without
+  /// this they only come back when the user next opens the app.
+  ///
+  /// Honours the same switches as [updateNotifications] but never cancels: a
+  /// settings change already cancelled what it needed to.
+  static Future<void> rearmFromBackground({
+    required bool notificationsEnabled,
+    required bool fajrReminder,
+    required bool loggingReminder,
+    required int fajrReminderMinutes,
+    required DateTime? todayFajr,
+    required DateTime? tomorrowFajr,
+    required bool isChallengeActive,
+  }) async {
+    if (!notificationsEnabled) return;
+    if (!fajrReminder && !(loggingReminder && isChallengeActive)) return;
+
+    await _ensureHeadlessReady();
+
+    if (fajrReminder && todayFajr != null) {
+      // If today's heads-up has already passed, aim at tomorrow's real Fajr
+      // instead of today's rolled forward a day.
+      final todayReminder = todayFajr.subtract(Duration(
+          minutes: fajrReminderMinutes < 0 ? 0 : fajrReminderMinutes));
+      final target = todayReminder.isAfter(DateTime.now())
+          ? todayFajr
+          : (tomorrowFajr ?? todayFajr);
+      await scheduleFajrReminder(
+        fajrTime: target,
+        minutesBefore: fajrReminderMinutes,
+      );
+    }
+
+    if (loggingReminder && isChallengeActive) {
+      await scheduleLoggingReminder();
+    }
+  }
+
   Future<void> _configureLocalTimeZone() async {
     tz.initializeTimeZones();
     String timezoneName;
@@ -120,6 +174,8 @@ class NotificationService {
       scheduledDate,
       NotificationDetails(android: androidDetails),
       payload: payload,
+      // Exact modes need SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM, which are
+      // deliberately not declared (Play restricts them), so this is inexact.
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
     );
   }

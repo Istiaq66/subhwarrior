@@ -4,9 +4,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <!-- Android 13+ requires runtime notification permission -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <!-- Exact-time scheduling for Fajr / logging reminders -->
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!-- android_alarm_manager_plus wakes the device for the Fajr call -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
