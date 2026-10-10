@@ -66,6 +66,7 @@ dependencies:
   firebase_performance: ^0.11.6
   flutter_callkit_incoming: ^3.1.6
   android_alarm_manager_plus: ^5.1.1
+  firebase_crashlytics: ^5.4.0
 
 dev_dependencies:
   flutter_test:

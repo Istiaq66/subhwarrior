@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/analytics/analytics_service.dart';
 import 'package:subh_warrior/core/analytics/firebase_analytics_service.dart';
+import 'package:subh_warrior/core/analytics/screen_view.dart';
+import 'package:subh_warrior/core/crash/crash_reporting.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/perf/firebase_performance_service.dart';
 import 'package:subh_warrior/core/perf/performance_service.dart';
@@ -93,12 +95,14 @@ Future<_Services> _bootstrap(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   StartupTrace.mark(StartupMarks.firebaseReady);
+  await CrashReporting.init();
 
   // Ensure a signed-in user (anonymous at minimum) before any Firestore I/O.
   // The auth StreamBuilder in the app derives the live uid from here on.
   final authService = AuthService();
   final uid = await authService.ensureSignedIn();
   StartupTrace.mark(StartupMarks.authReady);
+  unawaited(CrashReporting.setUser(uid));
 
   final analytics = FirebaseAnalyticsService();
   AnalyticsService.maybeInstance = analytics;
@@ -331,10 +335,13 @@ class _AppShell extends StatelessWidget {
       themeMode: themeProvider.themeMode,
       home: home,
       routes: {
-        '/auth': (context) => const AuthScreen(),
+        '/auth': (context) => const _AuthView(),
         '/home': (context) => const HomeScreen(),
-        '/onboarding': (context) => const OnboardingScreen(),
-        '/settings': (context) => const SettingsScreen(),
+        '/onboarding': (context) => const _OnboardingView(),
+        '/settings': (context) => const ScreenView(
+              name: AnalyticsScreens.settings,
+              child: SettingsScreen(),
+            ),
       },
     );
   }
@@ -382,16 +389,40 @@ class _RootRouter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Signed out → entry screen.
-    if (user == null) return const AuthScreen();
+    if (user == null) return const _AuthView();
 
     final challenge = context.watch<ChallengeProvider>();
 
     // No username yet (anonymous boot, or signed in without a profile) → auth.
-    if (challenge.userName.trim().isEmpty) return const AuthScreen();
+    if (challenge.userName.trim().isEmpty) return const _AuthView();
 
     // Registered but no location → finish onboarding.
-    if (!challenge.hasLocation) return const OnboardingScreen();
+    if (!challenge.hasLocation) return const _OnboardingView();
 
     return const HomeScreen();
   }
+}
+
+/// Keyed so `_RootRouter` swapping between screens logs each one, not just the
+/// first.
+class _AuthView extends StatelessWidget {
+  const _AuthView();
+
+  @override
+  Widget build(BuildContext context) => const ScreenView(
+        key: ValueKey(AnalyticsScreens.auth),
+        name: AnalyticsScreens.auth,
+        child: AuthScreen(),
+      );
+}
+
+class _OnboardingView extends StatelessWidget {
+  const _OnboardingView();
+
+  @override
+  Widget build(BuildContext context) => const ScreenView(
+        key: ValueKey(AnalyticsScreens.onboarding),
+        name: AnalyticsScreens.onboarding,
+        child: OnboardingScreen(),
+      );
 }

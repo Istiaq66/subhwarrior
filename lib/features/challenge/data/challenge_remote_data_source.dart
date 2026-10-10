@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:subh_warrior/core/crash/crash_reporting.dart';
 
 import '../domain/day_log.dart';
 import 'challenge_data.dart';
@@ -104,8 +105,9 @@ class ChallengeRemoteDataSource {
         'lastUpdated': FieldValue.serverTimestamp(),
         'logs': data.dayLogs.map((e) => e.toJson()).toList(),
       });
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('Error saving to Firestore: $e');
+      CrashReporting.recordNonFatal(e, st, 'Firestore saveChallenge failed');
     }
   }
 

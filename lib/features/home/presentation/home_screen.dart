@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:subh_warrior/core/analytics/screen_view.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/challenge/domain/challenge_stats.dart';
@@ -33,10 +34,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0;
 
+  /// Analytics screen names, in the same order as the bottom-nav tabs.
+  static const _tabScreens = [
+    AnalyticsScreens.home,
+    AnalyticsScreens.progress,
+    AnalyticsScreens.leaderboard,
+  ];
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    logScreenView(AnalyticsScreens.home);
     _init();
   }
 
@@ -135,6 +144,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           setState(() {
             _selectedIndex = index;
           });
+          logScreenView(_tabScreens[index]);
         },
         destinations: [
           NavigationDestination(

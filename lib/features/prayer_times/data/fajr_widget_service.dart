@@ -7,6 +7,7 @@ import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/crash/crash_reporting.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../helpers/notification_service.dart';
 import '../../../providers/locale_provider.dart';
@@ -41,8 +42,9 @@ class FajrWidgetService {
   static Future<void> refresh() async {
     try {
       await _refresh();
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('FajrWidgetService.refresh skipped: $e');
+      CrashReporting.recordNonFatal(e, st, 'FajrWidgetService.refresh failed');
     }
   }
 
@@ -136,8 +138,9 @@ class FajrWidgetService {
           tomorrowFajr: tomorrowFajr,
           isChallengeActive: challengeData.isChallengeActive,
         );
-      } catch (e) {
+      } catch (e, st) {
         debugPrint('FajrWidgetService: reminder re-arm failed: $e');
+        CrashReporting.recordNonFatal(e, st, 'Fajr reminder re-arm failed');
       }
 
       final now = DateTime.now();

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:subh_warrior/core/analytics/screen_view.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/l10n/l10n_utils.dart';
@@ -163,7 +164,12 @@ class TodayStatusCard extends StatelessWidget {
         FilledButton.icon(
           onPressed: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const LogDayScreen()),
+            MaterialPageRoute(
+              builder: (_) => const ScreenView(
+                name: AnalyticsScreens.logDay,
+                child: LogDayScreen(),
+              ),
+            ),
           ),
           icon: const Icon(Icons.check_circle, size: 22),
           label: Text(l10n.todayStatusLogTodayButton),

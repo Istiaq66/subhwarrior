@@ -15,6 +15,9 @@ abstract final class AnalyticsEvents {
   static const friendAdded = 'friend_added';
   static const notificationOpened = 'notification_opened';
 
+  /// Screen impressions — see `ScreenView`.
+  static const screenView = 'screen_view';
+
   /// Startup timings, one per launch — see `StartupTrace`.
   static const appStartup = 'app_startup';
 }

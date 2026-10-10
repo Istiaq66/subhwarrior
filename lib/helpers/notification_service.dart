@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:subh_warrior/core/analytics/analytics_service.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/crash/crash_reporting.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/l10n/l10n_standalone.dart';
 import 'package:subh_warrior/features/prayer_times/data/fajr_call_service.dart';
@@ -98,8 +99,8 @@ class NotificationService {
     if (fajrReminder && todayFajr != null) {
       // If today's heads-up has already passed, aim at tomorrow's real Fajr
       // instead of today's rolled forward a day.
-      final todayReminder = todayFajr.subtract(Duration(
-          minutes: fajrReminderMinutes < 0 ? 0 : fajrReminderMinutes));
+      final todayReminder = todayFajr.subtract(
+          Duration(minutes: fajrReminderMinutes < 0 ? 0 : fajrReminderMinutes));
       final target = todayReminder.isAfter(DateTime.now())
           ? todayFajr
           : (tomorrowFajr ?? todayFajr);
@@ -260,8 +261,9 @@ class NotificationService {
         scheduledDate: scheduledTime,
         payload: 'fajr_reminder',
       );
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('❌ Error scheduling Fajr reminder: $e');
+      CrashReporting.recordNonFatal(e, st, 'Fajr reminder scheduling failed');
     }
   }
 
@@ -291,8 +293,10 @@ class NotificationService {
         scheduledDate: scheduledTime,
         payload: 'logging_reminder',
       );
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('❌ Error scheduling logging reminder: $e');
+      CrashReporting.recordNonFatal(
+          e, st, 'Logging reminder scheduling failed');
     }
   }
 
