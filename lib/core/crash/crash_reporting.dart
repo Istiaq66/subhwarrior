@@ -1,5 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:subh_warrior/firebase_options.dart';
 
 /// Crashlytics wiring. Call [init] once Firebase is initialized; until then
 /// (and in tests) every method is a safe no-op.
@@ -29,6 +31,26 @@ class CrashReporting {
     } catch (e) {
       debugPrint('CrashReporting.init skipped: $e');
     }
+  }
+
+  /// [init] for a background isolate (alarm callback, background-fetch task).
+  ///
+  /// Those isolates never run `main()`, so Firebase is not started and the
+  /// error hooks are unset: handled errors would be dropped by
+  /// [recordNonFatal] and uncaught ones would vanish. Safe to call repeatedly
+  /// and never throws.
+  static Future<void> initInBackground() async {
+    try {
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      }
+    } catch (e) {
+      debugPrint('CrashReporting.initInBackground: Firebase unavailable: $e');
+      return;
+    }
+    await init();
   }
 
   /// Ties reports to the Firebase uid (an opaque id, no personal data).

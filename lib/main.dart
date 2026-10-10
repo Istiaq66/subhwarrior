@@ -224,7 +224,7 @@ void _fajrWidgetBackgroundFetchHeadlessTask(HeadlessEvent task) async {
     return;
   }
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await CrashReporting.initInBackground();
   await FajrWidgetService.refresh();
   BackgroundFetch.finish(task.taskId);
 }

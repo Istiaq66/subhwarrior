@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:subh_warrior/core/crash/crash_reporting.dart';
 import 'package:subh_warrior/core/l10n/l10n_standalone.dart';
 
 /// Rings the device like an incoming call at Fajr, instead of posting a
@@ -258,6 +259,9 @@ class FajrCallService {
 Future<void> onFajrAlarm() async {
   debugPrint('FajrCallService: alarm fired');
 
+  // First, so everything below — including a failed ring — is reportable.
+  await CrashReporting.initInBackground();
+
   // The isolate has its own copy of the preference cache.
   final prefs = await SharedPreferences.getInstance();
   await prefs.reload();
@@ -270,14 +274,20 @@ Future<void> onFajrAlarm() async {
   try {
     await FajrCallService.ring();
     debugPrint('FajrCallService: call screen requested');
-  } catch (e) {
+  } catch (e, st) {
     // A failure here is invisible otherwise — the isolate has no UI.
     debugPrint('FajrCallService: could not show the call: $e');
+    CrashReporting.recordNonFatal(e, st, 'Fajr call failed to ring');
   }
 
   // `oneShotAt` fires once. Nothing else re-arms it while the app stays
   // closed, so tomorrow's call has to be booked from here — otherwise the
   // alarm rings exactly once and then only ever comes back if the user opens
   // the app.
-  await FajrCallService.rescheduleNextFromAlarm(prefs);
+  try {
+    await FajrCallService.rescheduleNextFromAlarm(prefs);
+  } catch (e, st) {
+    debugPrint('FajrCallService: could not book the next call: $e');
+    CrashReporting.recordNonFatal(e, st, 'Fajr call reschedule failed');
+  }
 }
