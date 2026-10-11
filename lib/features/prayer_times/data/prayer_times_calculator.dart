@@ -1,16 +1,16 @@
 import 'package:adhan/adhan.dart' as adhan;
 
-import '../../../core/utils/hijri_date.dart';
+import '../domain/calculation_method.dart';
 import '../domain/prayer_times.dart';
+import '../domain/umm_al_qura_ramadan.dart';
 
 /// Computes prayer times on the device with the `adhan` package — no network,
 /// so times are available for any day the app is opened, connected or not.
 ///
-/// Inputs keep the Aladhan vocabulary the app has always stored: `method` is an
-/// Aladhan method id (persisted in prefs by older builds, and the keys of the
-/// Settings picker) and `school` is Aladhan's 0 = Standard, 1 = Hanafi. Output
-/// mirrors what the Aladhan API returned, including its derived Imsak and
-/// Midnight, so nothing downstream of [PrayerTimes] changes.
+/// `method` is a [CalculationMethod] id (Aladhan's numbering, which the app
+/// has always stored) and `school` is Aladhan's 0 = Standard, 1 = Hanafi.
+/// Output mirrors what the Aladhan API returned, including its derived Imsak
+/// and Midnight, so nothing downstream of [PrayerTimes] changes.
 ///
 /// Times are rendered in the device's time zone. That matches the old API for
 /// the app's real use — the user's own location — but a profile set to a city
@@ -25,28 +25,12 @@ class PrayerTimesCalculator {
 
   static DateTime _deviceLocal(DateTime time) => time.toLocal();
 
-  /// Aladhan method id → adhan method. Covers every id the Settings picker
-  /// offers; anything else (a value from a build with a longer list) falls
-  /// back to [_fallbackMethod].
-  static const Map<int, adhan.CalculationMethod> _methods = {
-    1: adhan.CalculationMethod.karachi,
-    2: adhan.CalculationMethod.north_america,
-    3: adhan.CalculationMethod.muslim_world_league,
-    4: adhan.CalculationMethod.umm_al_qura,
-    5: adhan.CalculationMethod.egyptian,
-    15: adhan.CalculationMethod.moon_sighting_committee,
-  };
-
-  static const _fallbackMethod = adhan.CalculationMethod.muslim_world_league;
-
   /// Aladhan's default Imsak: a fixed ten minutes before Fajr.
   static const _imsakLead = Duration(minutes: 10);
 
   /// Umm al-Qura's Isha moves from 90 to 120 minutes after Maghrib during
   /// Ramadan. Aladhan applies this; `adhan` does not.
   static const _ummAlQuraRamadanExtra = Duration(minutes: 30);
-
-  static const _ramadan = 9;
 
   /// Moonsighting Committee's seasonal curves, per 55° of latitude, at the
   /// four turning points of its year (see [_seasonalMinutes]).
@@ -69,24 +53,29 @@ class PrayerTimesCalculator {
   }) {
     final coordinates =
         adhan.Coordinates(latitude, longitude, validate: true);
-    final params = _parameters(method, school);
+    final spec = CalculationMethod.byId(method);
+    final params = _parameters(spec, school);
 
     final day = DateTime(date.year, date.month, date.day);
-    final today = adhan.PrayerTimes(
-        coordinates, adhan.DateComponents.from(day), params);
+    final components = adhan.DateComponents.from(day);
+    final today = adhan.PrayerTimes(coordinates, components, params);
     final nextDay = adhan.PrayerTimes(coordinates,
         adhan.DateComponents.from(day.add(const Duration(days: 1))), params);
 
-    // With the method offsets cleared, Maghrib is sunset for every method the
-    // picker offers (only Tehran sets a Maghrib angle).
-    final sunset = today.maghrib;
+    // Maghrib is sunset unless the method waits for a Maghrib angle; only
+    // then is a separate sunset needed.
+    final sunset = spec.maghribAngle == null
+        ? today.maghrib
+        : adhan.PrayerTimes(coordinates, components,
+                adhan.CalculationParameters(fajrAngle: 18, ishaAngle: 17))
+            .maghrib;
     var fajr = today.fajr;
     var isha = today.isha;
 
     // `adhan` takes the later of 18° and the seasonal curve for Fajr, and the
     // earlier for Isha. The Committee — and Aladhan — use the curve alone,
     // which put Fajr up to several minutes apart.
-    if (params.method == adhan.CalculationMethod.moon_sighting_committee &&
+    if (spec.id == CalculationMethod.moonsightingCommittee &&
         latitude < _moonsightingSeasonalMaxLatitude) {
       final dyy = adhan.PrayerTimes.daysSinceSolstice(
           _dayOfYear(day), day.year, latitude);
@@ -95,18 +84,19 @@ class PrayerTimesCalculator {
       isha = sunset.add(_seasonalMinutes(_moonsightingEvening, latitude, dyy));
     }
 
-    if (params.method == adhan.CalculationMethod.umm_al_qura &&
-        HijriDate.fromDateTime(day).month == _ramadan) {
+    if (spec.id == CalculationMethod.ummAlQura &&
+        UmmAlQuraRamadan.contains(day)) {
       isha = isha.add(_ummAlQuraRamadanExtra);
     }
 
+    Duration minutes(int n) => Duration(minutes: n);
     return PrayerTimes(
       fajr: _hhmm(fajr),
-      sunrise: _hhmm(today.sunrise),
-      dhuhr: _hhmm(today.dhuhr),
-      asr: _hhmm(today.asr),
+      sunrise: _hhmm(today.sunrise.add(minutes(spec.sunriseOffset))),
+      dhuhr: _hhmm(today.dhuhr.add(minutes(spec.dhuhrOffset))),
+      asr: _hhmm(today.asr.add(minutes(spec.asrOffset))),
       sunset: _hhmm(sunset),
-      maghrib: _hhmm(today.maghrib),
+      maghrib: _hhmm(today.maghrib.add(minutes(spec.maghribOffset))),
       isha: _hhmm(isha),
       imsak: _hhmm(fajr.subtract(_imsakLead)),
       // Aladhan's Standard midnight: halfway from sunset to the next sunrise.
@@ -114,20 +104,31 @@ class PrayerTimesCalculator {
     );
   }
 
-  static adhan.CalculationParameters _parameters(int method, int school) {
-    final params = (_methods[method] ?? _fallbackMethod).getParameters()
+  /// `adhan` parameters for [spec]. Offsets are left out and added to the
+  /// results instead, so `adhan`'s Maghrib stays the raw sunset the derived
+  /// times are measured from.
+  static adhan.CalculationParameters _parameters(
+      CalculationMethod spec, int school) {
+    final params = spec.id == CalculationMethod.moonsightingCommittee
+        // The adhan method value switches on its seventh-of-the-night rule
+        // above 55°; its own offsets are not Aladhan's and are cleared.
+        ? (adhan.CalculationMethod.moon_sighting_committee.getParameters()
+          ..methodAdjustments = adhan.PrayerAdjustments())
+        : adhan.CalculationParameters(
+            fajrAngle: spec.fajrAngle,
+            // `adhan` needs an Isha angle for the angle-based rule even when
+            // Isha is an interval. The interval still decides Isha; this
+            // placeholder is never used for it.
+            ishaAngle: spec.ishaAngle ?? spec.fajrAngle,
+            ishaInterval: spec.ishaIntervalMinutes ?? 0,
+            maghribAngle: spec.maghribAngle,
+          );
+    // Aladhan's default high-latitude rule, for every method: where the
+    // twilight angle is never reached, Fajr is that fraction (angle / 60) of
+    // the night before sunrise.
+    return params
       ..madhab = school == 1 ? adhan.Madhab.hanafi : adhan.Madhab.shafi
-      // `adhan` pads some methods (Dhuhr +1 minute, Moonsighting Committee
-      // Dhuhr +5 and Maghrib +3). Aladhan does not, and these are the times
-      // users already have.
-      ..methodAdjustments = adhan.PrayerAdjustments();
-    // Aladhan's default high-latitude rule is angle based. `adhan` can only
-    // apply it with an Isha angle — Umm al-Qura uses a fixed interval and
-    // would throw — so those methods keep `adhan`'s middle-of-the-night rule.
-    if (params.ishaAngle != null) {
-      params.highLatitudeRule = adhan.HighLatitudeRule.twilight_angle;
-    }
-    return params;
+      ..highLatitudeRule = adhan.HighLatitudeRule.twilight_angle;
   }
 
   /// Moonsighting Committee's twilight length: 75 minutes plus a

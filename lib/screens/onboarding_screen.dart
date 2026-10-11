@@ -29,6 +29,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   double _longitude = 0.0;
   bool _hasCoordinates = false;
 
+  /// ISO code of the country at the resolved coordinates, when the geocoder
+  /// gave one. Seeds the prayer method and Asr school on completion.
+  String? _countryCode;
+
   @override
   void initState() {
     super.initState();
@@ -58,10 +62,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       if (!mounted) return;
       if (locations.isNotEmpty) {
         final loc = locations.first;
+        final countryCode =
+            await _countryCodeAt(loc.latitude, loc.longitude);
+        if (!mounted) return;
         setState(() {
           _latitude = loc.latitude;
           _longitude = loc.longitude;
           _hasCoordinates = true;
+          _countryCode = countryCode;
         });
       } else {
         context.showSnack(
@@ -76,6 +84,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             .onboardingErrorFindingLocation(e.toString()),
         kind: AppSnackKind.error,
       );
+    }
+  }
+
+  /// Best-effort country lookup for a typed location. A failure only means
+  /// the prayer settings keep their defaults instead of the country's.
+  Future<String?> _countryCodeAt(double latitude, double longitude) async {
+    try {
+      final placemarks = await placemarkFromCoordinates(latitude, longitude)
+          .timeout(const Duration(seconds: 5));
+      return placemarks.isEmpty ? null : placemarks.first.isoCountryCode;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -280,7 +300,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             controller: _locationController,
             onChanged: (_) {
               // Editing the text invalidates any previously resolved coords.
-              if (_hasCoordinates) setState(() => _hasCoordinates = false);
+              if (_hasCoordinates) {
+                setState(() {
+                  _hasCoordinates = false;
+                  _countryCode = null;
+                });
+              }
             },
             decoration: InputDecoration(
               labelText: l10n.onboardingLocationFieldLabel,
@@ -564,6 +589,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _latitude = position.latitude;
       _longitude = position.longitude;
       _hasCoordinates = true;
+      _countryCode = null;
 
       // Reverse geocoding is best-effort: the coordinates alone already drive
       // prayer times, so a failed or empty lookup falls back to showing them.
@@ -585,6 +611,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   : l10n.locationUnknownLocality);
           final country = place.country ?? '';
           location = country.isEmpty ? locality : '$locality, $country';
+          _countryCode = place.isoCountryCode;
         }
       } catch (_) {
         // Keep the coordinate fallback.
@@ -618,6 +645,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       final prayerProvider = context.read<PrayerTimeProvider>();
 
       if (_hasCoordinates) {
+        // Seed the method and Asr school from the user's country before the
+        // first fetch, so the first times they see are their local ones.
+        await prayerProvider.applyCountryDefaults(_countryCode, seed: true);
         try {
           await prayerProvider.fetchPrayerTimes(_latitude, _longitude);
         } catch (_) {}

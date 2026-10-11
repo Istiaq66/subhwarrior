@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/features/prayer_times/data/location_data_source.dart';
 import 'package:subh_warrior/features/prayer_times/data/prayer_times_repository.dart';
 import 'package:subh_warrior/features/prayer_times/domain/cached_prayer_times.dart';
+import 'package:subh_warrior/features/prayer_times/domain/calculation_method.dart';
 import 'package:subh_warrior/features/prayer_times/domain/prayer_settings.dart';
 import 'package:subh_warrior/features/prayer_times/domain/prayer_times.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
@@ -118,6 +119,80 @@ void main() {
 
       expect(controller.calculationMethod, 3);
       expect(repo.lastSaved?.calculationMethod, 3);
+    });
+
+    test('applyCountryDefaults seeds method and school on onboarding',
+        () async {
+      final repo = FakePrayerTimesRepository();
+      final controller = PrayerTimeProvider(repo);
+
+      await controller.applyCountryDefaults('bd', seed: true);
+
+      expect(controller.calculationMethod, CalculationMethod.karachi);
+      expect(controller.useHanafiMethod, isTrue);
+      expect(repo.lastSaved?.defaultsCountryCode, 'BD');
+    });
+
+    test('applyCountryDefaults keeps a hand-picked method in the same country',
+        () async {
+      final repo = FakePrayerTimesRepository(
+        settings: const PrayerSettings(
+          calculationMethod: CalculationMethod.moonsightingCommittee,
+          defaultsCountryCode: 'GB',
+        ),
+      );
+      final controller = PrayerTimeProvider(repo);
+
+      await controller.applyCountryDefaults('GB');
+
+      expect(controller.calculationMethod,
+          CalculationMethod.moonsightingCommittee);
+      expect(repo.saveCount, 0);
+    });
+
+    test('applyCountryDefaults adopts the method, not the school, on a move',
+        () async {
+      final repo = FakePrayerTimesRepository(
+        settings: const PrayerSettings(
+          calculationMethod: CalculationMethod.karachi,
+          defaultsCountryCode: 'BD',
+        ),
+      );
+      final controller = PrayerTimeProvider(repo);
+
+      await controller.applyCountryDefaults('MY');
+
+      expect(controller.calculationMethod, CalculationMethod.jakim);
+      expect(controller.useHanafiMethod, isFalse);
+      expect(repo.lastSaved?.defaultsCountryCode, 'MY');
+    });
+
+    test('applyCountryDefaults only records the country for older profiles',
+        () async {
+      // No country recorded: this profile predates country defaults, and its
+      // method may well have been picked by hand.
+      final repo = FakePrayerTimesRepository(
+        settings: const PrayerSettings(calculationMethod: 5),
+      );
+      final controller = PrayerTimeProvider(repo);
+
+      await controller.applyCountryDefaults('BD');
+
+      expect(controller.calculationMethod, 5);
+      expect(repo.lastSaved?.defaultsCountryCode, 'BD');
+    });
+
+    test('applyCountryDefaults ignores a missing country', () async {
+      final repo = FakePrayerTimesRepository(
+        settings: const PrayerSettings(calculationMethod: 5),
+      );
+      final controller = PrayerTimeProvider(repo);
+
+      await controller.applyCountryDefaults(null, seed: true);
+      await controller.applyCountryDefaults(' ', seed: true);
+
+      expect(controller.calculationMethod, 5);
+      expect(repo.saveCount, 0);
     });
 
     test('updateJuristicMethod persists and updates state', () {

@@ -154,12 +154,14 @@ void main() {
         calculationMethod: 4,
         useHanafiMethod: true,
         use24HourFormat: true,
+        defaultsCountryCode: 'SA',
       ));
 
       final loaded = ds.load();
       expect(loaded.calculationMethod, 4);
       expect(loaded.useHanafiMethod, isTrue);
       expect(loaded.use24HourFormat, isTrue);
+      expect(loaded.defaultsCountryCode, 'SA');
     });
 
     test('remembers geocoded coordinates for one city at a time', () async {

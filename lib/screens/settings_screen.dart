@@ -16,6 +16,7 @@ import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/data/fajr_call_service.dart';
+import 'package:subh_warrior/features/prayer_times/domain/calculation_method.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/helpers/location_access.dart';
 import 'package:subh_warrior/helpers/notification_permission.dart';
@@ -73,16 +74,6 @@ class _SettingsScreenState extends State<SettingsScreen>
     'ar': 'العربية',
     'bn': 'বাংলা',
     'ur': 'اردو',
-  };
-
-  // Prayer calculation methods
-  final Map<int, String> _calculationMethods = {
-    1: 'University of Islamic Sciences, Karachi',
-    2: 'Islamic Society of North America (ISNA)',
-    3: 'Muslim World League (MWL)',
-    4: 'Umm Al-Qura University, Makkah',
-    5: 'Egyptian General Authority',
-    15: 'Moonsighting Committee',
   };
 
   @override
@@ -341,16 +332,20 @@ class _SettingsScreenState extends State<SettingsScreen>
             Consumer<PrayerTimeProvider>(
               builder: (context, provider, _) {
                 return DropdownButtonFormField<int>(
+                  // `initialValue` is only read on first build; keying on the
+                  // method rebuilds the field when it changes underneath it
+                  // (a location change adopting the country's method).
+                  key: ValueKey(provider.calculationMethod),
                   initialValue: provider.calculationMethod,
                   isExpanded: true,
                   decoration: InputDecoration(
                     labelText: l10n.settingsCalculationMethodLabel,
                   ),
-                  items: _calculationMethods.entries.map((entry) {
+                  items: CalculationMethod.all.map((method) {
                     return DropdownMenuItem(
-                      value: entry.key,
+                      value: method.id,
                       child: Text(
-                        entry.value,
+                        method.name,
                         style: Theme.of(context).textTheme.bodyMedium,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -972,6 +967,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         position.latitude.toStringAsFixed(2),
         position.longitude.toStringAsFixed(2),
       );
+      String? countryCode;
       try {
         final placemarks = await placemarkFromCoordinates(
           position.latitude,
@@ -986,6 +982,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                   : l10n.locationUnknownLocality);
           final country = place.country ?? '';
           location = country.isEmpty ? locality : '$locality, $country';
+          countryCode = place.isoCountryCode;
         }
       } catch (_) {
         // Keep the coordinate fallback.
@@ -1002,6 +999,9 @@ class _SettingsScreenState extends State<SettingsScreen>
             latitude: position.latitude,
             longitude: position.longitude,
           );
+
+      if (!mounted) return;
+      await context.read<PrayerTimeProvider>().applyCountryDefaults(countryCode);
 
       if (!mounted) return;
       await _refreshPrayerTimes();

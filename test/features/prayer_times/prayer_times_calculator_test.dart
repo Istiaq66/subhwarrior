@@ -69,6 +69,53 @@ void main() {
       }
     }
 
+    // The rest of the catalog, standard Asr. Fields: Fajr, Imsak, Sunrise,
+    // Dhuhr, Asr, Maghrib, Isha.
+    const dhakaRest = <int, List<String>>{
+      0: ['05:33', '05:23', '06:43', '12:08', '15:11', '17:48', '18:34'],
+      7: ['05:25', '05:15', '06:43', '12:08', '15:11', '17:50', '18:34'],
+      8: ['05:17', '05:07', '06:43', '12:08', '15:11', '17:33', '19:03'],
+      9: ['05:23', '05:13', '06:43', '12:08', '15:11', '17:33', '18:50'],
+      10: ['05:23', '05:13', '06:43', '12:08', '15:11', '17:33', '19:03'],
+      11: ['05:14', '05:04', '06:43', '12:08', '15:11', '17:33', '18:52'],
+      12: ['05:51', '05:41', '06:43', '12:08', '15:11', '17:33', '18:25'],
+      13: ['05:23', '05:13', '06:36', '12:13', '15:15', '17:40', '18:47'],
+      14: ['05:33', '05:23', '06:43', '12:08', '15:11', '17:33', '18:38'],
+      16: ['05:23', '05:13', '06:43', '12:11', '15:11', '17:36', '18:53'],
+      17: ['05:14', '05:04', '06:43', '12:08', '15:11', '17:33', '18:52'],
+      18: ['05:23', '05:13', '06:43', '12:08', '15:11', '17:33', '18:52'],
+      19: ['05:23', '05:13', '06:43', '12:08', '15:11', '17:33', '18:47'],
+      20: ['05:14', '05:04', '06:43', '12:08', '15:11', '17:33', '18:52'],
+      21: ['05:19', '05:09', '06:43', '12:13', '15:11', '17:38', '18:47'],
+      22: ['05:23', '05:13', '06:43', '12:13', '15:11', '17:36', '18:53'],
+      23: ['05:23', '05:13', '06:43', '12:08', '15:11', '17:38', '18:52'],
+    };
+
+    for (final MapEntry(key: method, value: t) in dhakaRest.entries) {
+      test('Dhaka, method $method', () {
+        final actual = _atOffset(6).calculate(
+          date: dhakaDay,
+          latitude: dhakaLat,
+          longitude: dhakaLon,
+          method: method,
+          school: 0,
+        );
+        // Sunset is left out: Aladhan shifts it along with Maghrib for Turkey
+        // and Dubai, and the app never shows it.
+        _expectAladhan(actual, {
+          'fajr': t[0],
+          'imsak': t[1],
+          'sunrise': t[2],
+          'dhuhr': t[3],
+          'asr': t[4],
+          'maghrib': t[5],
+          'isha': t[6],
+          'sunset': actual.sunset,
+          'midnight': '00:08',
+        });
+      });
+    }
+
     test('London at the summer solstice uses the angle-based rule', () {
       // MWL's 18° Fajr never happens in a London June night, so the time
       // comes entirely from the high-latitude rule.
@@ -91,6 +138,23 @@ void main() {
         'midnight': '01:02',
       });
     });
+
+    // Interval-Isha methods use the same angle-based rule for Fajr, which
+    // never reaches its angle in a London June night.
+    const londonIntervalFajr = {4: '02:27', 8: '02:20', 10: '02:31', 22: '02:31'};
+    for (final MapEntry(key: method, value: fajr)
+        in londonIntervalFajr.entries) {
+      test('London at the summer solstice, method $method', () {
+        final actual = _atOffset(1).calculate(
+          date: DateTime(2026, 6, 21),
+          latitude: 51.5074,
+          longitude: -0.1278,
+          method: method,
+          school: 0,
+        );
+        expect(actual.fajr, fajr);
+      });
+    }
 
     test('Umm al-Qura extends Isha to 120 minutes in Ramadan', () {
       // 25 Feb 2026 is in Ramadan 1447. Makkah, UTC+3.
@@ -120,7 +184,6 @@ void main() {
     });
 
     test('Umm al-Qura does not throw at high latitude', () {
-      // Its Isha is an interval, so the angle-based rule cannot apply.
       expect(
         () => _atOffset(2).calculate(
           date: DateTime(2026, 6, 21),

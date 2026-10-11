@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../data/fajr_widget_service.dart';
 import '../data/prayer_times_repository.dart';
 import '../domain/cached_prayer_times.dart';
+import '../domain/country_prayer_defaults.dart';
 import '../domain/prayer_settings.dart';
 import '../domain/prayer_times.dart';
 
@@ -245,6 +246,39 @@ class PrayerTimeProvider extends ChangeNotifier {
       _error = 'Failed to get location: $e';
       notifyListeners();
     }
+  }
+
+  /// Adopts the calculation method customary in [countryCode] (ISO 3166-1
+  /// alpha-2) and, when [seed], its Asr school (see [CountryPrayerDefaults]).
+  ///
+  /// Onboarding seeds: a new profile takes both outright. After that only a
+  /// move to another country re-applies the method — re-detecting in the same
+  /// country keeps whatever the user picked, and the school, a personal
+  /// choice, is never touched again. A profile from before country defaults
+  /// has nothing recorded; its first location change only records the
+  /// country, so the method its user is already on survives.
+  ///
+  /// A null code (the geocoder had no answer, or was offline) changes
+  /// nothing. Does not refetch; callers fetch for the new location after.
+  Future<void> applyCountryDefaults(
+    String? countryCode, {
+    bool seed = false,
+  }) async {
+    final code = countryCode?.trim().toUpperCase();
+    if (code == null || code.isEmpty) return;
+
+    final previous = _settings.defaultsCountryCode;
+    if (!seed && previous == code) return;
+
+    final defaults = CountryPrayerDefaults.forCountry(code);
+    final adopt = seed || previous != null;
+    _settings = _settings.copyWith(
+      defaultsCountryCode: code,
+      calculationMethod: adopt ? defaults.calculationMethod : null,
+      useHanafiMethod: seed ? defaults.useHanafiMethod : null,
+    );
+    await _repository.saveSettings(_settings);
+    notifyListeners();
   }
 
   void updateCalculationMethod(int method) {

@@ -10,10 +10,16 @@ class PrayerSettings {
   /// Display clock in 24-hour (`14:30`) vs 12-hour (`02:30 PM`) format.
   final bool use24HourFormat;
 
+  /// ISO code of the country whose defaults were last applied, so a location
+  /// change only re-applies them on moving country. Null for profiles that
+  /// predate country defaults.
+  final String? defaultsCountryCode;
+
   const PrayerSettings({
     this.calculationMethod = defaultCalculationMethod,
     this.useHanafiMethod = false,
     this.use24HourFormat = false,
+    this.defaultsCountryCode,
   });
 
   static const int defaultCalculationMethod = 2;
@@ -25,10 +31,12 @@ class PrayerSettings {
     int? calculationMethod,
     bool? useHanafiMethod,
     bool? use24HourFormat,
+    String? defaultsCountryCode,
   }) =>
       PrayerSettings(
         calculationMethod: calculationMethod ?? this.calculationMethod,
         useHanafiMethod: useHanafiMethod ?? this.useHanafiMethod,
         use24HourFormat: use24HourFormat ?? this.use24HourFormat,
+        defaultsCountryCode: defaultsCountryCode ?? this.defaultsCountryCode,
       );
 }
