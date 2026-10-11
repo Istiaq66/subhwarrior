@@ -1,6 +1,7 @@
 /// User-chosen prayer-time calculation preferences.
 class PrayerSettings {
-  /// Aladhan calculation method (2 = ISNA, 3 = MWL, …).
+  /// Calculation method as an Aladhan method id (2 = ISNA, 3 = MWL, …) — the
+  /// app's stored vocabulary, mapped onto `adhan` by `PrayerTimesCalculator`.
   final int calculationMethod;
 
   /// Juristic school for Asr: Hanafi (school=1) vs Standard/Shafi (school=0).
@@ -17,7 +18,7 @@ class PrayerSettings {
 
   static const int defaultCalculationMethod = 2;
 
-  /// Aladhan `school` query value derived from the juristic method.
+  /// Aladhan-style `school` value derived from the juristic method.
   int get school => useHanafiMethod ? 1 : 0;
 
   PrayerSettings copyWith({

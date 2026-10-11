@@ -2,13 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/features/prayer_times/data/location_data_source.dart';
+import 'package:subh_warrior/features/prayer_times/data/prayer_times_calculator.dart';
 import 'package:subh_warrior/features/prayer_times/data/prayer_times_local_data_source.dart';
-import 'package:subh_warrior/features/prayer_times/data/prayer_times_remote_data_source.dart';
 import 'package:subh_warrior/features/prayer_times/data/prayer_times_repository.dart';
 import 'package:subh_warrior/features/prayer_times/domain/prayer_settings.dart';
 import 'package:subh_warrior/features/prayer_times/domain/prayer_times.dart';
 
-class _MockRemote extends Mock implements PrayerTimesRemoteDataSource {}
+class _MockCalculator extends Mock implements PrayerTimesCalculator {}
 
 class _MockLocal extends Mock implements PrayerTimesLocalDataSource {}
 
@@ -27,35 +27,36 @@ const _times = PrayerTimes(
 );
 
 void main() {
-  late _MockRemote remote;
+  late _MockCalculator calculator;
   late _MockLocal local;
   late _MockLocation location;
   late PrayerTimesRepositoryImpl repository;
 
+  setUpAll(() => registerFallbackValue((latitude: 0.0, longitude: 0.0)));
+
   setUp(() {
-    remote = _MockRemote();
+    calculator = _MockCalculator();
     local = _MockLocal();
     location = _MockLocation();
-    repository = PrayerTimesRepositoryImpl(remote, local, location);
+    repository = PrayerTimesRepositoryImpl(calculator, local, location);
+    when(() => calculator.calculate(
+          date: any(named: 'date'),
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          method: any(named: 'method'),
+          school: any(named: 'school'),
+        )).thenReturn(_times);
   });
 
   group('PrayerTimesRepositoryImpl', () {
     test('fetchByCoordinates forwards method and derived school', () async {
-      when(() => remote.fetchByCoordinates(
-            date: any(named: 'date'),
-            latitude: any(named: 'latitude'),
-            longitude: any(named: 'longitude'),
-            method: any(named: 'method'),
-            school: any(named: 'school'),
-          )).thenAnswer((_) async => _times);
-
       const settings =
           PrayerSettings(calculationMethod: 3, useHanafiMethod: true);
       final result = await repository.fetchByCoordinates(
           DateTime(2026, 7, 18), 23.8, 90.4, settings);
 
       expect(result, same(_times));
-      verify(() => remote.fetchByCoordinates(
+      verify(() => calculator.calculate(
             date: DateTime(2026, 7, 18),
             latitude: 23.8,
             longitude: 90.4,
@@ -64,27 +65,58 @@ void main() {
           )).called(1);
     });
 
-    test('fetchByCity forwards school 0 for the standard juristic method',
+    test('fetchByCity calculates from remembered coordinates without geocoding',
         () async {
-      when(() => remote.fetchByCity(
-            date: any(named: 'date'),
-            city: any(named: 'city'),
-            country: any(named: 'country'),
-            method: any(named: 'method'),
-            school: any(named: 'school'),
-          )).thenAnswer((_) async => _times);
+      when(() => local.loadCityCoordinates('Dhaka', 'Bangladesh'))
+          .thenReturn((latitude: 23.8, longitude: 90.4));
 
       const settings = PrayerSettings(calculationMethod: 5);
       await repository.fetchByCity(
           DateTime(2026, 7, 18), 'Dhaka', 'Bangladesh', settings);
 
-      verify(() => remote.fetchByCity(
+      verifyNever(() => location.cityCoordinates(any(), any()));
+      verify(() => calculator.calculate(
             date: DateTime(2026, 7, 18),
-            city: 'Dhaka',
-            country: 'Bangladesh',
+            latitude: 23.8,
+            longitude: 90.4,
             method: 5,
             school: 0,
           )).called(1);
+    });
+
+    test('fetchByCity geocodes an unknown city once and remembers it',
+        () async {
+      when(() => local.loadCityCoordinates(any(), any())).thenReturn(null);
+      when(() => location.cityCoordinates('Dhaka', 'Bangladesh'))
+          .thenAnswer((_) async => (latitude: 23.8, longitude: 90.4));
+      when(() => local.saveCityCoordinates(any(), any(), any()))
+          .thenAnswer((_) async {});
+
+      await repository.fetchByCity(DateTime(2026, 7, 18), 'Dhaka',
+          'Bangladesh', const PrayerSettings());
+
+      verify(() => local.saveCityCoordinates(
+          'Dhaka', 'Bangladesh', (latitude: 23.8, longitude: 90.4))).called(1);
+      verify(() => calculator.calculate(
+            date: any(named: 'date'),
+            latitude: 23.8,
+            longitude: 90.4,
+            method: any(named: 'method'),
+            school: any(named: 'school'),
+          )).called(1);
+    });
+
+    test('fetchByCity surfaces a failed geocode', () async {
+      when(() => local.loadCityCoordinates(any(), any())).thenReturn(null);
+      when(() => location.cityCoordinates(any(), any()))
+          .thenThrow('offline');
+
+      await expectLater(
+        repository.fetchByCity(DateTime(2026, 7, 18), 'Dhaka', 'Bangladesh',
+            const PrayerSettings()),
+        throwsA('offline'),
+      );
+      verifyNever(() => local.saveCityCoordinates(any(), any(), any()));
     });
 
     test('currentCoordinates delegates to the location data source', () async {
@@ -128,6 +160,22 @@ void main() {
       expect(loaded.calculationMethod, 4);
       expect(loaded.useHanafiMethod, isTrue);
       expect(loaded.use24HourFormat, isTrue);
+    });
+
+    test('remembers geocoded coordinates for one city at a time', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final ds = PrayerTimesLocalDataSource(prefs);
+
+      expect(ds.loadCityCoordinates('Dhaka', 'Bangladesh'), isNull);
+
+      await ds.saveCityCoordinates(
+          'Dhaka', 'Bangladesh', (latitude: 23.8, longitude: 90.4));
+
+      // Matching ignores case and surrounding whitespace.
+      expect(ds.loadCityCoordinates(' dhaka ', 'BANGLADESH'),
+          (latitude: 23.8, longitude: 90.4));
+      expect(ds.loadCityCoordinates('Chittagong', 'Bangladesh'), isNull);
     });
   });
 }

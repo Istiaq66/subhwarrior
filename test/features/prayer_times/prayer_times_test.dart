@@ -85,31 +85,6 @@ class FakePrayerTimesRepository implements PrayerTimesRepository {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('PrayerTimes.fromJson', () {
-    test('strips the Aladhan timezone suffix', () {
-      final pt = PrayerTimes.fromJson({
-        'Fajr': '05:30 (+06)',
-        'Sunrise': '06:10 (+06)',
-        'Dhuhr': '12:00 (+06)',
-        'Asr': '15:30 (+06)',
-        'Sunset': '18:00 (+06)',
-        'Maghrib': '18:05 (+06)',
-        'Isha': '19:45 (+06)',
-        'Imsak': '05:20 (+06)',
-        'Midnight': '00:00 (+06)',
-      });
-      expect(pt.fajr, '05:30');
-      expect(pt.sunrise, '06:10');
-      expect(pt.isha, '19:45');
-    });
-
-    test('falls back to 00:00 for missing keys', () {
-      final pt = PrayerTimes.fromJson({});
-      expect(pt.fajr, '00:00');
-      expect(pt.midnight, '00:00');
-    });
-  });
-
   group('PrayerSettings', () {
     test('school derives from juristic method', () {
       expect(const PrayerSettings().school, 0);

@@ -238,7 +238,7 @@ void main() {
       await controller.fetchPrayerTimes(23.8, 90.4);
 
       expect(controller.todayPrayerTimes?.fajr, '04:44');
-      expect(controller.source, PrayerTimesSource.network);
+      expect(controller.source, PrayerTimesSource.fresh);
       expect(repo.savedCaches, hasLength(1));
       expect(repo.savedCaches.single.today.fajr, '04:44');
       expect(repo.savedCaches.single.latitude, 23.8);

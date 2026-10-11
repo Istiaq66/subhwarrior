@@ -70,9 +70,8 @@ class FajrWidgetService {
 
     // Same resolution ladder HomeScreen._loadPrayerTimes uses: real
     // coordinates when we have them, otherwise a by-city lookup off the
-    // stored location name. Fetching 0,0 — what sign-up and coordinate-less
-    // remote profiles write — is rejected with HTTP 400, which used to land
-    // in the catch below and leave the widget on its placeholder forever.
+    // stored location name. 0,0 — what sign-up and coordinate-less remote
+    // profiles write — is a sentinel, not the user's location.
     final cityCountry = challengeData.cityCountry;
     if (!challengeData.hasUsableCoordinates && cityCountry == null) {
       debugPrint('FajrWidgetService: no usable coordinates and no '
@@ -97,7 +96,7 @@ class FajrWidgetService {
 
     try {
       // The widget is refreshed in the background, often right at Fajr and
-      // often with no network — a failed lookup used to abort the whole
+      // often with no network — a failed city geocode used to abort the whole
       // update, leaving the countdown aimed at a Fajr that had already passed
       // and ticking into negative numbers until the app was next opened.
       // Today's cache answers the same question when the network cannot.

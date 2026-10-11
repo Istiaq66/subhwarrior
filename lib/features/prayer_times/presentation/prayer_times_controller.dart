@@ -11,18 +11,19 @@ import '../domain/prayer_settings.dart';
 import '../domain/prayer_times.dart';
 
 /// Where the times currently on screen came from. Lets the UI tell "nothing
-/// yet" (show a loading state) apart from "yesterday's fetch, revalidating"
+/// yet" (show a loading state) apart from "an earlier result, revalidating"
 /// (show the times, no spinner).
-enum PrayerTimesSource { none, cache, network }
+enum PrayerTimesSource { none, cache, fresh }
 
-/// Thin controller over [PrayerTimesRepository]. Holds no http, Geolocator or
+/// Thin controller over [PrayerTimesRepository]. Holds no Geolocator or
 /// SharedPreferences instances directly (IMPROVEMENT_PLAN B3) — all I/O goes
 /// through the repository. Time-window math and formatting live here.
 ///
 /// Startup is stale-while-revalidate: the constructor hydrates from the local
 /// cache synchronously (like [PrayerTimesRepository.loadSettings]) so Home can
-/// paint real times on its first frame, and the network refresh then runs
-/// behind that. Nothing about startup waits on the network — see
+/// paint real times on its first frame, and the refresh then runs behind
+/// that. Times are calculated on the device; only a never-geocoded city can
+/// wait on the network, and startup does not wait on it — see
 /// [loadForProfile].
 class PrayerTimeProvider extends ChangeNotifier {
   final PrayerTimesRepository _repository;
@@ -125,9 +126,9 @@ class PrayerTimeProvider extends ChangeNotifier {
   /// Fetches by coordinates.
   ///
   /// Rejects 0,0 outright: that is the app's "no coordinates yet" sentinel
-  /// (see `ChallengeProvider.hasUsableCoordinates`), and the Aladhan API
-  /// answers it with HTTP 400, so sending it only produces a generic failure
-  /// card. Callers should fall back to a city or device-location lookup.
+  /// (see `ChallengeProvider.hasUsableCoordinates`), and calculating for it
+  /// would show the Gulf of Guinea's times as the user's. Callers should fall
+  /// back to a city or device-location lookup.
   Future<void> fetchPrayerTimes(double latitude, double longitude) async {
     if (latitude == 0.0 && longitude == 0.0) {
       _error = 'No coordinates set';
@@ -226,7 +227,7 @@ class PrayerTimeProvider extends ChangeNotifier {
     if (today == null || tomorrow == null) return;
 
     _hydratedFrom = null;
-    _source = PrayerTimesSource.network;
+    _source = PrayerTimesSource.fresh;
     await _repository.saveCachedTimes(CachedPrayerTimes(
       today: today,
       tomorrow: tomorrow,

@@ -108,7 +108,7 @@ class ChallengeProvider extends ChangeNotifier {
   /// coordinates — `AuthScreen` calls `updateUserSettings(latitude: 0,
   /// longitude: 0)` after sign-up, and a remote profile saved without
   /// coordinates restores as `0.0`. So a profile can carry a real city name
-  /// alongside 0,0, and the prayer-times API rejects 0,0 with HTTP 400. This
+  /// alongside 0,0, which would calculate the Gulf of Guinea's times. This
   /// distinguishes "we have coordinates" from "we have a location", so callers
   /// can fall back to a city lookup instead of showing a permanent error.
   /// Shared with `FajrWidgetService` via [ChallengeData.hasUsableCoordinates].

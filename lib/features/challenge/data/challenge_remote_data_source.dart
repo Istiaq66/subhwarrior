@@ -128,9 +128,9 @@ class ChallengeRemoteDataSource {
       // A remote profile can carry a location *name* with no coordinates
       // (older documents, or a geocode that failed at onboarding). Deriving
       // `hasLocation` from the name alone then restores a profile that claims
-      // a location while holding 0,0 — and the prayer-times API rejects
-      // 0,0 with HTTP 400, so the home screen shows a permanent
-      // "unable to load prayer times". Require the coordinates to be present.
+      // a location while holding 0,0 — which the prayer-times lookup cannot
+      // use, so the home screen shows a permanent "unable to load prayer
+      // times". Require the coordinates to be present.
       //
       // Absent is tested, not equality with zero: (0, 0) is a real coordinate
       // in the Gulf of Guinea, per the contract on
