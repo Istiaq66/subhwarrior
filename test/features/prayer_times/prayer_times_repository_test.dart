@@ -92,8 +92,8 @@ void main() {
       when(() => local.saveCityCoordinates(any(), any(), any()))
           .thenAnswer((_) async {});
 
-      await repository.fetchByCity(DateTime(2026, 7, 18), 'Dhaka',
-          'Bangladesh', const PrayerSettings());
+      await repository.fetchByCity(
+          DateTime(2026, 7, 18), 'Dhaka', 'Bangladesh', const PrayerSettings());
 
       verify(() => local.saveCityCoordinates(
           'Dhaka', 'Bangladesh', (latitude: 23.8, longitude: 90.4))).called(1);
@@ -108,8 +108,7 @@ void main() {
 
     test('fetchByCity surfaces a failed geocode', () async {
       when(() => local.loadCityCoordinates(any(), any())).thenReturn(null);
-      when(() => location.cityCoordinates(any(), any()))
-          .thenThrow('offline');
+      when(() => location.cityCoordinates(any(), any())).thenThrow('offline');
 
       await expectLater(
         repository.fetchByCity(DateTime(2026, 7, 18), 'Dhaka', 'Bangladesh',

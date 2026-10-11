@@ -36,8 +36,25 @@ void main() {
     });
 
     test('every listed method exists in the catalog', () {
-      const codes = ['AE', 'BH', 'DZ', 'EG', 'FR', 'ID', 'IR', 'JO', 'KW',
-        'MA', 'PT', 'QA', 'RU', 'SA', 'SG', 'TN', 'US'];
+      const codes = [
+        'AE',
+        'BH',
+        'DZ',
+        'EG',
+        'FR',
+        'ID',
+        'IR',
+        'JO',
+        'KW',
+        'MA',
+        'PT',
+        'QA',
+        'RU',
+        'SA',
+        'SG',
+        'TN',
+        'US'
+      ];
       for (final code in codes) {
         final id = CountryPrayerDefaults.forCountry(code).calculationMethod;
         expect(CalculationMethod.byId(id).id, id, reason: code);
@@ -52,7 +69,8 @@ void main() {
     });
 
     test('an unknown id falls back to Muslim World League', () {
-      expect(CalculationMethod.byId(99).id, CalculationMethod.muslimWorldLeague);
+      expect(
+          CalculationMethod.byId(99).id, CalculationMethod.muslimWorldLeague);
     });
   });
 }

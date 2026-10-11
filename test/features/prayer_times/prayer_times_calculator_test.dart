@@ -141,7 +141,12 @@ void main() {
 
     // Interval-Isha methods use the same angle-based rule for Fajr, which
     // never reaches its angle in a London June night.
-    const londonIntervalFajr = {4: '02:27', 8: '02:20', 10: '02:31', 22: '02:31'};
+    const londonIntervalFajr = {
+      4: '02:27',
+      8: '02:20',
+      10: '02:31',
+      22: '02:31'
+    };
     for (final MapEntry(key: method, value: fajr)
         in londonIntervalFajr.entries) {
       test('London at the summer solstice, method $method', () {

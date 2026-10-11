@@ -51,8 +51,7 @@ class PrayerTimesCalculator {
     required int method,
     required int school,
   }) {
-    final coordinates =
-        adhan.Coordinates(latitude, longitude, validate: true);
+    final coordinates = adhan.Coordinates(latitude, longitude, validate: true);
     final spec = CalculationMethod.byId(method);
     final params = _parameters(spec, school);
 
@@ -79,8 +78,8 @@ class PrayerTimesCalculator {
         latitude < _moonsightingSeasonalMaxLatitude) {
       final dyy = adhan.PrayerTimes.daysSinceSolstice(
           _dayOfYear(day), day.year, latitude);
-      fajr = today.sunrise.subtract(
-          _seasonalMinutes(_moonsightingMorning, latitude, dyy));
+      fajr = today.sunrise
+          .subtract(_seasonalMinutes(_moonsightingMorning, latitude, dyy));
       isha = sunset.add(_seasonalMinutes(_moonsightingEvening, latitude, dyy));
     }
 

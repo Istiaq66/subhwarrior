@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +15,7 @@ import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/prayer_times/data/fajr_call_service.dart';
+import 'package:subh_warrior/features/prayer_times/data/location_data_source.dart';
 import 'package:subh_warrior/features/prayer_times/domain/calculation_method.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/helpers/location_access.dart';
@@ -956,10 +956,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         return;
       }
 
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings:
-            const LocationSettings(accuracy: LocationAccuracy.high),
-      );
+      final position = await LocationDataSource.deviceFix();
 
       // Reverse geocoding is best-effort: the coordinates alone already drive
       // prayer times, so a failed or empty lookup falls back to showing them.
@@ -972,7 +969,7 @@ class _SettingsScreenState extends State<SettingsScreen>
         final placemarks = await placemarkFromCoordinates(
           position.latitude,
           position.longitude,
-        );
+        ).timeout(LocationDataSource.geocodeTimeLimit);
         if (placemarks.isNotEmpty) {
           final place = placemarks.first;
           final locality = place.locality?.isNotEmpty ?? false
@@ -1001,7 +998,9 @@ class _SettingsScreenState extends State<SettingsScreen>
           );
 
       if (!mounted) return;
-      await context.read<PrayerTimeProvider>().applyCountryDefaults(countryCode);
+      await context
+          .read<PrayerTimeProvider>()
+          .applyCountryDefaults(countryCode);
 
       if (!mounted) return;
       await _refreshPrayerTimes();

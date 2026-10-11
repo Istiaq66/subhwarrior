@@ -38,10 +38,10 @@ abstract final class UmmAlQuraRamadan {
   /// [day]'s calendar date is what counts; its time of day is ignored.
   static bool contains(DateTime day) {
     final date = DateTime(day.year, day.month, day.day);
-    final covered = !date.isBefore(_months.first.$1) &&
-        date.isBefore(_months.last.$2);
+    final covered =
+        !date.isBefore(_months.first.$1) && date.isBefore(_months.last.$2);
     if (!covered) return HijriDate.fromDateTime(date).month == _ramadan;
-    return _months.any(
-        (month) => !date.isBefore(month.$1) && date.isBefore(month.$2));
+    return _months
+        .any((month) => !date.isBefore(month.$1) && date.isBefore(month.$2));
   }
 }

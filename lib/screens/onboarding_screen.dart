@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
@@ -8,6 +7,7 @@ import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/core/theme/app_snack_bars.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
+import 'package:subh_warrior/features/prayer_times/data/location_data_source.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/helpers/location_access.dart';
 
@@ -58,12 +58,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (text.isEmpty) return;
 
     try {
-      final locations = await locationFromAddress(text);
+      final locations = await locationFromAddress(text)
+          .timeout(LocationDataSource.geocodeTimeLimit);
       if (!mounted) return;
       if (locations.isNotEmpty) {
         final loc = locations.first;
-        final countryCode =
-            await _countryCodeAt(loc.latitude, loc.longitude);
+        final countryCode = await _countryCodeAt(loc.latitude, loc.longitude);
         if (!mounted) return;
         setState(() {
           _latitude = loc.latitude;
@@ -92,7 +92,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<String?> _countryCodeAt(double latitude, double longitude) async {
     try {
       final placemarks = await placemarkFromCoordinates(latitude, longitude)
-          .timeout(const Duration(seconds: 5));
+          .timeout(LocationDataSource.geocodeTimeLimit);
       return placemarks.isEmpty ? null : placemarks.first.isoCountryCode;
     } catch (_) {
       return null;
@@ -580,11 +580,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         return;
       }
 
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-        ),
-      );
+      final position = await LocationDataSource.deviceFix();
 
       _latitude = position.latitude;
       _longitude = position.longitude;
@@ -601,7 +597,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         final placemarks = await placemarkFromCoordinates(
           position.latitude,
           position.longitude,
-        );
+        ).timeout(LocationDataSource.geocodeTimeLimit);
         if (placemarks.isNotEmpty) {
           final place = placemarks.first;
           final locality = place.locality?.isNotEmpty ?? false
