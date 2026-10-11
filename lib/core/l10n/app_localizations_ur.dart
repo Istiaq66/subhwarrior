@@ -469,9 +469,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get onboardingLocationFieldLabel => 'شہر/مقام';
 
   @override
-  String get onboardingLocationFieldHint => 'مثلاً کراچی، پاکستان';
-
-  @override
   String get onboardingGettingLocation => 'مقام حاصل کیا جا رہا ہے...';
 
   @override
@@ -496,27 +493,6 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get onboardingSetLocationPrompt => 'براہ کرم اپنا مقام سیٹ کریں';
-
-  @override
-  String get onboardingLocationNotFound =>
-      'وہ مقام نہیں مل سکا۔ براہ کرم ہجے چیک کریں۔';
-
-  @override
-  String onboardingErrorFindingLocation(String error) {
-    return 'مقام تلاش کرنے میں خرابی: $error';
-  }
-
-  @override
-  String get onboardingCoordinatesNotFound =>
-      'اس مقام کے متناسقات (کوآرڈینیٹس) نہیں مل سکے۔';
-
-  @override
-  String get locationUnknownLocality => 'نامعلوم';
-
-  @override
-  String locationSetCoords(String latitude, String longitude) {
-    return 'مقام سیٹ ہو گیا ($latitude, $longitude)';
-  }
 
   @override
   String get authCreateAccountTitle => 'اپنا اکاؤنٹ بنائیں';
@@ -1382,4 +1358,16 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get a11yShareStreak => 'اپنی اسٹریک شیئر کریں';
+
+  @override
+  String get locationChooseCity => 'اپنا شہر منتخب کریں';
+
+  @override
+  String get locationPickerTitle => 'اپنا شہر منتخب کریں';
+
+  @override
+  String get locationSearchHint => 'شہر یا ملک تلاش کریں';
+
+  @override
+  String get locationNoMatches => 'کوئی مماثل شہر نہیں ملا';
 }

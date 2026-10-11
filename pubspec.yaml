@@ -24,7 +24,6 @@ dependencies:
 
   # Location & Prayer Times
   geolocator: ^14.0.2
-  geocoding: ^4.0.0
   adhan: ^2.0.0+1
 
   # UI Components
@@ -82,6 +81,7 @@ flutter:
 
   assets:
     - assets/icons/
+    - assets/data/
 
   # Bundled rather than pulled via google_fonts: the app must theme itself
   # offline and in CI, with no runtime font download. Both files are variable

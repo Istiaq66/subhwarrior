@@ -116,7 +116,6 @@
   "onboardingLocationTitle": "اپنا مقام سیٹ کریں",
   "onboardingLocationSubtitle": "درست نماز کے اوقات معلوم کرنے کے لیے ہمیں اس کی ضرورت ہے",
   "onboardingLocationFieldLabel": "شہر/مقام",
-  "onboardingLocationFieldHint": "مثلاً کراچی، پاکستان",
   "onboardingGettingLocation": "مقام حاصل کیا جا رہا ہے...",
   "onboardingUseCurrentLocation": "موجودہ مقام استعمال کریں",
   "onboardingReadyTitle": "آپ بالکل تیار ہیں!",
@@ -125,11 +124,6 @@
   "onboardingBackButton": "واپس",
   "onboardingNextButton": "آگے",
   "onboardingSetLocationPrompt": "براہ کرم اپنا مقام سیٹ کریں",
-  "onboardingLocationNotFound": "وہ مقام نہیں مل سکا۔ براہ کرم ہجے چیک کریں۔",
-  "onboardingErrorFindingLocation": "مقام تلاش کرنے میں خرابی: {error}",
-  "onboardingCoordinatesNotFound": "اس مقام کے متناسقات (کوآرڈینیٹس) نہیں مل سکے۔",
-  "locationUnknownLocality": "نامعلوم",
-  "locationSetCoords": "مقام سیٹ ہو گیا ({latitude}, {longitude})",
   "authCreateAccountTitle": "اپنا اکاؤنٹ بنائیں",
   "authWelcomeBackTitle": "دوبارہ خوش آمدید",
   "authTagline": "مقصد کے ساتھ اٹھیں، اپنی صبح سنواریں۔",
@@ -370,5 +364,9 @@
   "a11yNonQualifyingDay": "غیر کوالیفائنگ دن",
   "a11yRequirementMet": "شرط پوری ہوئی",
   "a11yRequirementNotMet": "شرط پوری نہیں ہوئی",
-  "a11yShareStreak": "اپنی اسٹریک شیئر کریں"
+  "a11yShareStreak": "اپنی اسٹریک شیئر کریں",
+  "locationChooseCity": "اپنا شہر منتخب کریں",
+  "locationPickerTitle": "اپنا شہر منتخب کریں",
+  "locationSearchHint": "شہر یا ملک تلاش کریں",
+  "locationNoMatches": "کوئی مماثل شہر نہیں ملا"
 }

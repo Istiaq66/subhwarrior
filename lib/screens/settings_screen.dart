@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -14,11 +13,11 @@ import 'package:subh_warrior/core/theme/app_snack_bars.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
+import 'package:subh_warrior/features/location/domain/city.dart';
+import 'package:subh_warrior/features/location/presentation/location_selector.dart';
 import 'package:subh_warrior/features/prayer_times/data/fajr_call_service.dart';
-import 'package:subh_warrior/features/prayer_times/data/location_data_source.dart';
 import 'package:subh_warrior/features/prayer_times/domain/calculation_method.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
-import 'package:subh_warrior/helpers/location_access.dart';
 import 'package:subh_warrior/helpers/notification_permission.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/providers/locale_provider.dart';
@@ -35,9 +34,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen>
     with WidgetsBindingObserver {
   final _nameController = TextEditingController();
-  final _locationController = TextEditingController();
 
-  bool _isLoadingLocation = false;
   bool _nameIsEmpty = false;
   Timer? _profileSaveTimer;
   Timer? _notificationSaveTimer;
@@ -124,7 +121,6 @@ class _SettingsScreenState extends State<SettingsScreen>
 
     // Load user info
     _nameController.text = challengeProvider.userName;
-    _locationController.text = challengeProvider.userLocation;
 
     // Load notification settings from provider
     _notificationsEnabled = challengeProvider.notificationsEnabled;
@@ -148,14 +144,9 @@ class _SettingsScreenState extends State<SettingsScreen>
       unawaited(_writeNotificationSettings(_challengeProvider));
     }
     if (hadPendingEdit) {
-      unawaited(_writeProfile(
-        _challengeProvider,
-        name: _nameController.text.trim(),
-        location: _locationController.text.trim(),
-      ));
+      unawaited(_writeProfile(_challengeProvider, _nameController.text.trim()));
     }
     _nameController.dispose();
-    _locationController.dispose();
     super.dispose();
   }
 
@@ -265,57 +256,28 @@ class _SettingsScreenState extends State<SettingsScreen>
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _locationController,
-              textInputAction: TextInputAction.done,
-              onChanged: (_) => _persistProfileSoon(),
-              onEditingComplete: _persistProfile,
-              onTapOutside: (_) => _persistProfile(),
-              decoration: InputDecoration(
-                labelText: l10n.onboardingLocationFieldLabel,
-                hintText: l10n.onboardingLocationFieldHint,
-                prefixIcon: const Icon(Icons.map),
+        child: Consumer<ChallengeProvider>(
+          builder: (context, provider, _) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              LocationSelector(
+                label: provider.userLocation,
+                onSelected: _setLocation,
               ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: _isLoadingLocation ? null : _getCurrentLocation,
-                icon: _isLoadingLocation
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.my_location),
-                label: Text(_isLoadingLocation
-                    ? l10n.onboardingGettingLocation
-                    : l10n.onboardingUseCurrentLocation),
-              ),
-            ),
-            Consumer<ChallengeProvider>(
-              builder: (context, provider, _) {
-                if (provider.userLatitude != 0 && provider.userLongitude != 0) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      l10n.settingsCoordinates(
-                          context.localizeNumber(provider.userLatitude,
-                              fractionDigits: 4),
-                          context.localizeNumber(provider.userLongitude,
-                              fractionDigits: 4)),
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  );
-                }
-                return const SizedBox();
-              },
-            ),
-          ],
+              if (provider.hasUsableCoordinates)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    l10n.settingsCoordinates(
+                        context.localizeNumber(provider.userLatitude,
+                            fractionDigits: 4),
+                        context.localizeNumber(provider.userLongitude,
+                            fractionDigits: 4)),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -942,84 +904,29 @@ class _SettingsScreenState extends State<SettingsScreen>
     );
   }
 
-  Future<void> _getCurrentLocation() async {
-    final l10n = AppLocalizations.of(context)!;
-    setState(() {
-      _isLoadingLocation = true;
-    });
-
+  /// Saves [city] as the profile location, adopts its country's prayer
+  /// method when the country changed, and recalculates.
+  Future<void> _setLocation(City city) async {
+    final challengeProvider = context.read<ChallengeProvider>();
+    final prayerProvider = context.read<PrayerTimeProvider>();
     try {
-      final access = await requestLocationAccess();
-      if (!mounted) return;
-      if (access != LocationAccess.granted) {
-        showLocationAccessSnack(context, access);
-        return;
-      }
-
-      final position = await LocationDataSource.deviceFix();
-
-      // Reverse geocoding is best-effort: the coordinates alone already drive
-      // prayer times, so a failed or empty lookup falls back to showing them.
-      var location = l10n.locationSetCoords(
-        position.latitude.toStringAsFixed(2),
-        position.longitude.toStringAsFixed(2),
+      await challengeProvider.updateUserSettings(
+        name: _nameController.text.trim(),
+        location: city.label,
+        latitude: city.latitude,
+        longitude: city.longitude,
       );
-      String? countryCode;
-      try {
-        final placemarks = await placemarkFromCoordinates(
-          position.latitude,
-          position.longitude,
-        ).timeout(LocationDataSource.geocodeTimeLimit);
-        if (placemarks.isNotEmpty) {
-          final place = placemarks.first;
-          final locality = place.locality?.isNotEmpty ?? false
-              ? place.locality!
-              : (place.administrativeArea?.isNotEmpty ?? false
-                  ? place.administrativeArea!
-                  : l10n.locationUnknownLocality);
-          final country = place.country ?? '';
-          location = country.isEmpty ? locality : '$locality, $country';
-          countryCode = place.isoCountryCode;
-        }
-      } catch (_) {
-        // Keep the coordinate fallback.
-      }
-
+    } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _locationController.text = location;
-      });
-
-      await context.read<ChallengeProvider>().updateUserSettings(
-            name: _nameController.text,
-            location: location,
-            latitude: position.latitude,
-            longitude: position.longitude,
-          );
-
-      if (!mounted) return;
-      await context
-          .read<PrayerTimeProvider>()
-          .applyCountryDefaults(countryCode);
-
-      if (!mounted) return;
-      await _refreshPrayerTimes();
-    } catch (_) {
-      // Platform channel, timeout or GPS failure — the user gets one plain
-      // sentence instead of the raw exception.
-      if (!mounted) return;
-      showLocationSnack(
-        context,
-        l10n.locationDetectFailed,
+      context.showSnack(
+        _profileErrorMessage(AppLocalizations.of(context)!, e),
         kind: AppSnackKind.error,
       );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoadingLocation = false;
-        });
-      }
+      return;
     }
+    await prayerProvider.applyCountryDefaults(city.countryCode);
+    if (!mounted) return;
+    await _refreshPrayerTimes();
   }
 
   Future<void> _refreshPrayerTimes() async {
@@ -1142,7 +1049,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     }
   }
 
-  /// Persists the name and location fields once typing has settled.
+  /// Persists the name field once typing has settled.
   ///
   /// Debounced rather than written per keystroke: each save is a preferences
   /// write plus a provider notify, and a half-typed name is not worth either.
@@ -1160,11 +1067,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     if (mounted) setState(() => _nameIsEmpty = name.isEmpty);
     if (name.isEmpty) return;
 
-    final error = await _writeProfile(
-      _challengeProvider,
-      name: name,
-      location: _locationController.text.trim(),
-    );
+    final error = await _writeProfile(_challengeProvider, name);
     if (error == null || !mounted) return;
     context.showSnack(
       _profileErrorMessage(AppLocalizations.of(context)!, error),
@@ -1178,15 +1081,14 @@ class _SettingsScreenState extends State<SettingsScreen>
   /// Takes the provider rather than reading it from `context` so [dispose] can
   /// call it on the way out.
   static Future<Object?> _writeProfile(
-    ChallengeProvider? provider, {
-    required String name,
-    required String location,
-  }) async {
+    ChallengeProvider? provider,
+    String name,
+  ) async {
     if (provider == null || name.isEmpty) return null;
     try {
       await provider.updateUserSettings(
         name: name,
-        location: location,
+        location: provider.userLocation,
         latitude: provider.userLatitude,
         longitude: provider.userLongitude,
       );

@@ -471,9 +471,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get onboardingLocationFieldLabel => 'শহর/অবস্থান';
 
   @override
-  String get onboardingLocationFieldHint => 'যেমন, ঢাকা, বাংলাদেশ';
-
-  @override
   String get onboardingGettingLocation => 'অবস্থান নেওয়া হচ্ছে...';
 
   @override
@@ -499,27 +496,6 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get onboardingSetLocationPrompt =>
       'অনুগ্রহ করে আপনার অবস্থান নির্ধারণ করুন';
-
-  @override
-  String get onboardingLocationNotFound =>
-      'ওই অবস্থানটি খুঁজে পাওয়া যায়নি। অনুগ্রহ করে বানান যাচাই করুন।';
-
-  @override
-  String onboardingErrorFindingLocation(String error) {
-    return 'অবস্থান খুঁজতে সমস্যা হয়েছে: $error';
-  }
-
-  @override
-  String get onboardingCoordinatesNotFound =>
-      'ওই অবস্থানের স্থানাঙ্ক খুঁজে পাওয়া যায়নি।';
-
-  @override
-  String get locationUnknownLocality => 'অজানা';
-
-  @override
-  String locationSetCoords(String latitude, String longitude) {
-    return 'অবস্থান নির্ধারিত ($latitude, $longitude)';
-  }
 
   @override
   String get authCreateAccountTitle => 'আপনার অ্যাকাউন্ট তৈরি করুন';
@@ -1387,4 +1363,16 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get a11yShareStreak => 'আপনার স্ট্রিক শেয়ার করুন';
+
+  @override
+  String get locationChooseCity => 'আপনার শহর বেছে নিন';
+
+  @override
+  String get locationPickerTitle => 'আপনার শহর বেছে নিন';
+
+  @override
+  String get locationSearchHint => 'শহর বা দেশ খুঁজুন';
+
+  @override
+  String get locationNoMatches => 'মিলে যাওয়া কোনো শহর নেই';
 }

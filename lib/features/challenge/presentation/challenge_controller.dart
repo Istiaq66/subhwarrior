@@ -109,14 +109,10 @@ class ChallengeProvider extends ChangeNotifier {
   /// longitude: 0)` after sign-up, and a remote profile saved without
   /// coordinates restores as `0.0`. So a profile can carry a real city name
   /// alongside 0,0, which would calculate the Gulf of Guinea's times. This
-  /// distinguishes "we have coordinates" from "we have a location", so callers
-  /// can fall back to a city lookup instead of showing a permanent error.
-  /// Shared with `FajrWidgetService` via [ChallengeData.hasUsableCoordinates].
+  /// distinguishes "we have coordinates" from "we have a location". Shared
+  /// with `FajrWidgetService` via [ChallengeData.hasUsableCoordinates].
   bool get hasUsableCoordinates => _data.hasUsableCoordinates;
 
-  /// [userLocation] split for a by-city prayer-times lookup, or null when the
-  /// stored name isn't a "City, Country" pair.
-  ({String city, String country})? get cityCountry => _data.cityCountry;
   bool get notificationsEnabled => _data.notificationsEnabled;
   bool get fajrReminder => _data.fajrReminder;
   bool get fajrCall => _data.fajrCall;

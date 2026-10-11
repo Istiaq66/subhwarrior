@@ -116,7 +116,6 @@
   "onboardingLocationTitle": "আপনার অবস্থান নির্ধারণ করুন",
   "onboardingLocationSubtitle": "সঠিক নামাযের সময় হিসাব করতে এটি প্রয়োজন",
   "onboardingLocationFieldLabel": "শহর/অবস্থান",
-  "onboardingLocationFieldHint": "যেমন, ঢাকা, বাংলাদেশ",
   "onboardingGettingLocation": "অবস্থান নেওয়া হচ্ছে...",
   "onboardingUseCurrentLocation": "বর্তমান অবস্থান ব্যবহার করুন",
   "onboardingReadyTitle": "আপনি প্রস্তুত!",
@@ -125,11 +124,6 @@
   "onboardingBackButton": "পেছনে",
   "onboardingNextButton": "পরবর্তী",
   "onboardingSetLocationPrompt": "অনুগ্রহ করে আপনার অবস্থান নির্ধারণ করুন",
-  "onboardingLocationNotFound": "ওই অবস্থানটি খুঁজে পাওয়া যায়নি। অনুগ্রহ করে বানান যাচাই করুন।",
-  "onboardingErrorFindingLocation": "অবস্থান খুঁজতে সমস্যা হয়েছে: {error}",
-  "onboardingCoordinatesNotFound": "ওই অবস্থানের স্থানাঙ্ক খুঁজে পাওয়া যায়নি।",
-  "locationUnknownLocality": "অজানা",
-  "locationSetCoords": "অবস্থান নির্ধারিত ({latitude}, {longitude})",
   "authCreateAccountTitle": "আপনার অ্যাকাউন্ট তৈরি করুন",
   "authWelcomeBackTitle": "আবারও স্বাগতম",
   "authTagline": "উদ্দেশ্য নিয়ে জাগুন, নিজের সকাল গড়ুন।",
@@ -370,5 +364,9 @@
   "a11yNonQualifyingDay": "অযোগ্য দিন",
   "a11yRequirementMet": "শর্ত পূরণ হয়েছে",
   "a11yRequirementNotMet": "শর্ত পূরণ হয়নি",
-  "a11yShareStreak": "আপনার স্ট্রিক শেয়ার করুন"
+  "a11yShareStreak": "আপনার স্ট্রিক শেয়ার করুন",
+  "locationChooseCity": "আপনার শহর বেছে নিন",
+  "locationPickerTitle": "আপনার শহর বেছে নিন",
+  "locationSearchHint": "শহর বা দেশ খুঁজুন",
+  "locationNoMatches": "মিলে যাওয়া কোনো শহর নেই"
 }

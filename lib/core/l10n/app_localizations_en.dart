@@ -471,9 +471,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingLocationFieldLabel => 'City/Location';
 
   @override
-  String get onboardingLocationFieldHint => 'e.g., New York, USA';
-
-  @override
   String get onboardingGettingLocation => 'Getting Location...';
 
   @override
@@ -498,27 +495,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingSetLocationPrompt => 'Please set your location';
-
-  @override
-  String get onboardingLocationNotFound =>
-      'Could not find that location. Please check spelling.';
-
-  @override
-  String onboardingErrorFindingLocation(String error) {
-    return 'Error finding location: $error';
-  }
-
-  @override
-  String get onboardingCoordinatesNotFound =>
-      'Unable to find coordinates for that location.';
-
-  @override
-  String get locationUnknownLocality => 'Unknown';
-
-  @override
-  String locationSetCoords(String latitude, String longitude) {
-    return 'Location set ($latitude, $longitude)';
-  }
 
   @override
   String get authCreateAccountTitle => 'Create your account';
@@ -1381,4 +1357,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get a11yShareStreak => 'Share your streak';
+
+  @override
+  String get locationChooseCity => 'Choose your city';
+
+  @override
+  String get locationPickerTitle => 'Choose your city';
+
+  @override
+  String get locationSearchHint => 'Search city or country';
+
+  @override
+  String get locationNoMatches => 'No matching cities';
 }

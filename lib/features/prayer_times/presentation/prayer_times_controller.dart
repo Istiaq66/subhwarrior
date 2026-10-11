@@ -6,26 +6,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/fajr_widget_service.dart';
 import '../data/prayer_times_repository.dart';
-import '../domain/cached_prayer_times.dart';
 import '../domain/country_prayer_defaults.dart';
 import '../domain/prayer_settings.dart';
 import '../domain/prayer_times.dart';
-
-/// Where the times currently on screen came from. Lets the UI tell "nothing
-/// yet" (show a loading state) apart from "an earlier result, revalidating"
-/// (show the times, no spinner).
-enum PrayerTimesSource { none, cache, fresh }
 
 /// Thin controller over [PrayerTimesRepository]. Holds no Geolocator or
 /// SharedPreferences instances directly (IMPROVEMENT_PLAN B3) — all I/O goes
 /// through the repository. Time-window math and formatting live here.
 ///
-/// Startup is stale-while-revalidate: the constructor hydrates from the local
-/// cache synchronously (like [PrayerTimesRepository.loadSettings]) so Home can
-/// paint real times on its first frame, and the refresh then runs behind
-/// that. Times are calculated on the device; only a never-geocoded city can
-/// wait on the network, and startup does not wait on it — see
-/// [loadForProfile].
+/// Times are calculated on the device, so app startup computes them before
+/// Home's first frame — see [loadForProfile].
 class PrayerTimeProvider extends ChangeNotifier {
   final PrayerTimesRepository _repository;
 
@@ -34,12 +24,6 @@ class PrayerTimeProvider extends ChangeNotifier {
   bool _isLoading = false;
   String _error = '';
   PrayerSettings _settings;
-  PrayerTimesSource _source = PrayerTimesSource.none;
-
-  /// The cache entry the current [_todayPrayerTimes] came from, kept so a
-  /// later fetch can tell whether those times belong to the location now
-  /// being used. Cleared once fresh data lands.
-  CachedPrayerTimes? _hydratedFrom;
 
   /// The calendar day [_todayPrayerTimes] describes.
   ///
@@ -49,29 +33,11 @@ class PrayerTimeProvider extends ChangeNotifier {
   /// Fajr instead of going stale.
   DateTime? _timesDay;
 
-  PrayerTimeProvider(this._repository)
-      : _settings = _repository.loadSettings() {
-    _hydrateFromCache();
-  }
+  PrayerTimeProvider(this._repository) : _settings = _repository.loadSettings();
 
   /// Convenience constructor used by app wiring.
   factory PrayerTimeProvider.fromPrefs(SharedPreferences prefs) =>
       PrayerTimeProvider(PrayerTimesRepositoryImpl.fromPrefs(prefs));
-
-  /// Populates state from the cache when it is still today's. The location
-  /// check has to wait for a caller that knows which location is in play
-  /// (see [loadForProfile]) — showing the wrong *day* is the error worth
-  /// blocking here, and a wrong location is corrected before any fetch.
-  void _hydrateFromCache() {
-    final cached = _repository.loadCachedTimes();
-    if (cached == null || !cached.isSameDayAs(DateTime.now())) return;
-
-    _todayPrayerTimes = cached.today;
-    _tomorrowPrayerTimes = cached.tomorrow;
-    _hydratedFrom = cached;
-    _timesDay = _dayOf(DateTime.now());
-    _source = PrayerTimesSource.cache;
-  }
 
   /// Midnight of [moment] — the day two instants are compared on.
   static DateTime _dayOf(DateTime moment) =>
@@ -92,11 +58,8 @@ class PrayerTimeProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String get error => _error;
 
-  /// Whether there is anything to render, from either source.
   bool get hasTimes => _todayPrayerTimes != null;
 
-  /// Provenance of the times on screen.
-  PrayerTimesSource get source => _source;
   int get calculationMethod => _settings.calculationMethod;
   bool get useHanafiMethod => _settings.useHanafiMethod;
   bool get use24HourFormat => _settings.use24HourFormat;
@@ -129,14 +92,13 @@ class PrayerTimeProvider extends ChangeNotifier {
   /// Rejects 0,0 outright: that is the app's "no coordinates yet" sentinel
   /// (see `ChallengeProvider.hasUsableCoordinates`), and calculating for it
   /// would show the Gulf of Guinea's times as the user's. Callers should fall
-  /// back to a city or device-location lookup.
+  /// back to a device-location lookup.
   Future<void> fetchPrayerTimes(double latitude, double longitude) async {
     if (latitude == 0.0 && longitude == 0.0) {
       _error = 'No coordinates set';
       _notifyDeferred();
       return;
     }
-    _dropCacheIfElsewhere(latitude: latitude, longitude: longitude);
     await _runFetch(() async {
       final today = DateTime.now();
       final tomorrow = today.add(const Duration(days: 1));
@@ -145,30 +107,12 @@ class PrayerTimeProvider extends ChangeNotifier {
       _tomorrowPrayerTimes = await _repository.fetchByCoordinates(
           tomorrow, latitude, longitude, _settings);
       _timesDay = _dayOf(today);
-      await _cacheCurrent(latitude: latitude, longitude: longitude);
     });
   }
 
-  Future<void> fetchPrayerTimesByCity(String city, String country) async {
-    // A city lookup has no coordinates of its own, so it caches against the
-    // profile's 0,0 sentinel — the same key it will present on next launch,
-    // and one that stops matching the moment real coordinates arrive.
-    _dropCacheIfElsewhere(latitude: 0.0, longitude: 0.0);
-    await _runFetch(() async {
-      final today = DateTime.now();
-      final tomorrow = today.add(const Duration(days: 1));
-      _todayPrayerTimes =
-          await _repository.fetchByCity(today, city, country, _settings);
-      _tomorrowPrayerTimes =
-          await _repository.fetchByCity(tomorrow, city, country, _settings);
-      _timesDay = _dayOf(today);
-      await _cacheCurrent(latitude: 0.0, longitude: 0.0);
-    });
-  }
-
-  /// Resolution ladder shared by Home and app startup: real coordinates when
-  /// the profile has them, else a city lookup off the stored location name,
-  /// else — only when [allowDeviceLocation] — ask the device.
+  /// Resolution ladder shared by Home and app startup: the profile's
+  /// coordinates when it has them, else — only when [allowDeviceLocation] —
+  /// the device's.
   ///
   /// Startup passes `allowDeviceLocation: false`: a GPS permission dialog over
   /// the splash screen has no context, so that rung stays on the Home path
@@ -178,7 +122,6 @@ class PrayerTimeProvider extends ChangeNotifier {
     required bool hasUsableCoordinates,
     required double latitude,
     required double longitude,
-    ({String city, String country})? cityCountry,
     bool allowDeviceLocation = true,
   }) async {
     if (!hasLocation) return;
@@ -188,54 +131,9 @@ class PrayerTimeProvider extends ChangeNotifier {
       return;
     }
 
-    if (cityCountry != null) {
-      await fetchPrayerTimesByCity(cityCountry.city, cityCountry.country);
-      return;
-    }
-
     if (allowDeviceLocation) {
       await fetchPrayerTimesForCurrentLocation();
     }
-  }
-
-  /// Drops cache-hydrated times that belong to a different place, so a stale
-  /// location's times are never on screen while the new one is fetched.
-  void _dropCacheIfElsewhere({
-    required double latitude,
-    required double longitude,
-  }) {
-    final hydrated = _hydratedFrom;
-    if (hydrated == null) return;
-    if (hydrated.matchesLocation(latitude: latitude, longitude: longitude)) {
-      return;
-    }
-
-    _todayPrayerTimes = null;
-    _tomorrowPrayerTimes = null;
-    _hydratedFrom = null;
-    _timesDay = null;
-    _source = PrayerTimesSource.none;
-  }
-
-  /// Persists whatever was just fetched. Only reached on a successful fetch,
-  /// so a failed refresh can never overwrite a good entry.
-  Future<void> _cacheCurrent({
-    required double latitude,
-    required double longitude,
-  }) async {
-    final today = _todayPrayerTimes;
-    final tomorrow = _tomorrowPrayerTimes;
-    if (today == null || tomorrow == null) return;
-
-    _hydratedFrom = null;
-    _source = PrayerTimesSource.fresh;
-    await _repository.saveCachedTimes(CachedPrayerTimes(
-      today: today,
-      tomorrow: tomorrow,
-      date: DateTime.now(),
-      latitude: latitude,
-      longitude: longitude,
-    ));
   }
 
   Future<void> fetchPrayerTimesForCurrentLocation() async {
@@ -418,11 +316,8 @@ class PrayerTimeProvider extends ChangeNotifier {
   /// Shared fetch wrapper: toggles loading/error and defers notifications to
   /// avoid notifying during a build frame.
   Future<void> _runFetch(Future<void> Function() body) async {
-    // With cached times already on screen this is a background revalidation:
-    // flipping `isLoading` would swap real data for a spinner, which is the
-    // flash the cache exists to prevent.
-    final isRevalidation = hasTimes;
-    _isLoading = !isRevalidation;
+    // Recalculating under times already on screen must not flash a spinner.
+    _isLoading = !hasTimes;
     _error = '';
     _notifyDeferred();
 
@@ -430,14 +325,7 @@ class PrayerTimeProvider extends ChangeNotifier {
       await body();
       unawaited(FajrWidgetService.refresh());
     } catch (e) {
-      // Offline with a usable cache: keep showing it rather than replacing it
-      // with an error card. The error surfaces only when there is nothing
-      // else to show.
-      if (isRevalidation) {
-        debugPrint('PrayerTimeProvider: refresh failed, keeping cache: $e');
-      } else {
-        _error = 'Failed to fetch prayer times: $e';
-      }
+      _error = 'Failed to calculate prayer times: $e';
     } finally {
       _isLoading = false;
       _notifyDeferred();

@@ -55,20 +55,7 @@ class ChallengeData {
   /// sign-up, and a remote profile saved without coordinates restores as
   /// `0.0`. So a profile can carry a real city name alongside 0,0, and
   /// calculating for 0,0 yields the Gulf of Guinea's times rather than that
-  /// city's. This distinguishes "we have
-  /// coordinates" from "we have a location" so callers can fall back to a
-  /// city lookup instead of failing.
+  /// city's. This distinguishes "we have coordinates" from "we have a
+  /// location".
   bool get hasUsableCoordinates => userLatitude != 0.0 || userLongitude != 0.0;
-
-  /// [userLocation] split into a city/country pair usable for a by-city
-  /// prayer-times lookup ("Mountain View, United States"), or null when the
-  /// stored name is a bare city or empty.
-  ({String city, String country})? get cityCountry {
-    final parts = userLocation.split(',');
-    if (parts.length < 2) return null;
-    final city = parts.first.trim();
-    final country = parts.sublist(1).join(',').trim();
-    if (city.isEmpty || country.isEmpty) return null;
-    return (city: city, country: country);
-  }
 }

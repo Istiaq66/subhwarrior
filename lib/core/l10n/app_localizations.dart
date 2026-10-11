@@ -800,12 +800,6 @@ abstract class AppLocalizations {
   /// **'City/Location'**
   String get onboardingLocationFieldLabel;
 
-  /// Example hint text inside the location input field
-  ///
-  /// In en, this message translates to:
-  /// **'e.g., New York, USA'**
-  String get onboardingLocationFieldHint;
-
   /// No description provided for @onboardingGettingLocation.
   ///
   /// In en, this message translates to:
@@ -853,36 +847,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please set your location'**
   String get onboardingSetLocationPrompt;
-
-  /// No description provided for @onboardingLocationNotFound.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not find that location. Please check spelling.'**
-  String get onboardingLocationNotFound;
-
-  /// Snackbar shown when geocoding a typed location throws; error is the exception text
-  ///
-  /// In en, this message translates to:
-  /// **'Error finding location: {error}'**
-  String onboardingErrorFindingLocation(String error);
-
-  /// No description provided for @onboardingCoordinatesNotFound.
-  ///
-  /// In en, this message translates to:
-  /// **'Unable to find coordinates for that location.'**
-  String get onboardingCoordinatesNotFound;
-
-  /// Fallback city name when reverse geocoding returns no locality
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown'**
-  String get locationUnknownLocality;
-
-  /// Location field text when only raw coordinates are available; latitude/longitude are formatted decimal strings
-  ///
-  /// In en, this message translates to:
-  /// **'Location set ({latitude}, {longitude})'**
-  String locationSetCoords(String latitude, String longitude);
 
   /// No description provided for @authCreateAccountTitle.
   ///
@@ -2329,6 +2293,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share your streak'**
   String get a11yShareStreak;
+
+  /// Placeholder in the location field before a city is chosen
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your city'**
+  String get locationChooseCity;
+
+  /// Title of the full-screen city list
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your city'**
+  String get locationPickerTitle;
+
+  /// Hint in the city list search box
+  ///
+  /// In en, this message translates to:
+  /// **'Search city or country'**
+  String get locationSearchHint;
+
+  /// Shown when the city search matches nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No matching cities'**
+  String get locationNoMatches;
 }
 
 class _AppLocalizationsDelegate

@@ -116,7 +116,6 @@
   "onboardingLocationTitle": "حدّد موقعك",
   "onboardingLocationSubtitle": "نحتاج إلى ذلك لحساب مواقيت الصلاة بدقة",
   "onboardingLocationFieldLabel": "المدينة/الموقع",
-  "onboardingLocationFieldHint": "مثال: القاهرة، مصر",
   "onboardingGettingLocation": "جارٍ تحديد الموقع...",
   "onboardingUseCurrentLocation": "استخدم الموقع الحالي",
   "onboardingReadyTitle": "كل شيء جاهز!",
@@ -125,11 +124,6 @@
   "onboardingBackButton": "رجوع",
   "onboardingNextButton": "التالي",
   "onboardingSetLocationPrompt": "يرجى تحديد موقعك",
-  "onboardingLocationNotFound": "تعذّر العثور على هذا الموقع. يرجى التحقق من الإملاء.",
-  "onboardingErrorFindingLocation": "خطأ في العثور على الموقع: {error}",
-  "onboardingCoordinatesNotFound": "تعذّر العثور على إحداثيات هذا الموقع.",
-  "locationUnknownLocality": "غير معروف",
-  "locationSetCoords": "تم تحديد الموقع ({latitude}، {longitude})",
   "authCreateAccountTitle": "أنشئ حسابك",
   "authWelcomeBackTitle": "مرحبًا بعودتك",
   "authTagline": "انهض بعزيمة وابنِ روتين صباحك.",
@@ -370,5 +364,9 @@
   "a11yNonQualifyingDay": "يوم غير مؤهَّل",
   "a11yRequirementMet": "تم استيفاء المتطلب",
   "a11yRequirementNotMet": "لم يتم استيفاء المتطلب",
-  "a11yShareStreak": "شارك سلسلتك"
+  "a11yShareStreak": "شارك سلسلتك",
+  "locationChooseCity": "اختر مدينتك",
+  "locationPickerTitle": "اختر مدينتك",
+  "locationSearchHint": "ابحث عن مدينة أو دولة",
+  "locationNoMatches": "لا توجد مدن مطابقة"
 }

@@ -468,9 +468,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onboardingLocationFieldLabel => 'المدينة/الموقع';
 
   @override
-  String get onboardingLocationFieldHint => 'مثال: القاهرة، مصر';
-
-  @override
   String get onboardingGettingLocation => 'جارٍ تحديد الموقع...';
 
   @override
@@ -495,27 +492,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onboardingSetLocationPrompt => 'يرجى تحديد موقعك';
-
-  @override
-  String get onboardingLocationNotFound =>
-      'تعذّر العثور على هذا الموقع. يرجى التحقق من الإملاء.';
-
-  @override
-  String onboardingErrorFindingLocation(String error) {
-    return 'خطأ في العثور على الموقع: $error';
-  }
-
-  @override
-  String get onboardingCoordinatesNotFound =>
-      'تعذّر العثور على إحداثيات هذا الموقع.';
-
-  @override
-  String get locationUnknownLocality => 'غير معروف';
-
-  @override
-  String locationSetCoords(String latitude, String longitude) {
-    return 'تم تحديد الموقع ($latitude، $longitude)';
-  }
 
   @override
   String get authCreateAccountTitle => 'أنشئ حسابك';
@@ -1369,4 +1345,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get a11yShareStreak => 'شارك سلسلتك';
+
+  @override
+  String get locationChooseCity => 'اختر مدينتك';
+
+  @override
+  String get locationPickerTitle => 'اختر مدينتك';
+
+  @override
+  String get locationSearchHint => 'ابحث عن مدينة أو دولة';
+
+  @override
+  String get locationNoMatches => 'لا توجد مدن مطابقة';
 }

@@ -171,7 +171,6 @@ Future<void> _refreshPrayerTimesWithinBudget(
       hasUsableCoordinates: challengeData.hasUsableCoordinates,
       latitude: challengeData.userLatitude,
       longitude: challengeData.userLongitude,
-      cityCountry: challengeData.cityCountry,
       allowDeviceLocation: false,
     );
     await refresh.timeout(_prayerRefreshBootBudget, onTimeout: () {});

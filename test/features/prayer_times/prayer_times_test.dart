@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/features/prayer_times/data/location_data_source.dart';
 import 'package:subh_warrior/features/prayer_times/data/prayer_times_repository.dart';
-import 'package:subh_warrior/features/prayer_times/domain/cached_prayer_times.dart';
 import 'package:subh_warrior/features/prayer_times/domain/calculation_method.dart';
 import 'package:subh_warrior/features/prayer_times/domain/prayer_settings.dart';
 import 'package:subh_warrior/features/prayer_times/domain/prayer_times.dart';
@@ -14,19 +13,16 @@ class FakePrayerTimesRepository implements PrayerTimesRepository {
   int saveCount = 0;
   PrayerSettings? lastSaved;
 
-  /// Seeded to stand in for a previous launch's cache, then overwritten by
-  /// whatever the provider persists.
-  CachedPrayerTimes? cached;
-  final List<CachedPrayerTimes> savedCaches = [];
-
-  /// When set, both fetch methods throw it — used to simulate being offline.
+  /// When set, fetches throw it.
   Object? fetchError;
   int fetchCount = 0;
+
+  /// Latitude of the last fetch.
+  double? lastLatitude;
 
   FakePrayerTimesRepository({
     PrayerSettings? settings,
     PrayerTimes? result,
-    this.cached,
     this.fetchError,
   })  : settings = settings ?? const PrayerSettings(),
         result = result ?? _fixed;
@@ -47,14 +43,7 @@ class FakePrayerTimesRepository implements PrayerTimesRepository {
   Future<PrayerTimes> fetchByCoordinates(
       DateTime date, double lat, double lon, PrayerSettings s) async {
     fetchCount++;
-    if (fetchError != null) throw fetchError!;
-    return result;
-  }
-
-  @override
-  Future<PrayerTimes> fetchByCity(
-      DateTime date, String city, String country, PrayerSettings s) async {
-    fetchCount++;
+    lastLatitude = lat;
     if (fetchError != null) throw fetchError!;
     return result;
   }
@@ -71,15 +60,6 @@ class FakePrayerTimesRepository implements PrayerTimesRepository {
     settings = s;
     lastSaved = s;
     saveCount++;
-  }
-
-  @override
-  CachedPrayerTimes? loadCachedTimes() => cached;
-
-  @override
-  Future<void> saveCachedTimes(CachedPrayerTimes cache) async {
-    cached = cache;
-    savedCaches.add(cache);
   }
 }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
@@ -7,9 +6,9 @@ import 'package:subh_warrior/core/theme/app_colors.dart';
 import 'package:subh_warrior/core/theme/app_snack_bars.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
-import 'package:subh_warrior/features/prayer_times/data/location_data_source.dart';
+import 'package:subh_warrior/features/location/domain/city.dart';
+import 'package:subh_warrior/features/location/presentation/location_selector.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
-import 'package:subh_warrior/helpers/location_access.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -21,17 +20,9 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
 
   int _currentPage = 0;
-  bool _isLoadingLocation = false;
-  double _latitude = 0.0;
-  double _longitude = 0.0;
-  bool _hasCoordinates = false;
-
-  /// ISO code of the country at the resolved coordinates, when the geocoder
-  /// gave one. Seeds the prayer method and Asr school on completion.
-  String? _countryCode;
+  City? _city;
 
   @override
   void initState() {
@@ -47,56 +38,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   ScrollPhysics get _pageScrollPhysics {
     // Page 2 is the location page; block swiping past it until a location is set.
-    if (_currentPage == 2 && _locationController.text.isEmpty) {
+    if (_currentPage == 2 && _city == null) {
       return const NeverScrollableScrollPhysics();
     }
     return const BouncingScrollPhysics();
-  }
-
-  Future<void> _getCoordinatesFromText() async {
-    final text = _locationController.text.trim();
-    if (text.isEmpty) return;
-
-    try {
-      final locations = await locationFromAddress(text)
-          .timeout(LocationDataSource.geocodeTimeLimit);
-      if (!mounted) return;
-      if (locations.isNotEmpty) {
-        final loc = locations.first;
-        final countryCode = await _countryCodeAt(loc.latitude, loc.longitude);
-        if (!mounted) return;
-        setState(() {
-          _latitude = loc.latitude;
-          _longitude = loc.longitude;
-          _hasCoordinates = true;
-          _countryCode = countryCode;
-        });
-      } else {
-        context.showSnack(
-          AppLocalizations.of(context)!.onboardingLocationNotFound,
-          kind: AppSnackKind.warning,
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      context.showSnack(
-        AppLocalizations.of(context)!
-            .onboardingErrorFindingLocation(e.toString()),
-        kind: AppSnackKind.error,
-      );
-    }
-  }
-
-  /// Best-effort country lookup for a typed location. A failure only means
-  /// the prayer settings keep their defaults instead of the country's.
-  Future<String?> _countryCodeAt(double latitude, double longitude) async {
-    try {
-      final placemarks = await placemarkFromCoordinates(latitude, longitude)
-          .timeout(LocationDataSource.geocodeTimeLimit);
-      return placemarks.isEmpty ? null : placemarks.first.isoCountryCode;
-    } catch (_) {
-      return null;
-    }
   }
 
   @override
@@ -296,46 +241,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          TextField(
-            controller: _locationController,
-            onChanged: (_) {
-              // Editing the text invalidates any previously resolved coords.
-              if (_hasCoordinates) {
-                setState(() {
-                  _hasCoordinates = false;
-                  _countryCode = null;
-                });
-              }
-            },
-            decoration: InputDecoration(
-              labelText: l10n.onboardingLocationFieldLabel,
-              hintText: l10n.onboardingLocationFieldHint,
-              prefixIcon: const Icon(Icons.map),
-              border: const OutlineInputBorder(
-                borderRadius: AppRadius.brMd,
-              ),
-            ),
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 16),
-          Text(l10n.commonOr),
-          const SizedBox(height: 16),
-          OutlinedButton.icon(
-            onPressed: _isLoadingLocation ? null : _getCurrentLocation,
-            icon: _isLoadingLocation
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.my_location),
-            label: Text(_isLoadingLocation
-                ? l10n.onboardingGettingLocation
-                : l10n.onboardingUseCurrentLocation),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
+          LocationSelector(
+            label: _city?.label ?? '',
+            onSelected: (city) => setState(() => _city = city),
           ),
         ],
       ),
@@ -396,13 +304,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                 ),
                 const SizedBox(height: 8),
-                if (_locationController.text.isNotEmpty)
+                if (_city != null)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(Icons.location_on, size: 16),
                       const SizedBox(width: 4),
-                      Text(_locationController.text),
+                      Text(_city!.label),
                     ],
                   ),
               ],
@@ -458,31 +366,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           if (_currentPage < 3)
             TextButton(
-              onPressed: () async {
-                if (_currentPage == 2) {
-                  final locationText = _locationController.text.trim();
-
-                  if (locationText.isEmpty && mounted) {
-                    context.showSnack(
-                      l10n.onboardingSetLocationPrompt,
-                      kind: AppSnackKind.warning,
-                    );
-                    return;
-                  }
-
-                  // If user typed manually and didn't use current location
-                  if (!_hasCoordinates) {
-                    await _getCoordinatesFromText();
-
-                    // Still failed to get coordinates
-                    if (!_hasCoordinates && mounted) {
-                      context.showSnack(
-                        l10n.onboardingCoordinatesNotFound,
-                        kind: AppSnackKind.error,
-                      );
-                      return;
-                    }
-                  }
+              onPressed: () {
+                if (_currentPage == 2 && _city == null) {
+                  context.showSnack(
+                    l10n.onboardingSetLocationPrompt,
+                    kind: AppSnackKind.warning,
+                  );
+                  return;
                 }
                 _pageController.nextPage(
                   duration: const Duration(milliseconds: 300),
@@ -566,94 +456,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Future<void> _getCurrentLocation() async {
-    final l10n = AppLocalizations.of(context)!;
-    setState(() {
-      _isLoadingLocation = true;
-    });
-
-    try {
-      final access = await requestLocationAccess();
-      if (!mounted) return;
-      if (access != LocationAccess.granted) {
-        showLocationAccessSnack(context, access);
-        return;
-      }
-
-      final position = await LocationDataSource.deviceFix();
-
-      _latitude = position.latitude;
-      _longitude = position.longitude;
-      _hasCoordinates = true;
-      _countryCode = null;
-
-      // Reverse geocoding is best-effort: the coordinates alone already drive
-      // prayer times, so a failed or empty lookup falls back to showing them.
-      var location = l10n.locationSetCoords(
-        position.latitude.toStringAsFixed(2),
-        position.longitude.toStringAsFixed(2),
-      );
-      try {
-        final placemarks = await placemarkFromCoordinates(
-          position.latitude,
-          position.longitude,
-        ).timeout(LocationDataSource.geocodeTimeLimit);
-        if (placemarks.isNotEmpty) {
-          final place = placemarks.first;
-          final locality = place.locality?.isNotEmpty ?? false
-              ? place.locality!
-              : (place.administrativeArea?.isNotEmpty ?? false
-                  ? place.administrativeArea!
-                  : l10n.locationUnknownLocality);
-          final country = place.country ?? '';
-          location = country.isEmpty ? locality : '$locality, $country';
-          _countryCode = place.isoCountryCode;
-        }
-      } catch (_) {
-        // Keep the coordinate fallback.
-      }
-
-      if (!mounted) return;
-      setState(() {
-        _locationController.text = location;
-      });
-    } catch (_) {
-      // Platform channel, timeout or GPS failure — the user gets one plain
-      // sentence instead of the raw exception.
-      if (!mounted) return;
-      showLocationSnack(
-        context,
-        l10n.locationDetectFailed,
-        kind: AppSnackKind.error,
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoadingLocation = false;
-        });
-      }
-    }
-  }
-
   Future<void> _completeOnboarding() async {
     try {
       final challengeProvider = context.read<ChallengeProvider>();
       final prayerProvider = context.read<PrayerTimeProvider>();
 
-      if (_hasCoordinates) {
-        // Seed the method and Asr school from the user's country before the
-        // first fetch, so the first times they see are their local ones.
-        await prayerProvider.applyCountryDefaults(_countryCode, seed: true);
-        try {
-          await prayerProvider.fetchPrayerTimes(_latitude, _longitude);
-        } catch (_) {}
-      }
+      final city = _city!;
+      // Seed the method and Asr school from the user's country before the
+      // first fetch, so the first times they see are their local ones.
+      await prayerProvider.applyCountryDefaults(city.countryCode, seed: true);
+      try {
+        await prayerProvider.fetchPrayerTimes(city.latitude, city.longitude);
+      } catch (_) {}
 
       await challengeProvider.updateUserSettings(
         name: _nameController.text,
-        location: _locationController.text,
-        latitude: _latitude,
-        longitude: _longitude,
+        location: city.label,
+        latitude: city.latitude,
+        longitude: city.longitude,
       );
     } catch (e) {
       if (mounted) {

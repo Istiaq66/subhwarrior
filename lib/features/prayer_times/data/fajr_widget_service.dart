@@ -68,52 +68,23 @@ class FajrWidgetService {
     final today = DateTime.now();
     final tomorrow = today.add(const Duration(days: 1));
 
-    // Same resolution ladder HomeScreen._loadPrayerTimes uses: real
-    // coordinates when we have them, otherwise a by-city lookup off the
-    // stored location name. 0,0 — what sign-up and coordinate-less remote
-    // profiles write — is a sentinel, not the user's location.
-    final cityCountry = challengeData.cityCountry;
-    if (!challengeData.hasUsableCoordinates && cityCountry == null) {
-      debugPrint('FajrWidgetService: no usable coordinates and no '
-          'city/country to fall back on — leaving widget as-is.');
+    // 0,0 — what sign-up and coordinate-less remote profiles write — is a
+    // sentinel, not the user's location.
+    if (!challengeData.hasUsableCoordinates) {
+      debugPrint('FajrWidgetService: no coordinates — leaving widget as-is.');
       return;
     }
 
-    Future<PrayerTimes> fetchFor(DateTime day) =>
-        challengeData.hasUsableCoordinates
-            ? repository.fetchByCoordinates(
-                day,
-                challengeData.userLatitude,
-                challengeData.userLongitude,
-                settings,
-              )
-            : repository.fetchByCity(
-                day,
-                cityCountry!.city,
-                cityCountry.country,
-                settings,
-              );
+    Future<PrayerTimes> timesFor(DateTime day) => repository.fetchByCoordinates(
+          day,
+          challengeData.userLatitude,
+          challengeData.userLongitude,
+          settings,
+        );
 
     try {
-      // The widget is refreshed in the background, often right at Fajr and
-      // often with no network — a failed city geocode used to abort the whole
-      // update, leaving the countdown aimed at a Fajr that had already passed
-      // and ticking into negative numbers until the app was next opened.
-      // Today's cache answers the same question when the network cannot.
-      final cached = repository.loadCachedTimes();
-      final canUseCache = cached != null && cached.isSameDayAs(today);
-
-      late final PrayerTimes todayTimes;
-      late final PrayerTimes tomorrowTimes;
-      try {
-        todayTimes = await fetchFor(today);
-        tomorrowTimes = await fetchFor(tomorrow);
-      } catch (e) {
-        if (!canUseCache) rethrow;
-        debugPrint('FajrWidgetService: fetch failed ($e) — using cache.');
-        todayTimes = cached.today;
-        tomorrowTimes = cached.tomorrow;
-      }
+      final todayTimes = await timesFor(today);
+      final tomorrowTimes = await timesFor(tomorrow);
 
       final todayFajr = _onDay(today, todayTimes.fajr);
       final tomorrowFajr = _onDay(tomorrow, tomorrowTimes.fajr);
@@ -229,9 +200,8 @@ class FajrWidgetService {
         await _scheduleNextBoundary(nextFajr);
       }
     } catch (e) {
-      debugPrint('FajrWidgetService: prayer-times fetch/save failed: $e');
-      // Offline or API error — leave previously-saved widget data as-is,
-      // same offline-tolerant contract as PrayerTimeProvider._runFetch.
+      // Leave previously saved widget data as-is.
+      debugPrint('FajrWidgetService: widget update failed: $e');
     }
   }
 

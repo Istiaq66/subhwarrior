@@ -284,10 +284,6 @@
   "onboardingLocationTitle": "Set Your Location",
   "onboardingLocationSubtitle": "We need this to calculate accurate prayer times",
   "onboardingLocationFieldLabel": "City/Location",
-  "onboardingLocationFieldHint": "e.g., New York, USA",
-  "@onboardingLocationFieldHint": {
-    "description": "Example hint text inside the location input field"
-  },
   "onboardingGettingLocation": "Getting Location...",
   "onboardingUseCurrentLocation": "Use Current Location",
   "onboardingReadyTitle": "You're All Set!",
@@ -304,33 +300,6 @@
   "onboardingBackButton": "Back",
   "onboardingNextButton": "Next",
   "onboardingSetLocationPrompt": "Please set your location",
-  "onboardingLocationNotFound": "Could not find that location. Please check spelling.",
-  "onboardingErrorFindingLocation": "Error finding location: {error}",
-  "@onboardingErrorFindingLocation": {
-    "description": "Snackbar shown when geocoding a typed location throws; error is the exception text",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "onboardingCoordinatesNotFound": "Unable to find coordinates for that location.",
-  "locationUnknownLocality": "Unknown",
-  "@locationUnknownLocality": {
-    "description": "Fallback city name when reverse geocoding returns no locality"
-  },
-  "locationSetCoords": "Location set ({latitude}, {longitude})",
-  "@locationSetCoords": {
-    "description": "Location field text when only raw coordinates are available; latitude/longitude are formatted decimal strings",
-    "placeholders": {
-      "latitude": {
-        "type": "String"
-      },
-      "longitude": {
-        "type": "String"
-      }
-    }
-  },
   "authCreateAccountTitle": "Create your account",
   "authWelcomeBackTitle": "Welcome back",
   "authTagline": "Rise with purpose, build your morning routine.",
@@ -867,5 +836,21 @@
   "a11yShareStreak": "Share your streak",
   "@a11yShareStreak": {
     "description": "Tooltip for the icon button that opens the share sheet from the streak card"
+  },
+  "locationChooseCity": "Choose your city",
+  "@locationChooseCity": {
+    "description": "Placeholder in the location field before a city is chosen"
+  },
+  "locationPickerTitle": "Choose your city",
+  "@locationPickerTitle": {
+    "description": "Title of the full-screen city list"
+  },
+  "locationSearchHint": "Search city or country",
+  "@locationSearchHint": {
+    "description": "Hint in the city list search box"
+  },
+  "locationNoMatches": "No matching cities",
+  "@locationNoMatches": {
+    "description": "Shown when the city search matches nothing"
   }
 }

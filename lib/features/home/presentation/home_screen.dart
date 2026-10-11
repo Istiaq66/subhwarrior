@@ -91,7 +91,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       hasUsableCoordinates: challengeProvider.hasUsableCoordinates,
       latitude: challengeProvider.userLatitude,
       longitude: challengeProvider.userLongitude,
-      cityCountry: challengeProvider.cityCountry,
     );
   }
 
