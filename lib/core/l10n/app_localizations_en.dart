@@ -886,6 +886,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t delete your account. Check your connection and try again.';
 
   @override
+  String get settingsSignOut => 'Sign out';
+
+  @override
+  String get settingsSignOutDialogTitle => 'Sign out?';
+
+  @override
+  String get settingsSignOutDialogContent =>
+      'You will be signed out on this device. Your progress stays saved to your account — sign in again to pick up where you left off.';
+
+  @override
   String get settingsGuidelinesDialogTitle => 'Challenge Guidelines';
 
   @override

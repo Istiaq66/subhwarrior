@@ -758,6 +758,7 @@ class _SettingsScreenState extends State<SettingsScreen>
               subtitle: Text(_appVersion.isEmpty ? '…' : _appVersion),
             ),
             _buildAccountTile(),
+            _buildSignOutTile(),
             _buildDeleteAccountTile(),
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -784,7 +785,8 @@ class _SettingsScreenState extends State<SettingsScreen>
   }
 
   /// Account status + Google upgrade. Anonymous users (the default) can link a
-  /// Google account; signed-in users can sign out (IMPROVEMENT_PLAN D1).
+  /// Google account (IMPROVEMENT_PLAN D1). Signed-in users see their account
+  /// here and sign out from the separate row below it.
   Widget _buildAccountTile() {
     final auth = context.read<AuthService>();
     return StreamBuilder(
@@ -810,12 +812,55 @@ class _SettingsScreenState extends State<SettingsScreen>
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : null,
-          onTap: _isAccountBusy
-              ? null
-              : (isAnon ? (configured ? _linkGoogle : null) : _signOutAccount),
+          // Only a guest row is tappable (to link Google). Signing out used to
+          // hang off tapping a signed-in row, with no hint and no
+          // confirmation; it now lives in its own row, see
+          // [_buildSignOutTile].
+          onTap: _isAccountBusy || !isAnon || !configured ? null : _linkGoogle,
         );
       },
     );
+  }
+
+  /// Explicit, confirmed sign-out. Hidden for guest accounts, which have
+  /// nothing to sign out of.
+  Widget _buildSignOutTile() {
+    final auth = context.read<AuthService>();
+    return StreamBuilder(
+      stream: auth.authStateChanges(),
+      builder: (context, _) {
+        if (auth.isAnonymous) return const SizedBox.shrink();
+        final l10n = AppLocalizations.of(context)!;
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.logout),
+          title: Text(l10n.settingsSignOut),
+          onTap: _isAccountBusy ? null : _confirmSignOut,
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmSignOut() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.settingsSignOutDialogTitle),
+        content: Text(l10n.settingsSignOutDialogContent),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.settingsCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.settingsSignOut),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) await _signOutAccount();
   }
 
   Future<void> _linkGoogle() async {

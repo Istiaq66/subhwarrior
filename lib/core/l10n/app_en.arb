@@ -500,6 +500,9 @@
   "settingsDeleteAccountConfirm": "Delete permanently",
   "settingsDeleteAccountWrongPassword": "That password is incorrect.",
   "settingsDeleteAccountFailed": "Couldn't delete your account. Check your connection and try again.",
+  "settingsSignOut": "Sign out",
+  "settingsSignOutDialogTitle": "Sign out?",
+  "settingsSignOutDialogContent": "You will be signed out on this device. Your progress stays saved to your account — sign in again to pick up where you left off.",
   "settingsGuidelinesDialogTitle": "Challenge Guidelines",
   "settingsGuidelinesContent": "🌅 SUBH WARRIOR CHALLENGE\n\n✓ Wake up at or before Fajr time\n✓ Stay awake and alert\n✓ Pray Fajr within the prayer window\n✓ Complete 60+ minutes of productive work\n✓ Log before {cutoffTime} daily\n✓ Complete 16+ days over 4 weeks\n✓ Minimum 4 qualifying days per week\n\nQUALIFYING WORK:\n• Deep work tasks\n• Strategic planning\n• Learning/skill development\n• Creative projects\n• Important communication\n\nNON-QUALIFYING:\n• Passive content consumption\n• Routine administrative tasks\n• Social media\n\nNote: Weekends do not count as qualifying days.",
   "@settingsGuidelinesContent": {

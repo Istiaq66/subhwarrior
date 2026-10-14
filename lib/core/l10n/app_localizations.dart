@@ -1514,6 +1514,24 @@ abstract class AppLocalizations {
   /// **'Couldn\'t delete your account. Check your connection and try again.'**
   String get settingsDeleteAccountFailed;
 
+  /// No description provided for @settingsSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get settingsSignOut;
+
+  /// No description provided for @settingsSignOutDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out?'**
+  String get settingsSignOutDialogTitle;
+
+  /// No description provided for @settingsSignOutDialogContent.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be signed out on this device. Your progress stays saved to your account — sign in again to pick up where you left off.'**
+  String get settingsSignOutDialogContent;
+
   /// No description provided for @settingsGuidelinesDialogTitle.
   ///
   /// In en, this message translates to:

@@ -891,6 +891,16 @@ class AppLocalizationsBn extends AppLocalizations {
       'আপনার অ্যাকাউন্ট মোছা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।';
 
   @override
+  String get settingsSignOut => 'সাইন আউট';
+
+  @override
+  String get settingsSignOutDialogTitle => 'সাইন আউট করবেন?';
+
+  @override
+  String get settingsSignOutDialogContent =>
+      'এই ডিভাইসে আপনি সাইন আউট হবেন। আপনার অগ্রগতি অ্যাকাউন্টে সংরক্ষিত থাকবে — যেখানে থেমেছিলেন সেখান থেকে শুরু করতে আবার সাইন ইন করুন।';
+
+  @override
   String get settingsGuidelinesDialogTitle => 'চ্যালেঞ্জ নির্দেশিকা';
 
   @override

@@ -880,6 +880,16 @@ class AppLocalizationsAr extends AppLocalizations {
       'تعذّر حذف حسابك. تحقق من اتصالك وحاول مرة أخرى.';
 
   @override
+  String get settingsSignOut => 'تسجيل الخروج';
+
+  @override
+  String get settingsSignOutDialogTitle => 'تسجيل الخروج؟';
+
+  @override
+  String get settingsSignOutDialogContent =>
+      'سيتم تسجيل خروجك على هذا الجهاز. يبقى تقدّمك محفوظًا في حسابك — سجّل الدخول مرة أخرى لتتابع من حيث توقفت.';
+
+  @override
   String get settingsGuidelinesDialogTitle => 'إرشادات التحدي';
 
   @override

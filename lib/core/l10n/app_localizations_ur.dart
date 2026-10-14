@@ -886,6 +886,16 @@ class AppLocalizationsUr extends AppLocalizations {
       'آپ کا اکاؤنٹ حذف نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
 
   @override
+  String get settingsSignOut => 'سائن آؤٹ';
+
+  @override
+  String get settingsSignOutDialogTitle => 'سائن آؤٹ کریں؟';
+
+  @override
+  String get settingsSignOutDialogContent =>
+      'اس آلے پر آپ سائن آؤٹ ہو جائیں گے۔ آپ کی پیش رفت آپ کے اکاؤنٹ میں محفوظ رہے گی — جہاں چھوڑا تھا وہیں سے جاری رکھنے کے لیے دوبارہ سائن اِن کریں۔';
+
+  @override
   String get settingsGuidelinesDialogTitle => 'چیلنج کی ہدایات';
 
   @override
