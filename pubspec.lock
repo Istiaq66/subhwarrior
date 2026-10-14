@@ -422,6 +422,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_alarm_call:
+    dependency: "direct main"
+    description:
+      name: flutter_alarm_call
+      sha256: d3b819f0b65b251ac7b1fca9b2d0a884ec1126adf2271baa3c59afbe2edd3fb2
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   flutter_cache_manager:
     dependency: transitive
     description:

@@ -37,6 +37,8 @@ dependencies:
 
   # Notifications
   flutter_local_notifications: ^19.4.2
+  # The Fajr call: rings at Fajr with the app closed (alarm-clock notification).
+  flutter_alarm_call: ^0.1.0
   timezone: ^0.10.1
 
   # Calendar

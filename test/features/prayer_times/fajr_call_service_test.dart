@@ -51,7 +51,7 @@ void main() {
   group('off Android', () {
     // The host test VM is not Android, so every entry point should be inert
     // rather than reaching for a plugin channel that is not registered.
-    test('scheduling, cancelling and answering are no-ops', () async {
+    test('scheduling, cancelling and launch checks are no-ops', () async {
       await expectLater(
         FajrCallService.schedule(
           enabled: true,
@@ -62,17 +62,17 @@ void main() {
       await expectLater(FajrCallService.cancel(), completes);
       await expectLater(FajrCallService.restoreFromLaunch(), completes);
       expect(await FajrCallService.canShowFullScreen(), isFalse);
-      expect(FajrCallService.ringing.value, isFalse);
+      expect(await FajrCallService.canScheduleExactAlarms(), isFalse);
     });
 
     test('ignores notification responses', () {
       const response = NotificationResponse(
         notificationResponseType: NotificationResponseType.selectedNotification,
-        payload: FajrCallService.payload,
+        id: FajrCallService.notificationId,
+        payload: 'flutter_alarm_call:{}',
       );
 
       expect(FajrCallService.handleResponse(response), isFalse);
-      expect(FajrCallService.ringing.value, isFalse);
     });
   });
 }
