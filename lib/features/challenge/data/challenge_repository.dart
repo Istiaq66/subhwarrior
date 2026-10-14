@@ -28,6 +28,11 @@ abstract class ChallengeRepository {
   /// on rename. The result says whether it was reserved, already held by
   /// someone else, or could not be written at all.
   Future<UsernameReservation> reserveUsername(String desired, String previous);
+
+  /// Permanently erases this user's data from the server, then from this
+  /// device. Throws if the server delete fails, leaving the local copy intact
+  /// so the user can retry.
+  Future<void> deleteAllData(String userName);
 }
 
 class ChallengeRepositoryImpl implements ChallengeRepository {
@@ -74,4 +79,10 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
   Future<UsernameReservation> reserveUsername(
           String desired, String previous) =>
       _remote.reserveUsername(desired, previous);
+
+  @override
+  Future<void> deleteAllData(String userName) async {
+    await _remote.deleteAll(userName);
+    await _local.clear();
+  }
 }

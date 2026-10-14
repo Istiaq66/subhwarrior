@@ -854,6 +854,32 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsCancel => 'إلغاء';
 
   @override
+  String get settingsDeleteAccount => 'حذف الحساب';
+
+  @override
+  String get settingsDeleteAccountSubtitle => 'امسح بياناتك نهائيًا';
+
+  @override
+  String get settingsDeleteAccountDialogTitle => 'هل تريد حذف حسابك؟';
+
+  @override
+  String get settingsDeleteAccountDialogContent =>
+      'سيؤدي هذا إلى مسح اسم المستخدم وترتيبك في لوحة المتصدرين وتقدّم التحدي والسجلات اليومية والموقع المحفوظ نهائيًا من خوادمنا ومن هذا الجهاز. لا يمكن التراجع عن ذلك.';
+
+  @override
+  String get settingsDeleteAccountPasswordLabel => 'أدخل كلمة المرور للتأكيد';
+
+  @override
+  String get settingsDeleteAccountConfirm => 'حذف نهائي';
+
+  @override
+  String get settingsDeleteAccountWrongPassword => 'كلمة المرور غير صحيحة.';
+
+  @override
+  String get settingsDeleteAccountFailed =>
+      'تعذّر حذف حسابك. تحقق من اتصالك وحاول مرة أخرى.';
+
+  @override
   String get settingsGuidelinesDialogTitle => 'إرشادات التحدي';
 
   @override

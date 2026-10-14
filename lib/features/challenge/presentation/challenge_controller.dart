@@ -84,6 +84,10 @@ class ChallengeProvider extends ChangeNotifier {
         analytics: analytics,
       );
 
+  /// Erases this user's challenge data from the server and this device, for
+  /// account deletion. Throws if the server delete fails.
+  Future<void> deleteAllData() => _repository.deleteAllData(_data.userName);
+
   // Getters
   DateTime? get challengeStartDate => _data.challengeStartDate;
   List<DayLog> get dayLogs => _data.dayLogs;

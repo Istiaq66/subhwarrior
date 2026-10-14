@@ -858,6 +858,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsCancel => 'Cancel';
 
   @override
+  String get settingsDeleteAccount => 'Delete account';
+
+  @override
+  String get settingsDeleteAccountSubtitle => 'Permanently erase your data';
+
+  @override
+  String get settingsDeleteAccountDialogTitle => 'Delete your account?';
+
+  @override
+  String get settingsDeleteAccountDialogContent =>
+      'This permanently erases your username, leaderboard entry, challenge progress, daily logs and saved location from our servers and this device. It cannot be undone.';
+
+  @override
+  String get settingsDeleteAccountPasswordLabel =>
+      'Enter your password to confirm';
+
+  @override
+  String get settingsDeleteAccountConfirm => 'Delete permanently';
+
+  @override
+  String get settingsDeleteAccountWrongPassword =>
+      'That password is incorrect.';
+
+  @override
+  String get settingsDeleteAccountFailed =>
+      'Couldn\'t delete your account. Check your connection and try again.';
+
+  @override
   String get settingsGuidelinesDialogTitle => 'Challenge Guidelines';
 
   @override

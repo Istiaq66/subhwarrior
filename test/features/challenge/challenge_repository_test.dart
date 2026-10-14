@@ -80,5 +80,28 @@ void main() {
           UsernameReservation.taken);
       verifyZeroInteractions(local);
     });
+
+    test('deleteAllData erases the server copy, then the local one', () async {
+      final order = <String>[];
+      when(() => remote.deleteAll('aisha')).thenAnswer((_) async {
+        order.add('remote');
+      });
+      when(() => local.clear()).thenAnswer((_) async {
+        order.add('local');
+      });
+
+      await repository.deleteAllData('aisha');
+
+      expect(order, ['remote', 'local']);
+    });
+
+    test('deleteAllData keeps the local copy if the server delete fails',
+        () async {
+      when(() => remote.deleteAll(any())).thenThrow(StateError('offline'));
+
+      await expectLater(repository.deleteAllData('aisha'), throwsStateError);
+
+      verifyNever(() => local.clear());
+    });
   });
 }

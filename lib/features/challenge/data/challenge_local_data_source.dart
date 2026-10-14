@@ -83,6 +83,19 @@ class ChallengeLocalDataSource {
     await prefs.setBool(_kMigrated, true);
   }
 
+  /// Removes every challenge key for this user from the device.
+  ///
+  /// Also removes the un-namespaced originals: the legacy migration copies
+  /// them to `uid:key` without deleting them, so they would otherwise keep a
+  /// full copy of the profile (including coordinates) after account deletion.
+  /// The migration marker is left in place so they are not copied back.
+  Future<void> clear() async {
+    for (final base in _allKeys) {
+      await prefs.remove(_key(base));
+      await prefs.remove(base);
+    }
+  }
+
   ChallengeData load() {
     final data = ChallengeData();
 

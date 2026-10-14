@@ -1,16 +1,20 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:subh_warrior/core/constants/app_constants.dart';
+import 'package:subh_warrior/core/crash/crash_reporting.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/l10n/l10n_utils.dart';
 import 'package:subh_warrior/core/theme/app_snack_bars.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
+import 'package:subh_warrior/features/auth/data/account_deletion.dart';
 import 'package:subh_warrior/features/auth/data/auth_service.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/location/domain/city.dart';
@@ -754,6 +758,7 @@ class _SettingsScreenState extends State<SettingsScreen>
               subtitle: Text(_appVersion.isEmpty ? '…' : _appVersion),
             ),
             _buildAccountTile(),
+            _buildDeleteAccountTile(),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.book),
@@ -841,6 +846,74 @@ class _SettingsScreenState extends State<SettingsScreen>
       await context.read<AuthService>().signOut();
     } finally {
       if (mounted) setState(() => _isAccountBusy = false);
+    }
+  }
+
+  /// Play requires an in-app way to delete the account and its data.
+  Widget _buildDeleteAccountTile() {
+    final l10n = AppLocalizations.of(context)!;
+    final error = Theme.of(context).colorScheme.error;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(Icons.delete_forever, color: error),
+      title: Text(l10n.settingsDeleteAccount, style: TextStyle(color: error)),
+      subtitle: Text(l10n.settingsDeleteAccountSubtitle),
+      onTap: _isAccountBusy ? null : _deleteAccount,
+    );
+  }
+
+  /// Confirms, then permanently deletes the user's data and sign-in. The
+  /// ordering and failure rules live in [deleteAccount].
+  Future<void> _deleteAccount() async {
+    final l10n = AppLocalizations.of(context)!;
+    final auth = context.read<AuthService>();
+    final challenge = context.read<ChallengeProvider>();
+
+    final password = await showDialog<String>(
+      context: context,
+      builder: (_) => _DeleteAccountDialog(
+        askPassword: auth.needsPasswordToConfirm,
+      ),
+    );
+    if (password == null || !mounted) return;
+
+    setState(() => _isAccountBusy = true);
+    String? failure;
+    try {
+      await deleteAccount(
+        reauthenticate: () => auth.reauthenticate(password: password),
+        deleteUserData: challenge.deleteAllData,
+        cleanUpDevice: () async {
+          await FajrCallService.cancel();
+          await NotificationService.cancelAllNotifications();
+        },
+        deleteAuthUser: auth.deleteAccount,
+      );
+      // The account is now a fresh anonymous one; keep crash reports from
+      // being filed under the id that was just deleted.
+      unawaited(CrashReporting.setUser(auth.uid ?? ''));
+    } on GoogleSignInException catch (e) {
+      // Closing the Google chooser is a choice, not an error.
+      if (e.code != GoogleSignInExceptionCode.canceled) {
+        failure = l10n.settingsDeleteAccountFailed;
+      }
+    } on FirebaseAuthException catch (e) {
+      failure = const {
+        'wrong-password',
+        'invalid-credential',
+        'invalid-login-credentials',
+      }.contains(e.code)
+          ? l10n.settingsDeleteAccountWrongPassword
+          : l10n.settingsDeleteAccountFailed;
+    } catch (_) {
+      failure = l10n.settingsDeleteAccountFailed;
+    } finally {
+      if (mounted) setState(() => _isAccountBusy = false);
+    }
+    // After a successful delete the auth change rebuilds the whole app, so
+    // there is usually no screen left to report on.
+    if (failure != null && mounted) {
+      context.showSnack(failure, kind: AppSnackKind.error);
     }
   }
 
@@ -1292,6 +1365,72 @@ class _CustomReminderSheetState extends State<_CustomReminderSheet> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Confirmation for account deletion. Pops with the typed password (empty when
+/// the account needs none) to go ahead, or null if the user backs out. Only
+/// password accounts are asked for a password; Google accounts confirm in the
+/// Google chooser and anonymous ones have nothing to confirm.
+class _DeleteAccountDialog extends StatefulWidget {
+  final bool askPassword;
+
+  const _DeleteAccountDialog({required this.askPassword});
+
+  @override
+  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
+}
+
+class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
+  final _password = TextEditingController();
+
+  @override
+  void dispose() {
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final error = Theme.of(context).colorScheme.error;
+    return AlertDialog(
+      title: Text(l10n.settingsDeleteAccountDialogTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.settingsDeleteAccountDialogContent),
+          if (widget.askPassword) ...[
+            const SizedBox(height: AppSpacing.md),
+            TextField(
+              controller: _password,
+              obscureText: true,
+              autofocus: true,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                labelText: l10n.settingsDeleteAccountPasswordLabel,
+              ),
+            ),
+          ],
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.settingsCancel),
+        ),
+        TextButton(
+          onPressed: widget.askPassword && _password.text.isEmpty
+              ? null
+              : () => Navigator.pop(context, _password.text),
+          child: Text(
+            l10n.settingsDeleteAccountConfirm,
+            style: TextStyle(color: error),
+          ),
+        ),
+      ],
     );
   }
 }

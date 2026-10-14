@@ -6,7 +6,9 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Challenge / leaderboard documents, keyed by uid.
+    // Challenge / leaderboard documents, keyed by uid. World-readable, so they
+    // hold leaderboard fields only — coordinates, logs and dates live in
+    // challenge_private below. `hasOnly` stops a client putting them back.
     match /challenges/{uid} {
       // Public read so the leaderboard can rank everyone.
       allow read: if true;
@@ -15,6 +17,10 @@ service cloud.firestore {
       // uid must match the doc id and the caller (no spoofing another user).
       allow create, update: if request.auth != null
         && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'uid', 'userName', 'userNameLower', 'location',
+          'currentStreak', 'totalQualifyingDays', 'lastUpdated'
+        ])
         && request.resource.data.uid == uid
         && request.resource.data.userName is string
         && request.resource.data.userName.size() >= 3
@@ -25,6 +31,26 @@ service cloud.firestore {
         && request.resource.data.currentStreak >= 0;
 
       allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Per-user private state (exact coordinates, start date, week, day logs).
+    // Readable and writable only by the owner — never by other users.
+    match /challenge_private/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'latitude', 'longitude', 'startDate', 'isChallengeActive',
+          'currentWeek', 'logs'
+        ])
+        && request.resource.data.latitude is number
+        && request.resource.data.latitude >= -90
+        && request.resource.data.latitude <= 90
+        && request.resource.data.longitude is number
+        && request.resource.data.longitude >= -180
+        && request.resource.data.longitude <= 180
+        && request.resource.data.logs is list;
     }
 
     // Username reservations, keyed by the lowercased name.

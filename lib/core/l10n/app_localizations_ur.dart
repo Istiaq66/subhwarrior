@@ -859,6 +859,33 @@ class AppLocalizationsUr extends AppLocalizations {
   String get settingsCancel => 'منسوخ کریں';
 
   @override
+  String get settingsDeleteAccount => 'اکاؤنٹ حذف کریں';
+
+  @override
+  String get settingsDeleteAccountSubtitle => 'اپنا ڈیٹا مستقل طور پر مٹا دیں';
+
+  @override
+  String get settingsDeleteAccountDialogTitle => 'کیا اپنا اکاؤنٹ حذف کریں؟';
+
+  @override
+  String get settingsDeleteAccountDialogContent =>
+      'یہ آپ کا صارف نام، لیڈر بورڈ اندراج، چیلنج کی پیش رفت، روزانہ لاگز اور محفوظ کردہ مقام ہمارے سرورز اور اس آلے سے مستقل طور پر مٹا دے گا۔ اسے واپس نہیں کیا جا سکتا۔';
+
+  @override
+  String get settingsDeleteAccountPasswordLabel =>
+      'تصدیق کے لیے اپنا پاس ورڈ درج کریں';
+
+  @override
+  String get settingsDeleteAccountConfirm => 'مستقل طور پر حذف کریں';
+
+  @override
+  String get settingsDeleteAccountWrongPassword => 'پاس ورڈ غلط ہے۔';
+
+  @override
+  String get settingsDeleteAccountFailed =>
+      'آپ کا اکاؤنٹ حذف نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
   String get settingsGuidelinesDialogTitle => 'چیلنج کی ہدایات';
 
   @override

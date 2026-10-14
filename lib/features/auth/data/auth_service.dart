@@ -12,6 +12,13 @@ class GoogleSignInNotConfigured implements Exception {
       'and set AuthService.googleServerClientId to the Web client OAuth ID.';
 }
 
+/// Thrown by [AuthService.reauthenticate] when the account signs in with a
+/// password and none was supplied, so the caller can ask for one.
+class PasswordRequiredException implements Exception {
+  @override
+  String toString() => 'This account needs its password to confirm.';
+}
+
 /// Owns all Firebase Auth + Google Sign-In I/O. The only place that touches
 /// `FirebaseAuth` / `GoogleSignIn`. Keyed by a stable [uid] that survives the
 /// anonymous → Google upgrade (linking preserves the uid), so every Firestore
@@ -54,25 +61,8 @@ class AuthService {
   ///
   /// Throws [GoogleSignInNotConfigured] if [googleServerClientId] is unset.
   Future<UserCredential> signInWithGoogle() async {
-    if (googleServerClientId.isEmpty) {
-      throw GoogleSignInNotConfigured();
-    }
     try {
-      final signIn = GoogleSignIn.instance;
-      if (!_googleInitialized) {
-        await signIn.initialize(serverClientId: googleServerClientId);
-        _googleInitialized = true;
-      }
-      final account = await signIn.authenticate();
-      final idToken = account.authentication.idToken;
-      if (idToken == null) {
-        throw FirebaseAuthException(
-          code: 'missing-google-id-token',
-          message: 'Google sign-in returned no ID token.',
-        );
-      }
-
-      final credential = GoogleAuthProvider.credential(idToken: idToken);
+      final credential = await _googleCredential();
       final user = _auth.currentUser;
 
       // Prefer linking so the anonymous uid (and its Firestore doc) survives.
@@ -101,6 +91,85 @@ class AuthService {
       debugPrint('Google sign-in error: $e\n$st');
       rethrow;
     }
+  }
+
+  /// Shows the Google account chooser and returns a Firebase credential for
+  /// the chosen account. Throws [GoogleSignInNotConfigured] if the OAuth
+  /// client ID is unset.
+  Future<AuthCredential> _googleCredential() async {
+    if (googleServerClientId.isEmpty) {
+      throw GoogleSignInNotConfigured();
+    }
+    final signIn = GoogleSignIn.instance;
+    if (!_googleInitialized) {
+      await signIn.initialize(serverClientId: googleServerClientId);
+      _googleInitialized = true;
+    }
+    final account = await signIn.authenticate();
+    final idToken = account.authentication.idToken;
+    if (idToken == null) {
+      throw FirebaseAuthException(
+        code: 'missing-google-id-token',
+        message: 'Google sign-in returned no ID token.',
+      );
+    }
+    return GoogleAuthProvider.credential(idToken: idToken);
+  }
+
+  bool _hasProvider(String providerId) =>
+      _auth.currentUser?.providerData.any((p) => p.providerId == providerId) ??
+      false;
+
+  /// Whether the signed-in account uses Google. Reauthenticating it needs no
+  /// typing, only the Google account chooser.
+  bool get usesGoogle => _hasProvider(GoogleAuthProvider.PROVIDER_ID);
+
+  /// Whether the signed-in account has to confirm with its password and has no
+  /// Google sign-in to use instead.
+  bool get needsPasswordToConfirm =>
+      !usesGoogle && _hasProvider(EmailAuthProvider.PROVIDER_ID);
+
+  /// Proves the person holding the phone owns the signed-in account, which
+  /// Firebase requires before deleting it. Anonymous accounts have nothing to
+  /// prove and return immediately.
+  ///
+  /// Throws [PasswordRequiredException] if a password account is given no
+  /// [password]. A cancelled Google chooser or a wrong password throws, so the
+  /// caller stops before anything is deleted.
+  Future<void> reauthenticate({String? password}) async {
+    final user = _auth.currentUser;
+    if (user == null || user.isAnonymous) return;
+
+    if (usesGoogle) {
+      await user.reauthenticateWithCredential(await _googleCredential());
+      return;
+    }
+    if (_hasProvider(EmailAuthProvider.PROVIDER_ID)) {
+      final email = user.email;
+      if (password == null || password.isEmpty || email == null) {
+        throw PasswordRequiredException();
+      }
+      await user.reauthenticateWithCredential(
+        EmailAuthProvider.credential(email: email, password: password),
+      );
+    }
+  }
+
+  /// Permanently deletes the signed-in Firebase account, then starts a fresh
+  /// anonymous session for the same reason [signOut] does: the app always
+  /// needs a uid. Call [reauthenticate] first, and delete the user's data
+  /// first — once the account is gone the Firestore rules no longer let that
+  /// data be removed.
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    await user.delete();
+    try {
+      await GoogleSignIn.instance.signOut();
+    } catch (e) {
+      debugPrint('Google signOut after delete: $e');
+    }
+    await _auth.signInAnonymously();
   }
 
   Future<UserCredential?> registerWithEmail({

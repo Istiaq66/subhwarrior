@@ -1466,6 +1466,54 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get settingsCancel;
 
+  /// No description provided for @settingsDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get settingsDeleteAccount;
+
+  /// No description provided for @settingsDeleteAccountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently erase your data'**
+  String get settingsDeleteAccountSubtitle;
+
+  /// No description provided for @settingsDeleteAccountDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account?'**
+  String get settingsDeleteAccountDialogTitle;
+
+  /// No description provided for @settingsDeleteAccountDialogContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently erases your username, leaderboard entry, challenge progress, daily logs and saved location from our servers and this device. It cannot be undone.'**
+  String get settingsDeleteAccountDialogContent;
+
+  /// No description provided for @settingsDeleteAccountPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password to confirm'**
+  String get settingsDeleteAccountPasswordLabel;
+
+  /// No description provided for @settingsDeleteAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get settingsDeleteAccountConfirm;
+
+  /// No description provided for @settingsDeleteAccountWrongPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'That password is incorrect.'**
+  String get settingsDeleteAccountWrongPassword;
+
+  /// No description provided for @settingsDeleteAccountFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete your account. Check your connection and try again.'**
+  String get settingsDeleteAccountFailed;
+
   /// No description provided for @settingsGuidelinesDialogTitle.
   ///
   /// In en, this message translates to:

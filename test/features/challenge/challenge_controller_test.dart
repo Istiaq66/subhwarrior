@@ -47,6 +47,14 @@ class FakeChallengeRepository implements ChallengeRepository {
   Future<bool> usernameExists(String username, String currentUserName) async =>
       usernameTaken;
 
+  /// Names passed to [deleteAllData], in order.
+  final deletedFor = <String>[];
+
+  @override
+  Future<void> deleteAllData(String userName) async {
+    deletedFor.add(userName);
+  }
+
   @override
   Future<UsernameReservation> reserveUsername(
       String desired, String previous) async {
@@ -269,6 +277,17 @@ void main() {
 
       expect(controller.userName, 'Local');
       expect(controller.currentStreak, 0);
+    });
+  });
+
+  group('deleteAllData', () {
+    test('erases the data stored under the current username', () async {
+      final repo = FakeChallengeRepository(ChallengeData(userName: 'Aisha'));
+      final controller = ChallengeProvider(repo);
+
+      await controller.deleteAllData();
+
+      expect(repo.deletedFor, ['Aisha']);
     });
   });
 }

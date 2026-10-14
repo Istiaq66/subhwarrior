@@ -48,6 +48,9 @@ class FakeChallengeRepository implements ChallengeRepository {
       usernameTaken;
 
   @override
+  Future<void> deleteAllData(String userName) async {}
+
+  @override
   Future<UsernameReservation> reserveUsername(
       String desired, String previous) async {
     reserveCount++;

@@ -863,6 +863,34 @@ class AppLocalizationsBn extends AppLocalizations {
   String get settingsCancel => 'বাতিল';
 
   @override
+  String get settingsDeleteAccount => 'অ্যাকাউন্ট মুছুন';
+
+  @override
+  String get settingsDeleteAccountSubtitle =>
+      'আপনার ডেটা স্থায়ীভাবে মুছে ফেলুন';
+
+  @override
+  String get settingsDeleteAccountDialogTitle => 'আপনার অ্যাকাউন্ট মুছবেন?';
+
+  @override
+  String get settingsDeleteAccountDialogContent =>
+      'এটি আমাদের সার্ভার এবং এই ডিভাইস থেকে আপনার ইউজারনেম, লিডারবোর্ড এন্ট্রি, চ্যালেঞ্জের অগ্রগতি, দৈনিক লগ ও সংরক্ষিত অবস্থান স্থায়ীভাবে মুছে ফেলবে। এটি ফেরানো যাবে না।';
+
+  @override
+  String get settingsDeleteAccountPasswordLabel =>
+      'নিশ্চিত করতে আপনার পাসওয়ার্ড দিন';
+
+  @override
+  String get settingsDeleteAccountConfirm => 'স্থায়ীভাবে মুছুন';
+
+  @override
+  String get settingsDeleteAccountWrongPassword => 'পাসওয়ার্ডটি ভুল।';
+
+  @override
+  String get settingsDeleteAccountFailed =>
+      'আপনার অ্যাকাউন্ট মোছা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।';
+
+  @override
   String get settingsGuidelinesDialogTitle => 'চ্যালেঞ্জ নির্দেশিকা';
 
   @override
