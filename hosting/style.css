@@ -1,0 +1,522 @@
+/* Subh Warrior site. Colors and type come from the app (app_colors.dart,
+   PlusJakartaSans). No third-party requests: the font is self-hosted. */
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/assets/PlusJakartaSans-var.ttf") format("truetype");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+  --bg: #eaead9;
+  --surface: #f4f5eb;
+  --text: #1d2621;
+  --muted: #4f564b;
+  --rule: #c9cab6;
+  --brand: #0f5233;
+  --on-brand: #f4f5eb;
+  --link: #0f5233;
+  --accent: #c97b2e;
+  --focus: #0b5cad;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121710;
+    --surface: #1b2118;
+    --text: #eaead9;
+    --muted: #a9b1a4;
+    --rule: #2c3428;
+    --brand: #0d4a2e;
+    --on-brand: #eaead9;
+    --link: #5fb98a;
+    --accent: #e0ac4a;
+    --focus: #7db7f5;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-padding-top: 20px;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 1.0625rem/1.65 "Plus Jakarta Sans", system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  /* The face's word space is narrow; open it slightly for running text. */
+  word-spacing: 0.05em;
+  overflow-wrap: break-word;
+}
+
+.wrap {
+  max-width: 66rem;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+a {
+  color: var(--link);
+  text-underline-offset: 0.18em;
+}
+
+a:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+/* Header band: deep forest with a small sun on the horizon. */
+.band {
+  position: relative;
+  overflow: hidden;
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.band::after {
+  content: "";
+  position: absolute;
+  right: max(20px, calc((100vw - 66rem) / 2 + 20px));
+  bottom: -38px;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.band .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+.brand img {
+  display: block;
+  border-radius: 8px;
+}
+
+.band nav {
+  display: flex;
+  gap: 20px;
+  /* keep clear of the sun */
+  padding-right: 96px;
+}
+
+.band nav a {
+  color: inherit;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+}
+
+.band nav a:hover,
+.band nav a[aria-current="page"] {
+  border-bottom-color: currentColor;
+}
+
+.band a:focus-visible {
+  outline-color: var(--on-brand);
+}
+
+/* `main.wrap`, not `main`: `.wrap` sets padding too and would win. */
+main.wrap {
+  padding-bottom: 64px;
+}
+
+@media (max-width: 40rem) {
+  /* No room for the sun beside the nav on a phone. */
+  .band::after {
+    display: none;
+  }
+
+  .band nav {
+    gap: 14px;
+    padding-right: 0;
+  }
+
+  .band nav a {
+    font-size: 0.9rem;
+  }
+
+  .brand span {
+    display: none;
+  }
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: clamp(1.9rem, 1.2rem + 3vw, 2.9rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+h2 {
+  margin: 0 0 10px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  margin: 26px 0 6px;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+p {
+  margin: 0 0 14px;
+}
+
+ul,
+ol {
+  margin: 0 0 14px;
+  padding-left: 1.3rem;
+}
+
+li {
+  margin: 5px 0;
+}
+
+.prose {
+  max-width: 42rem;
+}
+
+.hero {
+  padding: 52px 0 28px;
+}
+
+.lead {
+  max-width: 38rem;
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.updated {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.button {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.button:hover {
+  filter: brightness(1.12);
+}
+
+.button:focus-visible {
+  outline-color: var(--focus);
+}
+
+/* ---- Home ---- */
+.links {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 38rem;
+}
+
+.links li {
+  margin: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.links li:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+
+.links a {
+  display: block;
+  padding: 18px 2px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.links small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+/* ---- Privacy policy ---- */
+.layout {
+  display: grid;
+  gap: 8px 56px;
+  align-items: start;
+}
+
+@media (min-width: 58rem) {
+  .layout {
+    grid-template-columns: 14rem minmax(0, 1fr);
+  }
+
+  .toc {
+    position: sticky;
+    top: 24px;
+  }
+
+  .toc summary {
+    display: none;
+  }
+}
+
+.toc {
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+}
+
+.toc summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 0;
+}
+
+.toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toc li {
+  margin: 0;
+}
+
+.toc a {
+  display: block;
+  padding: 5px 0;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.toc a:hover {
+  color: var(--link);
+  text-decoration: underline;
+}
+
+.doc section {
+  max-width: 42rem;
+  padding: 30px 0 10px;
+  border-top: 1px solid var(--rule);
+}
+
+.doc section:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.glance {
+  max-width: 42rem;
+  margin: 0 0 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.98rem;
+}
+
+caption {
+  text-align: left;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding-bottom: 10px;
+}
+
+th,
+td {
+  text-align: left;
+  vertical-align: top;
+  padding: 11px 14px 11px 0;
+  border-top: 1px solid var(--rule);
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: 1px solid var(--rule);
+}
+
+th {
+  font-weight: 600;
+}
+
+td strong {
+  font-weight: 700;
+}
+
+/* ---- Delete account ---- */
+.paths {
+  display: grid;
+  gap: 28px 48px;
+  align-items: start;
+  margin-top: 8px;
+}
+
+@media (min-width: 52rem) {
+  .paths {
+    grid-template-columns: 1.25fr 1fr;
+  }
+}
+
+.path-main {
+  padding: 26px 26px 14px;
+  background: var(--surface);
+  border-radius: 18px;
+  border: 1px solid var(--rule);
+}
+
+.path-main ol {
+  padding-left: 1.4rem;
+}
+
+.path-main li::marker {
+  font-weight: 700;
+  color: var(--link);
+}
+
+.path-side {
+  padding-top: 26px;
+  border-top: 1px solid var(--rule);
+}
+
+@media (min-width: 52rem) {
+  .path-side {
+    border-top: 0;
+    border-left: 1px solid var(--rule);
+    padding: 4px 0 0 36px;
+  }
+}
+
+.split {
+  display: grid;
+  gap: 8px 48px;
+  margin-top: 40px;
+}
+
+@media (min-width: 52rem) {
+  .split {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.split > div {
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+}
+
+.warning {
+  max-width: 42rem;
+  margin: 36px 0 0;
+  padding: 14px 18px;
+  border-left: 4px solid var(--accent);
+  background: var(--surface);
+  border-radius: 0 12px 12px 0;
+}
+
+.warning p {
+  margin: 0;
+}
+
+/* ---- Footer ---- */
+footer {
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+footer .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding-top: 22px;
+  padding-bottom: 40px;
+}
+
+footer a {
+  color: var(--muted);
+}
+
+@media print {
+  .band,
+  .toc,
+  .skip,
+  .button {
+    display: none;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 11pt;
+  }
+
+  a {
+    color: #000;
+  }
+}

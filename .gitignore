@@ -56,3 +56,5 @@ stitch_subh_warrior_forest_green_redesign/
 
 # FVM Version Cache
 .fvm/
+# Firebase CLI deploy cache
+.firebase/
