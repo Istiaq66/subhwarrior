@@ -768,6 +768,13 @@ class _SettingsScreenState extends State<SettingsScreen>
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.description_outlined),
+              title: Text(l10n.settingsTermsOfService),
+              trailing: const Icon(Icons.open_in_new, size: 18),
+              onTap: _openTerms,
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.feedback),
               title: Text(l10n.settingsSendFeedback),
               onTap: _sendFeedback,
@@ -959,6 +966,23 @@ class _SettingsScreenState extends State<SettingsScreen>
     // there is usually no screen left to report on.
     if (failure != null && mounted) {
       context.showSnack(failure, kind: AppSnackKind.error);
+    }
+  }
+
+  /// Terms of service, hosted with the privacy policy on Firebase Hosting
+  /// (`hosting/terms.html`).
+  static final Uri _termsUrl = Uri.parse('https://subh-warrior.web.app/terms');
+
+  Future<void> _openTerms() async {
+    final l10n = AppLocalizations.of(context)!;
+    var opened = false;
+    try {
+      opened = await launchUrl(_termsUrl, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      // No activity can handle the URL; reported below like a `false`.
+    }
+    if (!opened && mounted) {
+      context.showSnack(l10n.settingsLinkOpenFailed, kind: AppSnackKind.error);
     }
   }
 

@@ -825,6 +825,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsShareApp => 'Share App';
 
   @override
+  String get settingsTermsOfService => 'Terms of Service';
+
+  @override
+  String get settingsLinkOpenFailed =>
+      'Couldn\'t open the link. Check that a web browser is installed.';
+
+  @override
   String get settingsSignedInWithGoogle => 'Signed in with Google.';
 
   @override

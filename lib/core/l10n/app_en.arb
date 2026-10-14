@@ -458,6 +458,8 @@
   "settingsGuidelines": "Guidelines",
   "settingsSendFeedback": "Send Feedback",
   "settingsShareApp": "Share App",
+  "settingsTermsOfService": "Terms of Service",
+  "settingsLinkOpenFailed": "Couldn't open the link. Check that a web browser is installed.",
   "settingsSignedInWithGoogle": "Signed in with Google.",
   "settingsFeedbackSubject": "Subh Warrior Feedback",
   "@settingsFeedbackSubject": {

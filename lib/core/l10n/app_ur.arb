@@ -218,6 +218,8 @@
   "settingsGuidelines": "ہدایات",
   "settingsSendFeedback": "رائے بھیجیں",
   "settingsShareApp": "ایپ شیئر کریں",
+  "settingsTermsOfService": "سروس کی شرائط",
+  "settingsLinkOpenFailed": "لنک نہیں کھل سکا۔ دیکھیں کہ کوئی ویب براؤزر انسٹال ہے۔",
   "settingsSignedInWithGoogle": "Google کے ساتھ سائن اِن ہے۔",
   "settingsFeedbackSubject": "Subh Warrior کے بارے میں رائے",
   "settingsFeedbackAppVersion": "ایپ ورژن: {version} ({build})",

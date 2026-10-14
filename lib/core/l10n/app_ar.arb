@@ -218,6 +218,8 @@
   "settingsGuidelines": "الإرشادات",
   "settingsSendFeedback": "إرسال ملاحظات",
   "settingsShareApp": "مشاركة التطبيق",
+  "settingsTermsOfService": "شروط الخدمة",
+  "settingsLinkOpenFailed": "تعذّر فتح الرابط. تأكد من تثبيت متصفح ويب.",
   "settingsSignedInWithGoogle": "تم تسجيل الدخول عبر Google.",
   "settingsFeedbackSubject": "ملاحظات Subh Warrior",
   "settingsFeedbackAppVersion": "إصدار التطبيق: {version} ({build})",

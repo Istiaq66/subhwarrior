@@ -826,6 +826,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get settingsShareApp => 'ایپ شیئر کریں';
 
   @override
+  String get settingsTermsOfService => 'سروس کی شرائط';
+
+  @override
+  String get settingsLinkOpenFailed =>
+      'لنک نہیں کھل سکا۔ دیکھیں کہ کوئی ویب براؤزر انسٹال ہے۔';
+
+  @override
   String get settingsSignedInWithGoogle => 'Google کے ساتھ سائن اِن ہے۔';
 
   @override

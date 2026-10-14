@@ -821,6 +821,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsShareApp => 'مشاركة التطبيق';
 
   @override
+  String get settingsTermsOfService => 'شروط الخدمة';
+
+  @override
+  String get settingsLinkOpenFailed =>
+      'تعذّر فتح الرابط. تأكد من تثبيت متصفح ويب.';
+
+  @override
   String get settingsSignedInWithGoogle => 'تم تسجيل الدخول عبر Google.';
 
   @override

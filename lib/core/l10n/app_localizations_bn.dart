@@ -830,6 +830,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get settingsShareApp => 'অ্যাপ শেয়ার করুন';
 
   @override
+  String get settingsTermsOfService => 'পরিষেবার শর্তাবলি';
+
+  @override
+  String get settingsLinkOpenFailed =>
+      'লিংকটি খোলা যায়নি। একটি ওয়েব ব্রাউজার ইনস্টল আছে কি না দেখুন।';
+
+  @override
   String get settingsSignedInWithGoogle => 'Google দিয়ে সাইন ইন করা হয়েছে।';
 
   @override

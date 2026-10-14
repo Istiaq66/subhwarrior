@@ -1412,6 +1412,18 @@ abstract class AppLocalizations {
   /// **'Share App'**
   String get settingsShareApp;
 
+  /// No description provided for @settingsTermsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get settingsTermsOfService;
+
+  /// No description provided for @settingsLinkOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the link. Check that a web browser is installed.'**
+  String get settingsLinkOpenFailed;
+
   /// No description provided for @settingsSignedInWithGoogle.
   ///
   /// In en, this message translates to:
