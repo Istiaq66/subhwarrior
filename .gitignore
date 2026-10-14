@@ -58,3 +58,6 @@ stitch_subh_warrior_forest_green_redesign/
 .fvm/
 # Firebase CLI deploy cache
 .firebase/
+
+# Play Store listing assets (generated locally, not tracked)
+/store/
