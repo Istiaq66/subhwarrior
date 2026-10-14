@@ -268,6 +268,91 @@ li {
 }
 
 /* ---- Home ---- */
+.hero-home {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.hero-logo {
+  flex: none;
+  width: 96px;
+  height: 96px;
+  border-radius: 22px;
+  background: var(--surface);
+  padding: 8px;
+  border: 1px solid var(--rule);
+}
+
+@media (max-width: 40rem) {
+  .hero-home {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .hero-logo {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+  }
+}
+
+.about {
+  padding: 28px 0 8px;
+  border-top: 1px solid var(--rule);
+}
+
+.features {
+  display: grid;
+  gap: 4px 40px;
+  max-width: 54rem;
+}
+
+@media (min-width: 46rem) {
+  .features {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.features h3 {
+  margin-top: 14px;
+}
+
+.features p {
+  color: var(--muted);
+}
+
+/* Captioned store screenshots: four across, two on a phone. */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 20px 0 32px;
+}
+
+@media (min-width: 52rem) {
+  .gallery {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.gallery figure {
+  margin: 0;
+}
+
+.gallery img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--rule);
+}
+
+.about + .links {
+  margin-top: 28px;
+}
+
 .links {
   margin: 8px 0 0;
   padding: 0;
