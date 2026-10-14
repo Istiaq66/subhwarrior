@@ -28,10 +28,10 @@ void main() {
     });
 
     test('advances exactly one day at a time across a month boundary', () {
-      var previous = HijriDate.fromDateTime(DateTime(2026, 1, 1));
+      var previous = HijriDate.fromDateTime(DateTime(2026));
       for (var i = 1; i <= 400; i++) {
         final current =
-            HijriDate.fromDateTime(DateTime(2026, 1, 1).add(Duration(days: i)));
+            HijriDate.fromDateTime(DateTime(2026).add(Duration(days: i)));
         final rolledDay = current.day == previous.day + 1;
         final rolledMonth = current.day == 1 &&
             (current.month == previous.month + 1 ||
@@ -48,7 +48,7 @@ void main() {
     test('month is always within range over a long span', () {
       for (var i = 0; i < 4000; i += 7) {
         final hijri =
-            HijriDate.fromDateTime(DateTime(2020, 1, 1).add(Duration(days: i)));
+            HijriDate.fromDateTime(DateTime(2020).add(Duration(days: i)));
         expect(hijri.month, inInclusiveRange(1, 12));
         expect(hijri.day, inInclusiveRange(1, 30));
       }

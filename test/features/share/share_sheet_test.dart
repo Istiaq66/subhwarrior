@@ -23,6 +23,12 @@ void main() {
       (tester) async {
     final analytics = FakeAnalyticsService();
 
+    // The sheet is taller than the default 800x600 surface, which put the
+    // share button off-screen and made the tap a silent no-op.
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(_wrap(
       Builder(
         builder: (context) => Scaffold(
@@ -48,6 +54,11 @@ void main() {
     expect(find.byIcon(Icons.share), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.share));
+    // Image capture runs on the real event loop, which fake-async never
+    // advances; without this the busy spinner never stops for pumpAndSettle.
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 500)),
+    );
     await tester.pumpAndSettle();
 
     // In the widget-test environment path_provider/share_plus channels are
