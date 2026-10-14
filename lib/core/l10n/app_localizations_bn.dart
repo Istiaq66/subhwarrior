@@ -726,6 +726,10 @@ class AppLocalizationsBn extends AppLocalizations {
       'কল যেন পুরো স্ক্রিন জুড়ে আসে, সে জন্য ফুল স্ক্রিন নোটিফিকেশন চালু করুন।';
 
   @override
+  String get settingsFajrCallNeedsExactAlarm =>
+      'ফজরে কল যেন বাজে, সে জন্য অ্যালার্ম ও রিমাইন্ডার চালু করুন।';
+
+  @override
   String get settingsRemindMeBeforeFajr => 'ফজরের আগে মনে করিয়ে দিন';
 
   @override

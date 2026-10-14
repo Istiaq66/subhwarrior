@@ -722,6 +722,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Allow full screen notifications so the call can take over the screen.';
 
   @override
+  String get settingsFajrCallNeedsExactAlarm =>
+      'Allow alarms & reminders so the call can ring at Fajr.';
+
+  @override
   String get settingsRemindMeBeforeFajr => 'Remind me before Fajr';
 
   @override

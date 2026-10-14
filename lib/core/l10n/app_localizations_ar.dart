@@ -719,6 +719,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'اسمح بإشعارات ملء الشاشة حتى تظهر المكالمة على الشاشة كاملة.';
 
   @override
+  String get settingsFajrCallNeedsExactAlarm =>
+      'اسمح بالمنبّهات والتذكيرات حتى ترنّ المكالمة عند الفجر.';
+
+  @override
   String get settingsRemindMeBeforeFajr => 'ذكّرني قبل الفجر';
 
   @override

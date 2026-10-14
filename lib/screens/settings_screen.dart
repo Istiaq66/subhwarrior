@@ -63,6 +63,10 @@ class _SettingsScreenState extends State<SettingsScreen>
   /// Whether the OS lets the call take over the screen (Android 14+ gates
   /// this separately). Without it the call is a notification, not an alarm.
   bool _fullScreenAllowed = true;
+
+  /// Whether the OS will run the call's alarm at all (Android 12+ "Alarms &
+  /// reminders"). Without it nothing rings.
+  bool _exactAlarmAllowed = true;
   bool _loggingReminder = true;
   int _fajrReminderMinutes = 15;
   String _appVersion = '';
@@ -86,7 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     _loadCallPermissions();
   }
 
-  /// Both gates are granted on system settings pages the user leaves the app
+  /// These gates are granted on system settings pages the user leaves the app
   /// for, so they are re-read whenever the app comes back.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -96,11 +100,17 @@ class _SettingsScreenState extends State<SettingsScreen>
   Future<void> _loadCallPermissions() async {
     final allowed = await hasNotificationPermission();
     final fullScreen = await FajrCallService.canShowFullScreen();
+    final exactAlarm = await FajrCallService.canScheduleExactAlarms();
     if (!mounted) return;
+    // The call could not be scheduled while exact alarms were refused; now
+    // that they are allowed, rescheduling arms it.
+    final exactAlarmJustGranted = exactAlarm && !_exactAlarmAllowed;
     setState(() {
       _notificationsAllowed = allowed;
       _fullScreenAllowed = fullScreen;
+      _exactAlarmAllowed = exactAlarm;
     });
+    if (exactAlarmJustGranted && _fajrCall) _persistNotificationSettingsSoon();
   }
 
   Future<void> _loadAppVersion() async {
@@ -432,7 +442,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                     _fajrCall = value;
                   });
                   _persistNotificationSettingsSoon();
-                  if (value) await _promptForFullScreenAccess();
+                  if (value) await _promptForCallAccess();
                 },
               ),
               const Divider(),
@@ -1088,26 +1098,39 @@ class _SettingsScreenState extends State<SettingsScreen>
   String _fajrCallSubtitle(AppLocalizations l10n) {
     if (!_fajrCall) return l10n.settingsFajrCallSubtitle;
     if (!_notificationsAllowed) return l10n.settingsFajrCallNeedsNotifications;
+    if (!_exactAlarmAllowed) return l10n.settingsFajrCallNeedsExactAlarm;
     if (!_fullScreenAllowed) return l10n.settingsFajrCallNeedsFullScreen;
     return l10n.settingsFajrCallSubtitle;
   }
 
-  /// Nudges the user towards the full-screen-notification page.
+  /// Nudges the user towards the system page for the first missing gate:
+  /// "Alarms & reminders" before full screen, since without exact alarms
+  /// nothing rings at all.
   ///
-  /// Unlike the notification permission there is no dialog for this one — it
-  /// is a system settings page — so the call stays armed and the subtitle
-  /// keeps saying what is missing until it is granted.
-  Future<void> _promptForFullScreenAccess() async {
-    if (await FajrCallService.canShowFullScreen()) return;
+  /// Unlike the notification permission there is no dialog for these — they
+  /// are system settings pages — so the call stays on and the subtitle keeps
+  /// saying what is missing until it is granted.
+  Future<void> _promptForCallAccess() async {
+    final exactAlarm = await FajrCallService.canScheduleExactAlarms();
+    final fullScreen = await FajrCallService.canShowFullScreen();
     if (!mounted) return;
+    setState(() {
+      _exactAlarmAllowed = exactAlarm;
+      _fullScreenAllowed = fullScreen;
+    });
+    if (exactAlarm && fullScreen) return;
 
     final l10n = AppLocalizations.of(context)!;
     context.showSnack(
-      l10n.settingsFajrCallNeedsFullScreen,
+      exactAlarm
+          ? l10n.settingsFajrCallNeedsFullScreen
+          : l10n.settingsFajrCallNeedsExactAlarm,
       kind: AppSnackKind.warning,
       action: SnackBarAction(
         label: l10n.locationOpenSettingsAction,
-        onPressed: FajrCallService.requestFullScreenAccess,
+        onPressed: exactAlarm
+            ? FajrCallService.requestFullScreenAccess
+            : FajrCallService.requestExactAlarmAccess,
       ),
     );
   }

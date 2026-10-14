@@ -185,6 +185,7 @@
   "settingsFajrCallSubtitle": "فجر کے وقت کال کی طرح بجے گا، تاکہ آپ سوتے نہ رہ جائیں",
   "settingsFajrCallNeedsNotifications": "نوٹیفیکیشنز بند ہیں، اس لیے کال نہیں بجے گی۔ استعمال کے لیے اجازت دیں۔",
   "settingsFajrCallNeedsFullScreen": "کال پوری اسکرین پر آنے کے لیے فل اسکرین نوٹیفیکیشنز کی اجازت دیں۔",
+  "settingsFajrCallNeedsExactAlarm": "فجر کے وقت کال بجنے کے لیے الارم اور یاد دہانیوں کی اجازت دیں۔",
   "settingsRemindMeBeforeFajr": "فجر سے پہلے یاد دہانی",
   "settingsCustomMinutes": "حسبِ ضرورت",
   "settingsCustomReminderTitle": "حسبِ ضرورت یاد دہانی",

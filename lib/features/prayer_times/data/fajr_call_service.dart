@@ -5,6 +5,7 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subh_warrior/core/crash/crash_reporting.dart';
 import 'package:subh_warrior/core/l10n/l10n_standalone.dart';
@@ -89,6 +90,18 @@ class FajrCallService {
 
     await prefs.setInt(_prefsNextFajrKey, at.millisecondsSinceEpoch);
 
+    // `alarmClock` is an exact alarm. Without the permission the plugin only
+    // logs an error and drops the alarm while still reporting success, so
+    // the call silently never rang on Android 12+. Check first and say so.
+    // The next Fajr is already stored above, so granting the permission and
+    // rescheduling (Settings does this on resume) arms it.
+    if (!await canScheduleExactAlarms()) {
+      debugPrint(
+        'FajrCallService: exact alarms not allowed — call for $at not scheduled',
+      );
+      return;
+    }
+
     // `exact` + `wakeup` because a prayer time is the whole point; `rescheduleOnReboot`
     // so a phone restarted overnight still rings.
     final scheduled = await AndroidAlarmManager.oneShotAt(
@@ -139,6 +152,32 @@ class FajrCallService {
     } catch (e) {
       debugPrint('FajrCallService: full-screen check failed: $e');
       return false;
+    }
+  }
+
+  /// Whether the OS will run the call's alarm at the exact Fajr minute.
+  ///
+  /// Android 12+ puts exact alarms (`setAlarmClock` included) behind
+  /// SCHEDULE_EXACT_ALARM, which Android 14 no longer grants at install; the
+  /// user allows it under "Alarms & reminders". Older versions always allow
+  /// it. If the check itself fails, assume allowed and let scheduling try.
+  static Future<bool> canScheduleExactAlarms() async {
+    if (!_isSupported) return false;
+    try {
+      return await Permission.scheduleExactAlarm.isGranted;
+    } catch (e) {
+      debugPrint('FajrCallService: exact-alarm check failed: $e');
+      return true;
+    }
+  }
+
+  /// Opens the system "Alarms & reminders" page for this app.
+  static Future<void> requestExactAlarmAccess() async {
+    if (!_isSupported) return;
+    try {
+      await Permission.scheduleExactAlarm.request();
+    } catch (e) {
+      debugPrint('FajrCallService: exact-alarm request failed: $e');
     }
   }
 

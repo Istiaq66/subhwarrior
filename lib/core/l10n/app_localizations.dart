@@ -1214,6 +1214,12 @@ abstract class AppLocalizations {
   /// **'Allow full screen notifications so the call can take over the screen.'**
   String get settingsFajrCallNeedsFullScreen;
 
+  /// No description provided for @settingsFajrCallNeedsExactAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow alarms & reminders so the call can ring at Fajr.'**
+  String get settingsFajrCallNeedsExactAlarm;
+
   /// No description provided for @settingsRemindMeBeforeFajr.
   ///
   /// In en, this message translates to:

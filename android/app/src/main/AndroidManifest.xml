@@ -7,6 +7,22 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" tools:node="remove"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" tools:node="remove"/>
+    <!-- The Fajr call is an alarm, not a phone call. Strip the plugin's
+         phone-call machinery: Play only allows FOREGROUND_SERVICE_PHONE_CALL
+         for real calls, and the plugin already skips Telecom registration
+         when MANAGE_OWN_CALLS is absent. The matching services are removed
+         below. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" tools:node="remove"/>
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" tools:node="remove"/>
+    <!-- The Fajr call's alarm uses setAlarmClock, an exact alarm. Android 12+
+         drops it without this (Android 14 no longer grants it at install;
+         the user allows it under "Alarms & reminders", and Settings asks).
+         tools:remove drops the maxSdkVersion="33" that background_fetch
+         (tsbackgroundfetch) puts on the same permission; merged, it would
+         stop the app requesting it at all on Android 14+. -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        tools:remove="android:maxSdkVersion"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <!-- Android 13+ requires runtime notification permission -->
@@ -54,6 +70,17 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
+
+        <!-- flutter_callkit_incoming's phone-call services (see the permission
+             note above). Without them, answering the Fajr call skips the
+             "ongoing call" foreground notification, which FajrCallService
+             ends immediately anyway, and Telecom is never used. -->
+        <service
+            android:name="com.hiennv.flutter_callkit_incoming.CallkitNotificationService"
+            tools:node="remove" />
+        <service
+            android:name="com.hiennv.flutter_callkit_incoming.CallkitConnectionService"
+            tools:node="remove" />
 
         <receiver android:name=".FajrWidgetProvider" android:exported="true">
             <intent-filter>

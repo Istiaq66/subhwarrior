@@ -722,6 +722,10 @@ class AppLocalizationsUr extends AppLocalizations {
       'کال پوری اسکرین پر آنے کے لیے فل اسکرین نوٹیفیکیشنز کی اجازت دیں۔';
 
   @override
+  String get settingsFajrCallNeedsExactAlarm =>
+      'فجر کے وقت کال بجنے کے لیے الارم اور یاد دہانیوں کی اجازت دیں۔';
+
+  @override
   String get settingsRemindMeBeforeFajr => 'فجر سے پہلے یاد دہانی';
 
   @override
