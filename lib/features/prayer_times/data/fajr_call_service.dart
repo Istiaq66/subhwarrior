@@ -1,47 +1,78 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_callkit_incoming/entities/entities.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:subh_warrior/core/crash/crash_reporting.dart';
+import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/l10n/l10n_standalone.dart';
+import 'package:timezone/timezone.dart' as tz;
 
-/// Rings the device like an incoming call at Fajr, instead of posting a
-/// notification the user can sleep through.
+/// Rings the device like an alarm at Fajr, instead of posting a notification
+/// the user can sleep through.
 ///
-/// Android only. iOS reaches CallKit exclusively through a PushKit VoIP push
-/// sent by a server — an app cannot raise its own call screen from a local
-/// timer — so every entry point here no-ops off Android rather than pretending
-/// to schedule something.
+/// The ring is a notification scheduled as an alarm clock: when it fires, the
+/// system posts it, plays [_ringtone] on the alarm stream until it is answered
+/// or [_ringDuration] passes, and raises the call screen through its
+/// full-screen intent. No Dart runs at Fajr. An earlier version woke a
+/// background isolate through android_alarm_manager_plus, which hands the
+/// alarm to JobScheduler; vivo (and other OEM builds) hold those jobs while
+/// the app is closed, so the call only rang once the user opened the app.
+///
+/// Android only. iOS reaches a call screen exclusively through a PushKit VoIP
+/// push sent by a server, so every entry point here no-ops off Android rather
+/// than pretending to schedule something.
 class FajrCallService {
   FajrCallService._();
 
   /// Who the call appears to be from. Deliberately not localized: it is a name.
   static const callerName = 'Namaz';
 
-  /// Fixed id for the alarm so rescheduling replaces rather than stacks.
-  static const _alarmId = 20250928;
+  /// Fixed id so rescheduling replaces rather than stacks.
+  static const notificationId = 20250928;
 
-  /// Where the next Fajr instant is parked for the background isolate, which
-  /// has no access to the app's providers.
-  static const _prefsNextFajrKey = 'fajr_call_next_epoch_ms';
+  /// Marks the call's notification. `MainActivity.kt` matches it as well, to
+  /// raise the call screen over the lock screen before Flutter has booted.
+  static const payload = 'fajr_call';
 
-  /// Whether the user still wants the call — the background isolate re-reads
-  /// this so a toggle in settings takes effect even while the app is dead.
-  static const _prefsEnabledKey = 'fajr_call_enabled';
+  static const acceptActionId = 'fajr_call_accept';
+  static const declineActionId = 'fajr_call_decline';
 
-  /// How long the call screen rings before it gives up and leaves a missed
-  /// call. Long enough to wake someone, short enough not to wake the street.
+  /// A channel's sound and audio usage are fixed when it is first created, so
+  /// changing either needs a new id.
+  static const _channelId = 'fajr_call_alarm';
+
+  /// `res/raw/bird_sound.wav`, kept from resource shrinking by `raw/keep.xml`.
+  static const _ringtone = 'bird_sound';
+
+  /// How long the call rings before it gives up. Long enough to wake someone,
+  /// short enough not to wake the street.
   static const _ringDuration = Duration(seconds: 45);
+
+  /// `Notification.FLAG_INSISTENT`: repeat the sound until the notification
+  /// is cancelled, instead of playing it once.
+  static const _flagInsistent = 4;
+
+  /// How often the open call screen checks the notification is still up, so
+  /// it closes when the ring times out or is dismissed from the shade.
+  static const _ringingPollInterval = Duration(seconds: 2);
+
+  static const _channel = MethodChannel('com.subhwarrior.app/fajr_call');
+
+  static final _ringing = ValueNotifier<bool>(false);
+  static Timer? _ringingWatch;
+
+  /// Whether the in-app call screen should be showing.
+  static ValueListenable<bool> get ringing => _ringing;
 
   /// `Platform.isAndroid` rather than [defaultTargetPlatform]: the latter
   /// reports Android under `flutter_test` on any host, which would send every
   /// widget test into a plugin channel that is not there.
   static bool get _isSupported => !kIsWeb && Platform.isAndroid;
+
+  static FlutterLocalNotificationsPlugin get _plugin =>
+      FlutterLocalNotificationsPlugin();
 
   /// The next time Fajr comes round, given today's [fajrTime].
   ///
@@ -55,14 +86,12 @@ class FajrCallService {
         : fajrTime.add(const Duration(days: 1));
   }
 
-  /// Prepares the alarm plugin. Safe to call more than once.
-  static Future<void> initialize() async {
-    if (!_isSupported) return;
-    await AndroidAlarmManager.initialize();
-  }
-
-  /// Schedules the call for [fajrTime], or cancels it when [enabled] is false
-  /// or no Fajr time is known yet.
+  /// Schedules the call for [fajrTime] and the same time every day after, or
+  /// cancels it when [enabled] is false or no Fajr time is known yet.
+  ///
+  /// The daily repeat is the plugin's, natively, so the call keeps ringing
+  /// while the app stays closed. It drifts by the minute or two Fajr moves
+  /// each day until the next app launch or background refresh reschedules it.
   ///
   /// A past [fajrTime] is skipped rather than fired immediately — the caller
   /// reschedules from tomorrow's time.
@@ -72,9 +101,6 @@ class FajrCallService {
     DateTime? now,
   }) async {
     if (!_isSupported) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_prefsEnabledKey, enabled);
 
     if (!enabled || fajrTime == null) {
       await cancel();
@@ -88,13 +114,8 @@ class FajrCallService {
       return;
     }
 
-    await prefs.setInt(_prefsNextFajrKey, at.millisecondsSinceEpoch);
-
-    // `alarmClock` is an exact alarm. Without the permission the plugin only
-    // logs an error and drops the alarm while still reporting success, so
-    // the call silently never rang on Android 12+. Check first and say so.
-    // The next Fajr is already stored above, so granting the permission and
-    // rescheduling (Settings does this on resume) arms it.
+    // `alarmClock` is an exact alarm, refused without the permission. Settings
+    // reschedules on resume once the user grants it.
     if (!await canScheduleExactAlarms()) {
       debugPrint(
         'FajrCallService: exact alarms not allowed — call for $at not scheduled',
@@ -102,40 +123,52 @@ class FajrCallService {
       return;
     }
 
-    // `exact` + `wakeup` because a prayer time is the whole point; `rescheduleOnReboot`
-    // so a phone restarted overnight still rings.
-    final scheduled = await AndroidAlarmManager.oneShotAt(
-      at,
-      _alarmId,
-      onFajrAlarm,
-      exact: true,
-      wakeup: true,
-      rescheduleOnReboot: true,
-      alarmClock: true,
+    final l10n = await loadStoredL10n();
+    await _plugin.zonedSchedule(
+      notificationId,
+      callerName,
+      l10n.notifFajrBody,
+      tz.TZDateTime.from(at, tz.local),
+      NotificationDetails(android: _details(l10n)),
+      // Alarm-clock alarms are exempt from Doze and from app standby, and
+      // fire at the exact minute.
+      androidScheduleMode: AndroidScheduleMode.alarmClock,
+      matchDateTimeComponents: DateTimeComponents.time,
+      payload: payload,
     );
-    debugPrint(
-      scheduled
-          ? 'FajrCallService: call scheduled for $at'
-          : 'FajrCallService: could not schedule the call for $at',
-    );
+    debugPrint('FajrCallService: call scheduled for $at, then daily');
   }
 
-  /// Books the next day's call from the background isolate.
-  ///
-  /// The stored instant is the one that just rang, so the next is a day later;
-  /// the app corrects it to the real Fajr time on its next launch, when actual
-  /// prayer times are available. Drifting by the minute-or-two Fajr moves in a
-  /// day beats not ringing at all.
-  static Future<void> rescheduleNextFromAlarm(SharedPreferences prefs) async {
-    if (!_isSupported) return;
-
-    final lastMs = prefs.getInt(_prefsNextFajrKey);
-    if (lastMs == null) return;
-
-    final next = nextOccurrence(
-      fajrTime: DateTime.fromMillisecondsSinceEpoch(lastMs),
+  static AndroidNotificationDetails _details(AppLocalizations l10n) {
+    return AndroidNotificationDetails(
+      _channelId,
+      l10n.fajrCallChannelName,
+      channelDescription: l10n.settingsFajrCallSubtitle,
+      importance: Importance.max,
+      priority: Priority.max,
+      category: AndroidNotificationCategory.alarm,
+      fullScreenIntent: true,
+      visibility: NotificationVisibility.public,
+      sound: const RawResourceAndroidNotificationSound(_ringtone),
+      // The alarm stream rings through silent mode, like the clock app does.
+      audioAttributesUsage: AudioAttributesUsage.alarm,
+      vibrationPattern: Int64List.fromList([0, 800, 600, 800]),
+      additionalFlags: Int32List.fromList([_flagInsistent]),
+      timeoutAfter: _ringDuration.inMilliseconds,
+      ongoing: true,
+      autoCancel: false,
+      color: const Color(0xFF0F5233),
+      actions: [
+        // Both only take down the posted notification, natively; the daily
+        // schedule stays.
+        AndroidNotificationAction(declineActionId, l10n.fajrCallDecline),
+        AndroidNotificationAction(
+          acceptActionId,
+          l10n.fajrCallAccept,
+          showsUserInterface: true,
+        ),
+      ],
     );
-    await schedule(enabled: true, fajrTime: next);
   }
 
   /// Whether the OS will let the call take over the screen.
@@ -143,12 +176,13 @@ class FajrCallService {
   /// Android 14 put full-screen intents behind a second gate: the manifest
   /// permission is granted, but `canUseFullScreenIntent` is false by default
   /// for anything the platform does not consider a calling or alarm app.
-  /// Without it the call posts a plain notification instead of the call
-  /// screen, with the generic notification sound rather than the ringtone.
+  /// Without it the call is a heads-up notification — it still rings, but
+  /// the call screen does not take over a locked phone.
   static Future<bool> canShowFullScreen() async {
     if (!_isSupported) return false;
     try {
-      return await FlutterCallkitIncoming.canUseFullScreenIntent();
+      return await _channel.invokeMethod<bool>('canUseFullScreenIntent') ??
+          false;
     } catch (e) {
       debugPrint('FajrCallService: full-screen check failed: $e');
       return false;
@@ -185,148 +219,112 @@ class FajrCallService {
   static Future<void> requestFullScreenAccess() async {
     if (!_isSupported) return;
     try {
-      await FlutterCallkitIncoming.requestFullIntentPermission();
+      await _plugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestFullScreenIntentPermission();
     } catch (e) {
       debugPrint('FajrCallService: full-screen request failed: $e');
     }
   }
 
-  /// Drops any pending call alarm.
+  /// Drops the scheduled call, and any ring in progress.
   static Future<void> cancel() async {
     if (!_isSupported) return;
-    await AndroidAlarmManager.cancel(_alarmId);
+    _stopWatching();
+    await _plugin.cancel(notificationId);
   }
 
-  /// Shows the incoming-call screen now.
+  /// Picks up a call that launched the app from cold: the full-screen intent
+  /// at Fajr, a tap on the notification, or its answer button.
   ///
-  /// The call screen is raised from a background isolate, so its labels come
-  /// from the stored locale rather than a `BuildContext`. [callerName] is the
-  /// one string left untranslated — it is a name.
-  static Future<void> ring({String? handle}) async {
-    if (!_isSupported) return;
-
-    final l10n = await loadStoredL10n();
-    final params = CallKitParams(
-      id: _alarmId.toString(),
-      nameCaller: callerName,
-      appName: 'Subh Warrior',
-      handle: handle ?? callerName,
-      type: 0,
-      duration: _ringDuration.inMilliseconds,
-      missedCallNotification: NotificationParams(
-        showNotification: true,
-        isShowCallback: false,
-        subtitle: l10n.fajrCallMissed,
-      ),
-      android: AndroidParams(
-        isCustomNotification: true,
-        isShowLogo: false,
-        isShowFullLockedScreen: true,
-        isImportant: true,
-        // Deliberately false. `isFullScreen: true` makes the plugin launch its
-        // call activity directly (CallkitIncomingBroadcastReceiver), a path
-        // that never starts the ringtone — the activity only keeps an already
-        // playing one alive — and that Android blocks outright when the app
-        // process is dead. False takes the notification path instead, which
-        // plays [ringtonePath] and carries a full-screen intent, so the call
-        // still owns the lock screen wherever the OS permits it.
-        isFullScreen: false,
-        textAccept: l10n.fajrCallAccept,
-        textDecline: l10n.fajrCallDecline,
-        ringtonePath: 'bird_sound',
-        backgroundColor: '#0F5233',
-        actionColor: '#339C6B',
-        textColor: '#FFFFFF',
-        incomingCallNotificationChannelName: l10n.fajrCallChannelName,
-        missedCallNotificationChannelName: l10n.fajrCallMissedChannelName,
-        isShowCallID: false,
-      ),
-    );
-
-    await FlutterCallkitIncoming.showCallkitIncoming(params);
-  }
-
-  /// Ends the ringing call, if one is up.
-  static Future<void> endCall() async {
+  /// Run before the first frame, so the call screen is not held back behind
+  /// Firebase and sign-in at boot.
+  static Future<void> restoreFromLaunch() async {
     if (!_isSupported) return;
     try {
-      await FlutterCallkitIncoming.endAllCalls();
+      final details = await _plugin.getNotificationAppLaunchDetails();
+      final response = details?.notificationResponse;
+      if ((details?.didNotificationLaunchApp ?? false) && response != null) {
+        handleResponse(response);
+      }
+    } catch (e) {
+      debugPrint('FajrCallService: launch check failed: $e');
+    }
+  }
+
+  /// Routes a response to the call's notification while the app is running.
+  /// Returns false for any other notification.
+  static bool handleResponse(NotificationResponse response) {
+    if (!_isSupported || response.payload != payload) return false;
+    switch (response.actionId) {
+      case acceptActionId:
+        unawaited(answer());
+      case declineActionId:
+        unawaited(dismiss());
+      default:
+        // The full-screen intent or a tap on the notification body.
+        unawaited(_showWhileRinging());
+    }
+    return true;
+  }
+
+  /// Stops the ring and leaves the user in the app, asking them to unlock.
+  static Future<void> answer() => _endCall(unlock: true);
+
+  /// Stops the ring and sends the app to the background.
+  static Future<void> dismiss() => _endCall(unlock: false);
+
+  static Future<void> _endCall({required bool unlock}) async {
+    _stopWatching();
+    try {
+      await _channel.invokeMethod<void>('endCall', {
+        'notificationId': notificationId,
+        'unlock': unlock,
+      });
     } catch (e) {
       debugPrint('FajrCallService: could not end the call: $e');
     }
   }
 
-  /// Clears a call left hanging from a previous launch.
-  ///
-  /// Answering from a dead app starts the process fresh, and [listenForAnswers]
-  /// is only registered once boot reaches its first frame — too late to catch
-  /// that accept. The plugin meanwhile promotes the call to "ongoing", with a
-  /// foreground service and a Hang Up notification that nothing ever
-  /// dismisses. The app being open means the alarm did its job, so any call
-  /// still standing at startup is stale by definition.
-  static Future<void> clearLingeringCalls() => endCall();
-
-  /// Clears the call screen once the user has answered or dismissed it.
-  ///
-  /// Accepting already brings the app forward, which is the whole point of the
-  /// call — there is no audio session to keep alive, so the call is ended
-  /// either way and the user lands on whatever screen boot routes them to.
-  static StreamSubscription<CallEvent?>? listenForAnswers() {
-    if (!_isSupported) return null;
-
-    return FlutterCallkitIncoming.onEvent.listen((event) async {
-      switch (event) {
-        case CallEventActionCallAccept():
-        case CallEventActionCallDecline():
-        case CallEventActionCallTimeout():
-        case CallEventActionCallEnded():
-          await endCall();
-        default:
-          break;
-      }
+  /// Shows the call screen for as long as the ring lasts. A launch that
+  /// arrives after the ring timed out drops the lock-screen override instead,
+  /// so the app does not sit over the keyguard.
+  static Future<void> _showWhileRinging() async {
+    if (!await _isRinging()) {
+      await _releaseLockScreen();
+      return;
+    }
+    _ringing.value = true;
+    _ringingWatch?.cancel();
+    _ringingWatch = Timer.periodic(_ringingPollInterval, (_) async {
+      if (await _isRinging()) return;
+      _stopWatching();
+      await _releaseLockScreen();
     });
   }
-}
 
-/// Fires in a background isolate at Fajr — no widget tree, no providers, so
-/// everything it needs was parked in `SharedPreferences` when the alarm was
-/// set.
-///
-/// Must stay a top-level function annotated `vm:entry-point`: the Android side
-/// looks it up by handle after spinning up a fresh Dart VM.
-@pragma('vm:entry-point')
-Future<void> onFajrAlarm() async {
-  debugPrint('FajrCallService: alarm fired');
-
-  // First, so everything below — including a failed ring — is reportable.
-  await CrashReporting.initInBackground();
-
-  // The isolate has its own copy of the preference cache.
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.reload();
-
-  if (!(prefs.getBool(FajrCallService._prefsEnabledKey) ?? false)) {
-    debugPrint('FajrCallService: call disabled since it was scheduled.');
-    return;
+  static void _stopWatching() {
+    _ringingWatch?.cancel();
+    _ringingWatch = null;
+    _ringing.value = false;
   }
 
-  try {
-    await FajrCallService.ring();
-    debugPrint('FajrCallService: call screen requested');
-  } catch (e, st) {
-    // A failure here is invisible otherwise — the isolate has no UI.
-    debugPrint('FajrCallService: could not show the call: $e');
-    CrashReporting.recordNonFatal(e, st, 'Fajr call failed to ring');
+  static Future<bool> _isRinging() async {
+    try {
+      final active = await _plugin.getActiveNotifications();
+      return active.any((n) => n.id == notificationId);
+    } catch (e) {
+      debugPrint('FajrCallService: active notification check failed: $e');
+      return false;
+    }
   }
 
-  // `oneShotAt` fires once. Nothing else re-arms it while the app stays
-  // closed, so tomorrow's call has to be booked from here — otherwise the
-  // alarm rings exactly once and then only ever comes back if the user opens
-  // the app.
-  try {
-    await FajrCallService.rescheduleNextFromAlarm(prefs);
-  } catch (e, st) {
-    debugPrint('FajrCallService: could not book the next call: $e');
-    CrashReporting.recordNonFatal(e, st, 'Fajr call reschedule failed');
+  static Future<void> _releaseLockScreen() async {
+    try {
+      await _channel.invokeMethod<void>('releaseLockScreen');
+    } catch (e) {
+      debugPrint('FajrCallService: could not release the lock screen: $e');
+    }
   }
 }

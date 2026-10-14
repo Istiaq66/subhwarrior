@@ -1282,13 +1282,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fajrCallDecline => 'Dismiss';
 
   @override
-  String get fajrCallMissed => 'Missed Fajr call';
-
-  @override
   String get fajrCallChannelName => 'Fajr call';
-
-  @override
-  String get fajrCallMissedChannelName => 'Missed Fajr call';
 
   @override
   String get notifFajrBody => 'Time to wake up for Fajr prayer!';

@@ -1,3 +1,4 @@
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:subh_warrior/features/prayer_times/data/fajr_call_service.dart';
 
@@ -43,18 +44,6 @@ void main() {
     });
   });
 
-  test('the next occurrence is a day on from the one that just rang', () {
-    // What the background isolate books after ringing: one-shot alarms do not
-    // repeat, so without this the call rings once and never again unless the
-    // user opens the app.
-    final rang = DateTime(2026, 9, 28, 5, 50);
-
-    expect(
-      FajrCallService.nextOccurrence(fajrTime: rang, now: rang),
-      DateTime(2026, 9, 29, 5, 50),
-    );
-  });
-
   test('the caller is named Namaz', () {
     expect(FajrCallService.callerName, 'Namaz');
   });
@@ -62,7 +51,7 @@ void main() {
   group('off Android', () {
     // The host test VM is not Android, so every entry point should be inert
     // rather than reaching for a plugin channel that is not registered.
-    test('scheduling, cancelling and ringing are no-ops', () async {
+    test('scheduling, cancelling and answering are no-ops', () async {
       await expectLater(
         FajrCallService.schedule(
           enabled: true,
@@ -71,9 +60,19 @@ void main() {
         completes,
       );
       await expectLater(FajrCallService.cancel(), completes);
-      await expectLater(FajrCallService.ring(), completes);
-      await expectLater(FajrCallService.endCall(), completes);
-      expect(FajrCallService.listenForAnswers(), isNull);
+      await expectLater(FajrCallService.restoreFromLaunch(), completes);
+      expect(await FajrCallService.canShowFullScreen(), isFalse);
+      expect(FajrCallService.ringing.value, isFalse);
+    });
+
+    test('ignores notification responses', () {
+      const response = NotificationResponse(
+        notificationResponseType: NotificationResponseType.selectedNotification,
+        payload: FajrCallService.payload,
+      );
+
+      expect(FajrCallService.handleResponse(response), isFalse);
+      expect(FajrCallService.ringing.value, isFalse);
     });
   });
 }

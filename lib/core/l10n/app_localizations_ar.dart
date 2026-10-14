@@ -1273,13 +1273,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fajrCallDecline => 'تجاهل';
 
   @override
-  String get fajrCallMissed => 'مكالمة فجر فائتة';
-
-  @override
   String get fajrCallChannelName => 'مكالمة الفجر';
-
-  @override
-  String get fajrCallMissedChannelName => 'مكالمات الفجر الفائتة';
 
   @override
   String get notifFajrBody => 'حان وقت الاستيقاظ لصلاة الفجر!';

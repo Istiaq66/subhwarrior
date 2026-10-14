@@ -10,15 +10,57 @@ const int notificationPermissionLaunchInterval = 10;
 const String keyLaunchCountForNotificationPermission =
     'launch_count_notification_permission';
 
-Future<void> ensureNotificationPermission(BuildContext context) async {
-  final pref = await SharedPreferences.getInstance();
-  final int launchCount =
-      pref.getInt(keyLaunchCountForNotificationPermission) ?? 0;
+/// After "Not now", how long before Home asks again for features the user
+/// has switched on.
+const Duration notificationPermissionSnooze = Duration(days: 1);
+const String keyNotificationPermissionSnoozedUntil =
+    'notification_permission_snoozed_until_ms';
 
-  if (launchCount <= notificationPermissionLaunchLimit &&
-      launchCount % notificationPermissionLaunchInterval == 1) {
-    if (!context.mounted) return;
-    await getNotificationPermission(context);
+/// Whether Home should ask for the notification permission on this launch.
+///
+/// [featuresNeedIt] — reminders or the Fajr call are on — asks on every launch
+/// until granted, short of a snooze. Those switches sync from the account, so
+/// a fresh install can arrive with them on while the OS permission starts out
+/// denied, and the launch cadence alone left it that way silently. Otherwise
+/// the occasional nudge on launches 1, 11, 21 and 31 applies.
+bool shouldPromptForNotifications({
+  required bool featuresNeedIt,
+  required int launchCount,
+  required DateTime now,
+  DateTime? snoozedUntil,
+}) {
+  if (featuresNeedIt) {
+    return snoozedUntil == null || !now.isBefore(snoozedUntil);
+  }
+  return launchCount <= notificationPermissionLaunchLimit &&
+      launchCount % notificationPermissionLaunchInterval == 1;
+}
+
+Future<void> ensureNotificationPermission(
+  BuildContext context, {
+  bool featuresNeedIt = false,
+}) async {
+  if (await hasNotificationPermission()) return;
+
+  final pref = await SharedPreferences.getInstance();
+  final snoozedMs = pref.getInt(keyNotificationPermissionSnoozedUntil);
+  final now = DateTime.now();
+  final ask = shouldPromptForNotifications(
+    featuresNeedIt: featuresNeedIt,
+    launchCount: pref.getInt(keyLaunchCountForNotificationPermission) ?? 0,
+    now: now,
+    snoozedUntil: snoozedMs == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(snoozedMs),
+  );
+  if (!ask || !context.mounted) return;
+
+  final granted = await getNotificationPermission(context);
+  if (!granted && featuresNeedIt) {
+    await pref.setInt(
+      keyNotificationPermissionSnoozedUntil,
+      now.add(notificationPermissionSnooze).millisecondsSinceEpoch,
+    );
   }
 }
 
@@ -65,6 +107,12 @@ Future<bool> getNotificationPermission(BuildContext context) async {
 
     if (isAllowed ?? false) {
       final PermissionStatus status = await Permission.notification.request();
+      // After two refusals Android stops showing its dialog and `request`
+      // returns at once; the app's settings page is the only way left.
+      if (status.isPermanentlyDenied) {
+        await openNotificationSettings();
+        return false;
+      }
       return status == PermissionStatus.granted;
     }
   }

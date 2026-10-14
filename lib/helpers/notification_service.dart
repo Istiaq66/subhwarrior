@@ -44,8 +44,11 @@ class NotificationService {
     );
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (response) =>
-          handleNotificationTap(response.payload),
+      onDidReceiveNotificationResponse: (response) {
+        // A cold launch by the call is picked up earlier, in main().
+        FajrCallService.handleResponse(response);
+        handleNotificationTap(response.payload);
+      },
     );
 
     final launchDetails =
@@ -80,11 +83,15 @@ class NotificationService {
   /// isolate. Both fire once and nothing else books the next day, so without
   /// this they only come back when the user next opens the app.
   ///
+  /// The Fajr call repeats daily on its own; rescheduling it here moves it
+  /// onto the real Fajr minute, which shifts a little each day.
+  ///
   /// Honours the same switches as [updateNotifications] but never cancels: a
   /// settings change already cancelled what it needed to.
   static Future<void> rearmFromBackground({
     required bool notificationsEnabled,
     required bool fajrReminder,
+    required bool fajrCall,
     required bool loggingReminder,
     required int fajrReminderMinutes,
     required DateTime? todayFajr,
@@ -92,7 +99,9 @@ class NotificationService {
     required bool isChallengeActive,
   }) async {
     if (!notificationsEnabled) return;
-    if (!fajrReminder && !(loggingReminder && isChallengeActive)) return;
+    if (!fajrReminder && !fajrCall && !(loggingReminder && isChallengeActive)) {
+      return;
+    }
 
     await _ensureHeadlessReady();
 
@@ -112,6 +121,20 @@ class NotificationService {
 
     if (loggingReminder && isChallengeActive) {
       await scheduleLoggingReminder();
+    }
+
+    if (fajrCall && todayFajr != null) {
+      final nextFajr = todayFajr.isAfter(DateTime.now())
+          ? todayFajr
+          : (tomorrowFajr ??
+              FajrCallService.nextOccurrence(fajrTime: todayFajr));
+      // Last, so a refused exact alarm cannot cost the reminders above.
+      try {
+        await FajrCallService.schedule(enabled: true, fajrTime: nextFajr);
+      } catch (e, st) {
+        debugPrint('❌ Error re-arming the Fajr call: $e');
+        CrashReporting.recordNonFatal(e, st, 'Fajr call re-arm failed');
+      }
     }
   }
 
@@ -343,12 +366,17 @@ class NotificationService {
     // call rings at Fajr itself, for someone who would sleep through a
     // notification. Opt-in on its own switch. Android only — see
     // [FajrCallService].
-    await FajrCallService.schedule(
-      enabled: fajrCall,
-      fajrTime: todayFajrTime == null
-          ? null
-          : FajrCallService.nextOccurrence(fajrTime: todayFajrTime),
-    );
+    try {
+      await FajrCallService.schedule(
+        enabled: fajrCall,
+        fajrTime: todayFajrTime == null
+            ? null
+            : FajrCallService.nextOccurrence(fajrTime: todayFajrTime),
+      );
+    } catch (e, st) {
+      debugPrint('❌ Error scheduling the Fajr call: $e');
+      CrashReporting.recordNonFatal(e, st, 'Fajr call scheduling failed');
+    }
 
     // Handle logging reminder
     if (loggingReminder && isChallengeActive) {

@@ -2132,23 +2132,11 @@ abstract class AppLocalizations {
   /// **'Dismiss'**
   String get fajrCallDecline;
 
-  /// No description provided for @fajrCallMissed.
-  ///
-  /// In en, this message translates to:
-  /// **'Missed Fajr call'**
-  String get fajrCallMissed;
-
   /// No description provided for @fajrCallChannelName.
   ///
   /// In en, this message translates to:
   /// **'Fajr call'**
   String get fajrCallChannelName;
-
-  /// No description provided for @fajrCallMissedChannelName.
-  ///
-  /// In en, this message translates to:
-  /// **'Missed Fajr call'**
-  String get fajrCallMissedChannelName;
 
   /// Body of the scheduled Fajr reminder notification
   ///

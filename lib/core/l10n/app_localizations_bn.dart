@@ -1283,13 +1283,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get fajrCallDecline => 'বাতিল';
 
   @override
-  String get fajrCallMissed => 'ফজরের কল মিস হয়েছে';
-
-  @override
   String get fajrCallChannelName => 'ফজরের কল';
-
-  @override
-  String get fajrCallMissedChannelName => 'মিস হওয়া ফজরের কল';
 
   @override
   String get notifFajrBody => 'ফজরের নামাযের জন্য জেগে ওঠার সময় হয়েছে!';

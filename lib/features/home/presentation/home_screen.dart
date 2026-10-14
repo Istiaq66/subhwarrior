@@ -138,9 +138,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> _checkNotificationPermission() async {
     await incrementLaunchCount();
-    if (mounted) {
-      await ensureNotificationPermission(context);
-    }
+    if (!mounted) return;
+    final challenge = context.read<ChallengeProvider>();
+    await ensureNotificationPermission(
+      context,
+      featuresNeedIt: challenge.notificationsEnabled &&
+          (challenge.fajrReminder ||
+              challenge.fajrCall ||
+              (challenge.loggingReminder && challenge.isChallengeActive)),
+    );
   }
 
   Future<void> _startChallenge(ChallengeProvider provider) async {

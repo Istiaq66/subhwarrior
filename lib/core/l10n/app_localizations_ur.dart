@@ -1277,13 +1277,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get fajrCallDecline => 'نظرانداز کریں';
 
   @override
-  String get fajrCallMissed => 'فجر کی کال مس ہو گئی';
-
-  @override
   String get fajrCallChannelName => 'فجر کی کال';
-
-  @override
-  String get fajrCallMissedChannelName => 'مس شدہ فجر کال';
 
   @override
   String get notifFajrBody => 'فجر کی نماز کے لیے جاگنے کا وقت ہو گیا!';

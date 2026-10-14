@@ -102,6 +102,7 @@ class FajrWidgetService {
         await NotificationService.rearmFromBackground(
           notificationsEnabled: challengeData.notificationsEnabled,
           fajrReminder: challengeData.fajrReminder,
+          fajrCall: challengeData.fajrCall,
           loggingReminder: challengeData.loggingReminder,
           fajrReminderMinutes: challengeData.fajrReminderMinutes,
           todayFajr: todayFajr,

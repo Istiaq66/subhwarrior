@@ -1,19 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.subhwarrior.app">
-    <!-- Pulled in transitively by flutter_callkit_incoming; the Fajr call is
-         audio-less UI only, so strip them (Play flags unused camera/mic). -->
-    <uses-permission android:name="android.permission.CAMERA" tools:node="remove"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" tools:node="remove"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" tools:node="remove"/>
-    <!-- The Fajr call is an alarm, not a phone call. Strip the plugin's
-         phone-call machinery: Play only allows FOREGROUND_SERVICE_PHONE_CALL
-         for real calls, and the plugin already skips Telecom registration
-         when MANAGE_OWN_CALLS is absent. The matching services are removed
-         below. -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" tools:node="remove"/>
-    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" tools:node="remove"/>
     <!-- The Fajr call's alarm uses setAlarmClock, an exact alarm. Android 12+
          drops it without this (Android 14 no longer grants it at install;
          the user allows it under "Alarms & reminders", and Settings asks).
@@ -28,9 +15,9 @@
     <!-- Android 13+ requires runtime notification permission -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <!-- android_alarm_manager_plus wakes the device for the Fajr call -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <!-- flutter_callkit_incoming raises the call screen over the lock screen -->
+    <!-- The Fajr call's notification raises the call screen over the lock
+         screen (MainActivity shows itself over the keyguard for it). -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
 
     <application
@@ -71,17 +58,6 @@
             </intent-filter>
         </receiver>
 
-        <!-- flutter_callkit_incoming's phone-call services (see the permission
-             note above). Without them, answering the Fajr call skips the
-             "ongoing call" foreground notification, which FajrCallService
-             ends immediately anyway, and Telecom is never used. -->
-        <service
-            android:name="com.hiennv.flutter_callkit_incoming.CallkitNotificationService"
-            tools:node="remove" />
-        <service
-            android:name="com.hiennv.flutter_callkit_incoming.CallkitConnectionService"
-            tools:node="remove" />
-
         <receiver android:name=".FajrWidgetProvider" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -89,25 +65,6 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/fajr_widget_info" />
-        </receiver>
-
-        <!-- Exact alarm plumbing for the Fajr call: the service runs the
-             background isolate, the boot receiver restores alarms after a
-             reboot (enabled at runtime by the plugin). -->
-        <service
-            android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="false"/>
-        <receiver
-            android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmBroadcastReceiver"
-            android:exported="false"/>
-        <receiver
-            android:name="dev.fluttercommunity.plus.androidalarmmanager.RebootBroadcastReceiver"
-            android:enabled="false"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
         </receiver>
 
         <meta-data

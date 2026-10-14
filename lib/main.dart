@@ -23,6 +23,7 @@ import 'package:subh_warrior/features/challenge/presentation/challenge_controlle
 import 'package:subh_warrior/features/home/presentation/home_screen.dart';
 import 'package:subh_warrior/features/prayer_times/data/fajr_call_service.dart';
 import 'package:subh_warrior/features/prayer_times/data/fajr_widget_service.dart';
+import 'package:subh_warrior/features/prayer_times/presentation/fajr_call_overlay.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
 import 'package:subh_warrior/helpers/notification_service.dart';
 import 'package:subh_warrior/providers/locale_provider.dart';
@@ -62,6 +63,11 @@ void main() async {
   // instead — see [_AppShell].
   final prefs = await SharedPreferences.getInstance();
   StartupTrace.mark(StartupMarks.prefsLoaded);
+
+  // A launch by the Fajr call's full-screen intent has to show the call
+  // screen now, not after Firebase and sign-in have finished behind the
+  // splash. Not awaited: it only flips the overlay on.
+  unawaited(FajrCallService.restoreFromLaunch());
 
   // The first entry lands once the splash has actually been rasterized, so
   // this is the moment the user stops looking at the bare launch window.
@@ -120,14 +126,6 @@ Future<_Services> _bootstrap(
   SchedulerBinding.instance.addPostFrameCallback((_) {
     NotificationService().initBackground();
     unawaited(_configureFajrWidgetBackgroundFetch());
-    // The Fajr call: alarm plumbing plus the listener that clears the call
-    // screen once it has been answered or dismissed.
-    unawaited(FajrCallService.initialize());
-    FajrCallService.listenForAnswers();
-    // Ends a call answered while the app was dead: the listener above misses
-    // that event, and the plugin's ongoing-call notification would otherwise
-    // sit in the shade until the next reboot.
-    unawaited(FajrCallService.clearLingeringCalls());
   });
 
   await _refreshPrayerTimesWithinBudget(prefs, uid, prayerProvider);
@@ -327,7 +325,7 @@ class _AppShell extends StatelessWidget {
         // NumberFormat calls (prayer times, dates) use the app locale's
         // native digits and month names.
         Intl.defaultLocale = Localizations.localeOf(context).toString();
-        return child!;
+        return FajrCallOverlay(child: child!);
       },
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),

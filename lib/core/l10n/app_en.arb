@@ -717,9 +717,7 @@
   "notifFajrTitle": "🕌 Fajr in {minutes} minutes",
   "fajrCallAccept": "Wake up",
   "fajrCallDecline": "Dismiss",
-  "fajrCallMissed": "Missed Fajr call",
   "fajrCallChannelName": "Fajr call",
-  "fajrCallMissedChannelName": "Missed Fajr call",
   "@notifFajrTitle": {
     "description": "Title of the scheduled Fajr reminder notification",
     "placeholders": {
