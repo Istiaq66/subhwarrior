@@ -82,7 +82,7 @@
     }
   },
   "todayStatusTitle": "Today's Status",
-  "todayStatusChipQualifying": "Qualifying ✓",
+  "todayStatusChipQualifying": "Qualifying",
   "@todayStatusChipQualifying": {
     "description": "Status chip when today's log meets the qualifying criteria"
   },
@@ -681,7 +681,7 @@
   "@leaderboardYouBadge": {
     "description": "Badge on the leaderboard row belonging to the current user"
   },
-  "leaderboardDaysCount": "{days} days",
+  "leaderboardDaysCount": "{days, plural, =1{{days} day} other{{days} days}}",
   "@leaderboardDaysCount": {
     "description": "Qualifying days count on a leaderboard row",
     "placeholders": {
@@ -761,7 +761,15 @@
     "shareCardEyebrow": "Morning routine",
 "shareCardTitle": "Subh Warrior",
   "shareCardStreakLabel": "day streak",
-  "shareCardQualifyingLabel": "qualifying days",
+  "shareCardQualifyingLabel": "{count, plural, =1{qualifying day} other{qualifying days}}",
+  "@shareCardQualifyingLabel": {
+    "description": "Label after the qualifying-day count on the share card; the number itself is shown separately",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "shareCardWeekLabel": "Week {week} of 4",
   "@shareCardWeekLabel": {
     "description": "Challenge week shown on the shareable streak card",

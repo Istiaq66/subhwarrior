@@ -165,7 +165,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get todayStatusTitle => 'حالة اليوم';
 
   @override
-  String get todayStatusChipQualifying => 'يوم مؤهَّل ✓';
+  String get todayStatusChipQualifying => 'يوم مؤهَّل';
 
   @override
   String get todayStatusChipLogged => 'مسجَّل';
@@ -1195,7 +1195,16 @@ class AppLocalizationsAr extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String daysString = daysNumberFormat.format(days);
 
-    return '$daysString يومًا';
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$daysString يوم',
+      many: '$daysString يومًا',
+      few: '$daysString أيام',
+      two: 'يومان',
+      one: 'يوم واحد',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1305,7 +1314,17 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shareCardStreakLabel => 'يومًا متتاليًا';
 
   @override
-  String get shareCardQualifyingLabel => 'أيام مؤهّلة';
+  String shareCardQualifyingLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'يومًا مؤهّلًا',
+      few: 'أيام مؤهّلة',
+      two: 'يومان مؤهّلان',
+      one: 'يوم مؤهّل',
+    );
+    return '$_temp0';
+  }
 
   @override
   String shareCardWeekLabel(int week) {

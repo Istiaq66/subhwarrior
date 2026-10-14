@@ -40,7 +40,7 @@
   "challengeCompleteShareButton": "আমার ধারা শেয়ার করুন",
   "weeklyProgressWeekAbbrev": "স{week}",
   "todayStatusTitle": "আজকের অবস্থা",
-  "todayStatusChipQualifying": "যোগ্য ✓",
+  "todayStatusChipQualifying": "যোগ্য",
   "todayStatusChipLogged": "লগ করা হয়েছে",
   "todayStatusChipPending": "বাকি আছে",
   "todayStatusChipTimeUp": "সময় শেষ",

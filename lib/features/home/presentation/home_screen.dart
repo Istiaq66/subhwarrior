@@ -7,6 +7,7 @@ import 'package:subh_warrior/core/analytics/screen_view.dart';
 import 'package:subh_warrior/core/l10n/app_localizations.dart';
 import 'package:subh_warrior/core/theme/app_spacing.dart';
 import 'package:subh_warrior/features/challenge/domain/challenge_stats.dart';
+import 'package:subh_warrior/features/challenge/domain/log_window.dart';
 import 'package:subh_warrior/features/challenge/presentation/challenge_controller.dart';
 import 'package:subh_warrior/features/leaderboard/presentation/leaderboard_screen.dart';
 import 'package:subh_warrior/features/prayer_times/presentation/prayer_times_controller.dart';
@@ -41,18 +42,40 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     AnalyticsScreens.leaderboard,
   ];
 
+  /// Rebuilds the dashboard when the logging window opens or closes.
+  Timer? _logWindowTimer;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     logScreenView(AnalyticsScreens.home);
+    _scheduleLogWindowRefresh();
     _init();
   }
 
   @override
   void dispose() {
+    _logWindowTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  /// `canLogToday` is read during build, so without this the "Log Today"
+  /// button stayed up past the cutoff, and a user who left the app open
+  /// overnight came back at Fajr to "Logging window closed" — and could not
+  /// log at all until something else happened to rebuild Home.
+  void _scheduleLogWindowRefresh() {
+    _logWindowTimer?.cancel();
+    final now = DateTime.now();
+    // A second past the boundary, so the rebuild never lands just before it.
+    final wait =
+        nextLogWindowChange(now).difference(now) + const Duration(seconds: 1);
+    _logWindowTimer = Timer(wait, () {
+      if (!mounted) return;
+      setState(() {});
+      _scheduleLogWindowRefresh();
+    });
   }
 
   /// Refetches when the app comes back and the times on screen belong to a
@@ -61,9 +84,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   /// Midnight passing with the app open — or a device clock change — left
   /// yesterday's times in memory, where the getters re-dated them onto today
   /// and the countdown re-armed against a Fajr that had already happened.
+  ///
+  /// Also re-evaluates the logging window: a timer can fire late after the
+  /// device slept, and a manual clock change moves the boundary entirely.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) return;
+    setState(() {});
+    _scheduleLogWindowRefresh();
     if (!context.read<PrayerTimeProvider>().hasStaleTimes) return;
     unawaited(_loadPrayerTimes());
   }

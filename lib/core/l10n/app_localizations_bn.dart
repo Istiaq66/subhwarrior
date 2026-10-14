@@ -167,7 +167,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get todayStatusTitle => 'আজকের অবস্থা';
 
   @override
-  String get todayStatusChipQualifying => 'যোগ্য ✓';
+  String get todayStatusChipQualifying => 'যোগ্য';
 
   @override
   String get todayStatusChipLogged => 'লগ করা হয়েছে';
@@ -1325,7 +1325,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get shareCardStreakLabel => 'দিনের স্ট্রিক';
 
   @override
-  String get shareCardQualifyingLabel => 'যোগ্য দিন';
+  String shareCardQualifyingLabel(int count) {
+    return 'যোগ্য দিন';
+  }
 
   @override
   String shareCardWeekLabel(int week) {

@@ -166,7 +166,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get todayStatusTitle => 'Today\'s Status';
 
   @override
-  String get todayStatusChipQualifying => 'Qualifying ✓';
+  String get todayStatusChipQualifying => 'Qualifying';
 
   @override
   String get todayStatusChipLogged => 'Logged';
@@ -1205,7 +1205,13 @@ class AppLocalizationsEn extends AppLocalizations {
         intl.NumberFormat.decimalPattern(localeName);
     final String daysString = daysNumberFormat.format(days);
 
-    return '$daysString days';
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$daysString days',
+      one: '$daysString day',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1319,7 +1325,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareCardStreakLabel => 'day streak';
 
   @override
-  String get shareCardQualifyingLabel => 'qualifying days';
+  String shareCardQualifyingLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'qualifying days',
+      one: 'qualifying day',
+    );
+    return '$_temp0';
+  }
 
   @override
   String shareCardWeekLabel(int week) {

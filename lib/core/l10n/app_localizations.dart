@@ -346,7 +346,7 @@ abstract class AppLocalizations {
   /// Status chip when today's log meets the qualifying criteria
   ///
   /// In en, this message translates to:
-  /// **'Qualifying ✓'**
+  /// **'Qualifying'**
   String get todayStatusChipQualifying;
 
   /// No description provided for @todayStatusChipLogged.
@@ -2027,7 +2027,7 @@ abstract class AppLocalizations {
   /// Qualifying days count on a leaderboard row
   ///
   /// In en, this message translates to:
-  /// **'{days} days'**
+  /// **'{days, plural, =1{{days} day} other{{days} days}}'**
   String leaderboardDaysCount(int days);
 
   /// Current streak count on a leaderboard row
@@ -2216,11 +2216,11 @@ abstract class AppLocalizations {
   /// **'day streak'**
   String get shareCardStreakLabel;
 
-  /// No description provided for @shareCardQualifyingLabel.
+  /// Label after the qualifying-day count on the share card; the number itself is shown separately
   ///
   /// In en, this message translates to:
-  /// **'qualifying days'**
-  String get shareCardQualifyingLabel;
+  /// **'{count, plural, =1{qualifying day} other{qualifying days}}'**
+  String shareCardQualifyingLabel(int count);
 
   /// Challenge week shown on the shareable streak card
   ///

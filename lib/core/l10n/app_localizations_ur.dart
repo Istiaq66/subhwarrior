@@ -166,7 +166,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get todayStatusTitle => 'آج کی صورتحال';
 
   @override
-  String get todayStatusChipQualifying => 'کوالیفائنگ ✓';
+  String get todayStatusChipQualifying => 'کوالیفائنگ';
 
   @override
   String get todayStatusChipLogged => 'لاگ ہو گیا';
@@ -1319,7 +1319,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get shareCardStreakLabel => 'دن کی اسٹریک';
 
   @override
-  String get shareCardQualifyingLabel => 'اہل دن';
+  String shareCardQualifyingLabel(int count) {
+    return 'اہل دن';
+  }
 
   @override
   String shareCardWeekLabel(int week) {

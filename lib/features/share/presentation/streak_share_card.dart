@@ -152,7 +152,7 @@ class StreakShareCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
-                          l10n.shareCardQualifyingLabel,
+                          l10n.shareCardQualifyingLabel(totalQualifyingDays),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.labelSmall?.copyWith(

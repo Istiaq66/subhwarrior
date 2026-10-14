@@ -28,6 +28,27 @@ void main() {
     expect(find.text('Subh Warrior'), findsOneWidget);
   });
 
+  testWidgets('labels one qualifying day in the singular', (tester) async {
+    await tester.pumpWidget(_wrap(const StreakShareCard(
+      currentStreak: 1,
+      totalQualifyingDays: 1,
+      currentWeek: 1,
+    )));
+
+    expect(find.text('qualifying day'), findsOneWidget);
+    expect(find.text('qualifying days'), findsNothing);
+  });
+
+  testWidgets('labels several qualifying days in the plural', (tester) async {
+    await tester.pumpWidget(_wrap(const StreakShareCard(
+      currentStreak: 3,
+      totalQualifyingDays: 5,
+      currentWeek: 2,
+    )));
+
+    expect(find.text('qualifying days'), findsOneWidget);
+  });
+
   testWidgets('localizes digits in Bengali', (tester) async {
     await tester.pumpWidget(_wrap(
       const StreakShareCard(
